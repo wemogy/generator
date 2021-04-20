@@ -15,3 +15,13 @@ Finally run the following command, you should see `wemogy` in the list of availa
 ```bash
   yo
 ```
+
+## Development
+
+This VS Code instance: `yarn dev`
+In some playground folder outside the repository for testing: `yo wemogy`
+
+
+## Sources
+
+- <https://github.com/alexbatis/generator-typescript-yo-generator>
