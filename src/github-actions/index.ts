@@ -1,19 +1,14 @@
 import * as chalk from 'chalk';
+import { timeStamp } from 'node:console';
 const yosay = require('yosay');
 import * as Generator from 'yeoman-generator';
 
-class AppGenerator extends Generator {
-	private selectedGeneratorName?: string;
-	private generators = [
-		{
-			name: 'GitHub Actions',
-			generator: 'wemogy:github-actions'
-		}
-	];
+class GitHubGenerator extends Generator {
+	answers: any; // Answers captured by prompt
 
 	constructor(args: any, options: any) {
 		super(args, options);
-		this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
+		this.argument('name', { type: String, required: false });
 	}
 
 	// Your initialization methods (checking current project state, getting configs, etc
@@ -21,14 +16,19 @@ class AppGenerator extends Generator {
 
 	// Where you prompt users for options (where you’d call this.prompt())
 	public async prompting() {
-		const { generator } = await this.prompt({
-			type: 'list',
-			name: 'generator',
-			message: 'What do you want to generate?',
-			choices: this.generators.map(x => x.name)
-		});
-
-		this.selectedGeneratorName = generator;
+		this.answers = await this.prompt([
+			{
+				type: 'input',
+				name: 'name',
+				message: 'Your project name',
+				default: this.appname // Default to current folder name
+			},
+			{
+				type: 'confirm',
+				name: 'cool',
+				message: 'Would you like to enable the Cool feature?'
+			}
+		]);
 	}
 
 	// Saving configurations and configure the project (creating .editorconfig files and other metadata files
@@ -36,8 +36,10 @@ class AppGenerator extends Generator {
 
 	//  Where you write the generator specific files (routes, controllers, etc)
 	public writing(): void {
-		const selection = this.generators.find(x => x.name === this.selectedGeneratorName);
-		this.composeWith(selection.generator);
+		this.fs.copyTpl(this.sourceRoot(), process.cwd(), {
+			name: this.options.name,
+			...this.answers
+		});
 	}
 
 	// Where installation are run (npm, bower)
@@ -47,4 +49,4 @@ class AppGenerator extends Generator {
 	public end(): void {}
 }
 
-export default AppGenerator;
+export default GitHubGenerator;

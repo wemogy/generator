@@ -1,26 +1,30 @@
-# Template Repository for wemogy projects
+# Yeoman Code Generator
 
 ## Get it running
 
 ```bash
-  yarn install
+yarn install
 ```
 
 ```bash
-  npm link
+npm link
 ```
 
-Finally run the following command, you should see `wemogy` in the list of available yeoman generators
-
-```bash
-  yo
-```
+When running the `yo` command from your command line, you should now see `Wemogy` in the list of available yeoman generators.
 
 ## Development
 
-This VS Code instance: `yarn dev`
-In some playground folder outside the repository for testing: `yo wemogy`
+Start the development using the following command in the root directory
 
+```bash
+yarn develop
+```
+
+To test the generator, run the following command in any directory
+
+```bash
+yo wemogy
+```
 
 ## Sources
 
