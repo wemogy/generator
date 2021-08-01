@@ -1,0 +1,26 @@
+name: Build
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  javascript:
+    name: Build JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      # Setup
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+      - name: Install packages
+        run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_FEED_TOKEN }}
+      - name: Build application
+        run: yarn build

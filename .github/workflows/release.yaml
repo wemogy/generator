@@ -1,0 +1,45 @@
+name: Create a new Release
+on:
+  push:
+    branches:
+      - release/**
+
+jobs:
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      # Setup
+      - uses: wemogy/release-version-action@1.0.1
+        id: release-version
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout at release tag
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+
+      # Build
+      - name: Install packages
+        run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_FEED_TOKEN }}
+      - name: Set version number
+        run: npm version ${{ steps.release-version.outputs.next-version }} --no-git-tag-version --allow-same-version
+      - name: Build application
+        run: yarn build
+      - name: Publish NPM package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Create GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release-version.outputs.next-version }}
+          name: Version ${{ steps.release-version.outputs.next-version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

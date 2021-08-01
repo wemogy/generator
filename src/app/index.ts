@@ -6,6 +6,10 @@ class AppGenerator extends Generator {
 	private selectedGeneratorName?: string;
 	private generators = [
 		{
+			name: '.NET',
+			generator: 'wemogy:dotnet'
+		},
+		{
 			name: 'GitHub Actions',
 			generator: 'wemogy:github-actions'
 		}
