@@ -3,16 +3,24 @@
 ## Get it running
 
 ```bash
+npm install -g @wemogy/generator-wemogy
+```
+
+```bash
+yo wemogy
+```
+
+When running the `yo` command from your command line, you should now see `Wemogy` in the list of available yeoman generators.
+
+## Development
+
+```bash
 yarn install
 ```
 
 ```bash
 npm link
 ```
-
-When running the `yo` command from your command line, you should now see `Wemogy` in the list of available yeoman generators.
-
-## Development
 
 Start the development using the following command in the root directory
 
