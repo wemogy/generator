@@ -1,5 +1,5 @@
 {
-	"name": "generator-wemogy",
+	"name": "@wemogy/generator-wemogy",
 	"version": "1.0.0",
 	"description": "A yeoman generator for common wemogy templates",
 	"repository": "https://github.com/wemogy/generator-wemogy",
