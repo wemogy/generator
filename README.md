@@ -1,5 +1,7 @@
 # Yeoman Code Generator
 
+![npm](https://img.shields.io/npm/v/generator-wemogy)
+
 ## Get it running
 
 ```bash
