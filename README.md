@@ -3,7 +3,7 @@
 ## Get it running
 
 ```bash
-npm install -g @wemogy/generator-wemogy
+npm install -g generator-wemogy
 ```
 
 ```bash
