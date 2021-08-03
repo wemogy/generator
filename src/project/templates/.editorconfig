@@ -1,0 +1,38 @@
+################################
+# EditorConfig is awesome      #
+# See: http://EditorConfig.org #
+################################
+
+# This file is the top-most EditorConfig file
+root = true
+
+# All files
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Define style of doc comments for intentation checks
+block_comment_start = /*
+block_comment = *
+block_comment_end = */
+
+# Exception for .provisionprofile files
+[*.provisionprofile]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+# Exception for .provisionprofile files
+[*.p12]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+# Exception for .sln files as they reformat themselves
+[*.sln]
+charset = utf-8-bom
+
+[*.cs]
+indent_size = 4

@@ -19,7 +19,7 @@ yarn install
 ```
 
 ```bash
-npm link
+yarn link
 ```
 
 Start the development using the following command in the root directory
@@ -32,6 +32,15 @@ To test the generator, run the following command in any directory
 
 ```bash
 yo wemogy
+```
+
+To remove the linked generator, run the following command
+
+```bash
+yarn unlink
+
+# Check, if removal was successful
+npm list -g --depth=0
 ```
 
 ## Sources

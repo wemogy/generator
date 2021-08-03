@@ -1,5 +1,5 @@
 {
-	"name": "@wemogy/generator-wemogy",
+	"name": "generator-wemogy",
 	"version": "1.0.0",
 	"description": "A yeoman generator for common wemogy templates",
 	"repository": "https://github.com/wemogy/generator-wemogy",
@@ -12,7 +12,7 @@
 		"build": "tsc & npm run copy-templates",
 		"develop": "tsc-watch & npm run watch-templates --silent",
 		"watch-templates": "onchange 'src/*/templates/**' --initial -- npm run copy-templates --silent",
-		"copy-templates": "copyfiles --up 1 'src/*/templates/**' generators"
+		"copy-templates": "copyfiles --all --up 1 'src/*/templates/**' generators"
 	},
 	"dependencies": {
 		"chalk": "^4.1.0",
