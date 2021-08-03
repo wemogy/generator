@@ -19,13 +19,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 12
-          registry-url: https://npm.pkg.github.com/
+          registry-url: https://registry.npmjs.org
 
       # Build
       - name: Install packages
         run: yarn install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_FEED_TOKEN }}
       - name: Set version number
         run: npm version ${{ steps.release-version.outputs.next-version }} --no-git-tag-version --allow-same-version
       - name: Build application
