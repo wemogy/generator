@@ -38,7 +38,17 @@ class DotNetGenerator extends Generator {
 		switch (this.answers.type) {
 			case 'Solution':
 				this.fs.copy(this.templatePath('solution/Solution.sln'), this.destinationPath(`${this.answers.name}.sln`));
-				this.fs.copy(this.templatePath('stylecop'), this.destinationPath());
+				this.fs.copy(
+					this.templatePath('stylecop'),
+					this.destinationPath(),
+					null,
+					// Include dotfiles (like .stylecop)
+					{
+						globOptions: {
+							dot: true
+						}
+					}
+				);
 				break;
 			case 'Class Library':
 				this.fs.copy(
