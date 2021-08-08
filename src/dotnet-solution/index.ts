@@ -1,14 +1,11 @@
-import * as chalk from 'chalk';
-import { timeStamp } from 'node:console';
 const yosay = require('yosay');
 import * as Generator from 'yeoman-generator';
 
-class GitHubGenerator extends Generator {
-  answers: any; // Answers captured by prompt
+class DotSolutionGenerator extends Generator {
+  private answers: any; // Answers captured by prompt
 
   constructor(args: any, options: any) {
     super(args, options);
-    this.argument('name', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -20,13 +17,13 @@ class GitHubGenerator extends Generator {
       {
         type: 'input',
         name: 'name',
-        message: 'Your project name',
-        default: this.appname // Default to current folder name
+        message: 'Solution name',
+        default: this.appname
       },
       {
         type: 'confirm',
-        name: 'cool',
-        message: 'Would you like to enable the Cool feature?'
+        name: 'styleCop',
+        message: 'Include StyleCop config?'
       }
     ]);
   }
@@ -36,10 +33,11 @@ class GitHubGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.sourceRoot(), process.cwd(), {
-      name: this.options.name,
-      ...this.answers
-    });
+    this.fs.copy(this.templatePath('Solution.sln'), this.destinationPath(`${this.answers.name}.sln`));
+
+    if (this.answers.styleCop) {
+      this.composeWith('wemogy:dotnet-stylecop');
+    }
   }
 
   // Where installation are run (npm, bower)
@@ -49,4 +47,4 @@ class GitHubGenerator extends Generator {
   public end(): void {}
 }
 
-export default GitHubGenerator;
+export default DotSolutionGenerator;
