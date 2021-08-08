@@ -18,7 +18,8 @@
 		"chalk": "^4.1.0",
 		"directory-exists": "^2.0.1",
 		"lodash": "^4.17.21",
-		"yeoman-generator": "^4.0.1",
+		"yeoman-generator": "5.4.0",
+		"yeoman-merge-ui": "^1.1.0",
 		"yosay": "^2.0.2"
 	},
 	"files": [
@@ -26,8 +27,8 @@
 	],
 	"devDependencies": {
 		"@types/lodash": "^4.14.168",
-		"@types/node": "^14.14.41",
-		"@types/yeoman-generator": "^4.11.3",
+		"@types/node": "^16.4.13",
+		"@types/yeoman-generator": "5.2.2",
 		"@types/yosay": "^2.0.0",
 		"copyfiles": "^2.4.1",
 		"onchange": "^7.1.0",

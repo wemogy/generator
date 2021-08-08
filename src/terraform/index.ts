@@ -1,32 +1,25 @@
-import * as chalk from 'chalk';
 const yosay = require('yosay');
 import * as Generator from 'yeoman-generator';
 
-class AppGenerator extends Generator {
-	private selectedGeneratorName?: string;
+class TerraformGenerator extends Generator {
+	private answers: any; // Answers captured by prompt
 	private generators = [
 		{
-			name: 'Empty project',
-			generator: 'wemogy:project'
+			name: 'Empty',
+			generator: 'wemogy:terraform-empty'
 		},
 		{
-			name: '.NET',
-			generator: 'wemogy:dotnet'
+			name: 'Azure Kubernetes Service (AKS)',
+			generator: 'wemogy:terraform-aks'
 		},
 		{
-			name: 'Terraform',
-			generator: 'wemogy:terraform'
+			name: 'Kubernetes Cluster configuration',
+			generator: 'wemogy:terraform-kubernetes'
 		}
-		// {
-		// 	name: 'GitHub Actions',
-		// 	generator: 'wemogy:github-actions'
-		// }
 	];
 
 	constructor(args: any, options: any) {
 		super(args, options);
-		this.appname = 'wemTest';
-		this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
 	}
 
 	// Your initialization methods (checking current project state, getting configs, etc
@@ -34,14 +27,12 @@ class AppGenerator extends Generator {
 
 	// Where you prompt users for options (where you’d call this.prompt())
 	public async prompting() {
-		const { generator } = await this.prompt({
+		this.answers = await this.prompt({
 			type: 'list',
 			name: 'generator',
 			message: 'What do you want to generate?',
 			choices: this.generators.map(x => x.name)
 		});
-
-		this.selectedGeneratorName = generator;
 	}
 
 	// Saving configurations and configure the project (creating .editorconfig files and other metadata files
@@ -55,9 +46,9 @@ class AppGenerator extends Generator {
 
 	// Called last, cleanup, say good bye, etc
 	public end(): void {
-		const selection = this.generators.find(x => x.name === this.selectedGeneratorName);
+		const selection = this.generators.find(x => x.name === this.answers.generator);
 		this.composeWith(selection.generator);
 	}
 }
 
-export default AppGenerator;
+export default TerraformGenerator;

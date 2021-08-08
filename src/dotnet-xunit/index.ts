@@ -1,25 +1,8 @@
+const yosay = require('yosay');
 import * as Generator from 'yeoman-generator';
 
-class DotNetGenerator extends Generator {
+class DotXunitGenerator extends Generator {
 	private answers: any; // Answers captured by prompt
-	private generators = [
-		{
-			name: 'Solution',
-			generator: 'wemogy:dotnet-solution'
-		},
-		{
-			name: 'Class Library',
-			generator: 'wemogy:dotnet-classlib'
-		},
-		{
-			name: 'ASP.NET Web API',
-			generator: 'wemogy:dotnet-aspnet'
-		},
-		{
-			name: 'xUnit Tests',
-			generator: 'wemogy:dotnet-xunit'
-		}
-	];
 
 	constructor(args: any, options: any) {
 		super(args, options);
@@ -32,10 +15,10 @@ class DotNetGenerator extends Generator {
 	public async prompting() {
 		this.answers = await this.prompt([
 			{
-				type: 'list',
-				name: 'projectType',
-				message: 'What do you want to generate?',
-				choices: this.generators.map(x => x.name)
+				type: 'input',
+				name: 'name',
+				message: 'Project name',
+				default: this.appname
 			}
 		]);
 	}
@@ -45,8 +28,8 @@ class DotNetGenerator extends Generator {
 
 	//  Where you write the generator specific files (routes, controllers, etc)
 	public writing(): void {
-		const selection = this.generators.find(x => x.name === this.answers.projectType);
-		this.composeWith(selection.generator);
+		this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+		this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
 	}
 
 	// Where installation are run (npm, bower)
@@ -56,4 +39,4 @@ class DotNetGenerator extends Generator {
 	public end(): void {}
 }
 
-export default DotNetGenerator;
+export default DotXunitGenerator;
