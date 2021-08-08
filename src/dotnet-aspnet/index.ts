@@ -1,14 +1,10 @@
-import * as chalk from 'chalk';
-import { timeStamp } from 'node:console';
-const yosay = require('yosay');
 import * as Generator from 'yeoman-generator';
 
-class GitHubGenerator extends Generator {
-  answers: any; // Answers captured by prompt
+class DotAspNetGenerator extends Generator {
+  private answers: any; // Answers captured by prompt
 
   constructor(args: any, options: any) {
     super(args, options);
-    this.argument('name', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -20,13 +16,14 @@ class GitHubGenerator extends Generator {
       {
         type: 'input',
         name: 'name',
-        message: 'Your project name',
-        default: this.appname // Default to current folder name
+        message: 'Project name',
+        default: this.appname
       },
       {
-        type: 'confirm',
-        name: 'cool',
-        message: 'Would you like to enable the Cool feature?'
+        type: 'input',
+        name: 'path',
+        message: 'Project parent folder path (from repository root)',
+        default: 'src'
       }
     ]);
   }
@@ -36,10 +33,8 @@ class GitHubGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.sourceRoot(), process.cwd(), {
-      name: this.options.name,
-      ...this.answers
-    });
+    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+    this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
   }
 
   // Where installation are run (npm, bower)
@@ -49,4 +44,4 @@ class GitHubGenerator extends Generator {
   public end(): void {}
 }
 
-export default GitHubGenerator;
+export default DotAspNetGenerator;
