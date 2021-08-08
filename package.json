@@ -9,7 +9,7 @@
 	"main": "generators/app/index.js",
 	"author": "wemogy GmbH",
 	"scripts": {
-		"build": "tsc & npm run copy-templates",
+		"build": "tsc && npm run copy-templates",
 		"develop": "tsc-watch & npm run watch-templates --silent",
 		"watch-templates": "onchange 'src/*/templates/**' --initial -- npm run copy-templates --silent",
 		"copy-templates": "copyfiles --all --up 1 'src/*/templates/**' generators"
