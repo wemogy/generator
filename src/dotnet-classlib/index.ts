@@ -18,6 +18,24 @@ class DotClasslibGenerator extends Generator {
         name: 'name',
         message: 'Project name',
         default: this.appname
+      },
+      {
+        type: 'confirm',
+        name: 'nuget',
+        message: 'Packable via NuGet?',
+        default: this.appname
+      },
+      {
+        when: (answers: any) => answers.nuget,
+        type: 'input',
+        name: 'nugetRepoUrl',
+        message: 'GitHub Repository Url'
+      },
+      {
+        when: (answers: any) => answers.nuget,
+        type: 'input',
+        name: 'nugetDescription',
+        message: 'NuGet package description'
       }
     ]);
   }
@@ -27,7 +45,11 @@ class DotClasslibGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+    this.fs.copyTpl(
+      this.templatePath('Project.csproj'),
+      this.destinationPath(`${this.answers.name}.csproj`),
+      this.answers
+    );
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
   }
 

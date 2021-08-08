@@ -18,6 +18,12 @@ class DotAspNetGenerator extends Generator {
         name: 'name',
         message: 'Project name',
         default: this.appname
+      },
+      {
+        type: 'input',
+        name: 'path',
+        message: 'Project parent folder path (from repository root)',
+        default: 'src'
       }
     ]);
   }
