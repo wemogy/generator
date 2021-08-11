@@ -39,6 +39,20 @@ class TerraformKubernetesGenerator extends Generator {
         type: 'confirm',
         name: 'certManager',
         message: 'Install Cert Manager'
+      },
+
+      // Linkerd
+      {
+        type: 'confirm',
+        name: 'linkerd',
+        message: 'Install Linkerd'
+      },
+
+      // akv2k8s
+      {
+        type: 'confirm',
+        name: 'akv2k8s',
+        message: 'Install Azure KeyVault to Kubernetes (akv2k8s)'
       }
     ]);
   }
@@ -57,11 +71,29 @@ class TerraformKubernetesGenerator extends Generator {
       );
     }
 
-    // Providers
+    // Cert Manager
     if (this.answers.certManager) {
       this.fs.copyTpl(
         this.templatePath('kubernetes_cert_manager.tf'),
         this.destinationPath('kubernetes_cert_manager.tf'),
+        this.answers
+      );
+    }
+
+    // Linkerd
+    if (this.answers.linkerd) {
+      this.fs.copyTpl(
+        this.templatePath('kubernetes_linkerd.tf'),
+        this.destinationPath('kubernetes_linkerd.tf'),
+        this.answers
+      );
+    }
+
+    // akv2k8s
+    if (this.answers.akv2k8s) {
+      this.fs.copyTpl(
+        this.templatePath('kubernetes_akv2k8s.tf'),
+        this.destinationPath('kubernetes_akv2k8s.tf'),
         this.answers
       );
     }
