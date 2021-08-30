@@ -1,7 +1,7 @@
 import * as Generator from 'yeoman-generator';
 
-class DotAspNetGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
+class EmptyProjectGenerator extends Generator {
+  answers: any; // Answers captured by prompt
 
   constructor(args: any, options: any) {
     super(args, options);
@@ -16,14 +16,8 @@ class DotAspNetGenerator extends Generator {
       {
         type: 'input',
         name: 'name',
-        message: 'Project name',
-        default: this.appname
-      },
-      {
-        type: 'input',
-        name: 'parentPath',
-        message: 'Project parent folder path (from repository root)',
-        default: 'src'
+        message: 'Your project name',
+        default: this.appname // Default to current folder name
       }
     ]);
   }
@@ -33,8 +27,20 @@ class DotAspNetGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
-    this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+    this.fs.copyTpl(
+      this.templatePath(),
+      this.destinationPath(),
+      {
+        ...this.answers
+      },
+      null,
+      // Include dotfiles (like .gitignore)
+      {
+        globOptions: {
+          dot: true
+        }
+      }
+    );
   }
 
   // Where installation are run (npm, bower)
@@ -44,4 +50,4 @@ class DotAspNetGenerator extends Generator {
   public end(): void {}
 }
 
-export default DotAspNetGenerator;
+export default EmptyProjectGenerator;

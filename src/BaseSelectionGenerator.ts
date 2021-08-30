@@ -1,7 +1,9 @@
 import * as Generator from 'yeoman-generator';
+import GeneratorSelection from './GeneratorSelection';
 
-class DotAspNetGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
+class BaseSelectionGenerator extends Generator {
+  private answers: any;
+  protected generators: GeneratorSelection[];
 
   constructor(args: any, options: any) {
     super(args, options);
@@ -14,16 +16,10 @@ class DotAspNetGenerator extends Generator {
   public async prompting() {
     this.answers = await this.prompt([
       {
-        type: 'input',
-        name: 'name',
-        message: 'Project name',
-        default: this.appname
-      },
-      {
-        type: 'input',
-        name: 'parentPath',
-        message: 'Project parent folder path (from repository root)',
-        default: 'src'
+        type: 'list',
+        name: 'selectedGenerator',
+        message: 'What do you want to generate?',
+        choices: this.generators.map(x => x.name)
       }
     ]);
   }
@@ -33,8 +29,8 @@ class DotAspNetGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
-    this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+    const selection = this.generators.find(x => x.name === this.answers.selectedGenerator);
+    this.composeWith(selection.generator);
   }
 
   // Where installation are run (npm, bower)
@@ -44,4 +40,4 @@ class DotAspNetGenerator extends Generator {
   public end(): void {}
 }
 
-export default DotAspNetGenerator;
+export default BaseSelectionGenerator;

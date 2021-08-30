@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotClasslibGenerator extends BaseTemplateGenerator {
+class <%= className %> extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -18,27 +18,11 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
         default: this.appname
       },
       {
-        type: 'confirm',
-        name: 'nuget',
-        message: 'Packable via NuGet?',
-        default: this.appname
-      },
-      {
-        when: (answers: any) => {
-          console.log(answers); // -> undefined
-          console.log(answers.nuget);
-          return answers.nuget;
-        },
         type: 'input',
-        name: 'nugetRepoUrl',
-        message: 'GitHub Repository Url'
+        name: 'path',
+        message: 'Path',
+        default: '.'
       },
-      {
-        when: (answers: any) => answers.nuget,
-        type: 'input',
-        name: 'nugetDescription',
-        message: 'NuGet package description'
-      }
     ]);
   }
 
@@ -47,12 +31,11 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(
-      this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}.csproj`),
-      this.answers
-    );
-    this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+    this.fs.copy(this.templatePath(), `${this.destinationPath()}/${this.answers.path}`, null, {
+      globOptions: {
+        dot: true // Include dotfiles (like .stylecop)
+      }
+    });
   }
 
   // Where installation are run (npm, bower)
@@ -62,4 +45,4 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotClasslibGenerator;
+export default <%= className %>;

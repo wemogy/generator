@@ -22,6 +22,7 @@ yarn install
 
 ```bash
 yarn link
+yarn link generator-wemogy
 ```
 
 Start the development using the following command in the root directory
@@ -30,7 +31,7 @@ Start the development using the following command in the root directory
 yarn develop
 ```
 
-To test the generator, run the following command in any directory
+To test the generator, run the following command
 
 ```bash
 yo wemogy

@@ -1,21 +1,21 @@
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
 
-class ProjectGenerator extends BaseSelectionGenerator {
+class <%= className %> extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
 
     this.generators = [
       {
-        name: 'Base Structure',
-        generator: 'wemogy:project-empty'
+        name: 'Test Generator A',
+        generator: 'wemogy:test-a'
       },
       {
-        name: '.NET SDK',
-        generator: 'wemogy:project-sdk-dotnet'
+        name: 'Test Generator B',
+        generator: 'wemogy:test-b'
       }
     ];
   }
 }
 
-export default resolveGeneratorInheritance(ProjectGenerator);
+export default resolveGeneratorInheritance(<%= className %>);

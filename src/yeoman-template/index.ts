@@ -1,6 +1,7 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import * as optionOrPrompt from 'yeoman-option-or-prompt';
 
-class DotClasslibGenerator extends BaseTemplateGenerator {
+class YeomanTemplateGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -14,30 +15,12 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'name',
-        message: 'Project name',
-        default: this.appname
+        message: 'Generator Name'
       },
       {
-        type: 'confirm',
-        name: 'nuget',
-        message: 'Packable via NuGet?',
-        default: this.appname
-      },
-      {
-        when: (answers: any) => {
-          console.log(answers); // -> undefined
-          console.log(answers.nuget);
-          return answers.nuget;
-        },
         type: 'input',
-        name: 'nugetRepoUrl',
-        message: 'GitHub Repository Url'
-      },
-      {
-        when: (answers: any) => answers.nuget,
-        type: 'input',
-        name: 'nugetDescription',
-        message: 'NuGet package description'
+        name: 'className',
+        message: 'Class Name'
       }
     ]);
   }
@@ -48,11 +31,11 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     this.fs.copyTpl(
-      this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}.csproj`),
+      `${this.templatePath()}/index.ts`,
+      `${this.destinationPath()}/${this.answers.name}/index.ts`,
       this.answers
     );
-    this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+    this.fs.copy(`${this.templatePath()}/templates`, `${this.destinationPath()}/${this.answers.name}/templates`);
   }
 
   // Where installation are run (npm, bower)
@@ -62,4 +45,4 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotClasslibGenerator;
+export default YeomanTemplateGenerator;
