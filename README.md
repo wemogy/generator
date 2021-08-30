@@ -16,6 +16,8 @@ When running the `yo` command from your command line, you should now see `Wemogy
 
 ## Development
 
+Open a Terminal at the repository root and run the following commands.
+
 ```bash
 yarn install
 ```
@@ -25,13 +27,13 @@ yarn link
 yarn link generator-wemogy
 ```
 
-Start the development using the following command in the root directory
+Start the development using the following command in the root directory.
 
 ```bash
 yarn develop
 ```
 
-To test the generator, run the following command
+To test the generator, run the following commands from the repository's root or a sub folder.
 
 ```bash
 yo wemogy
