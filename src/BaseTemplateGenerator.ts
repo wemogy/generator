@@ -1,5 +1,5 @@
 import * as Generator from 'yeoman-generator';
-import * as optionOrPrompt from 'yeoman-option-or-prompt';
+import optionOrPrompt from './OptionOrPrompt';
 
 class BaseTemplateGenerator extends Generator {
   protected answers: any;
