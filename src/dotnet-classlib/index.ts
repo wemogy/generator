@@ -25,8 +25,6 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
       },
       {
         when: (answers: any) => {
-          console.log(answers); // -> undefined
-          console.log(answers.nuget);
           return answers.nuget;
         },
         type: 'input',
