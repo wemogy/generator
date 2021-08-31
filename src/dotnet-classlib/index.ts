@@ -21,21 +21,19 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'nuget',
         message: 'Packable via NuGet?',
-        default: this.appname
-      },
-      {
-        when: (answers: any) => {
-          return answers.nuget;
-        },
-        type: 'input',
-        name: 'nugetRepoUrl',
-        message: 'GitHub Repository Url'
-      },
-      {
-        when: (answers: any) => answers.nuget,
-        type: 'input',
-        name: 'nugetDescription',
-        message: 'NuGet package description'
+        default: this.appname,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'nugetRepoUrl',
+            message: 'GitHub Repository Url'
+          },
+          {
+            type: 'input',
+            name: 'nugetDescription',
+            message: 'NuGet package description'
+          }
+        ]
       }
     ]);
   }

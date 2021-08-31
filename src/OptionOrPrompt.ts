@@ -1,17 +1,37 @@
 import * as Generator from 'yeoman-generator';
 import * as _ from 'lodash';
 
-export default async function optionOrPrompt<T>(questions: Generator.Questions<T>): Promise<void> {
+type FollowUpQuestion<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+> = Generator.Question<A> & {
+  type: 'confirm';
+  followUpQuestions?: Generator.Questions<AFollowUp>;
+};
+
+type AdvancedQuestion<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+> = Generator.Question<A> | FollowUpQuestion<A, AFollowUp>;
+
+export type AdvancedQuestions<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+> = AdvancedQuestion<A, AFollowUp> | Array<AdvancedQuestion<A, AFollowUp>>;
+
+export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>): Promise<T> {
   const answers: any = {};
 
+  // if the question is a single question
   if (!isQuestionsArray(questions)) {
-    if (isQuestion(questions)) {
-      return this.prompt(questions);
-    }
-    throw new Error('Observable is not supported');
+    const answer = await this.prompt(questions);
+
+    await mergeFolloUpAnswersIn.bind(this)(answer, questions);
+
+    return answer;
   }
 
-  for (const question of questions) {
+  for (const question of questions as any) {
     // add the option to the set of expected options
     this.option(question.name);
 
@@ -21,6 +41,8 @@ export default async function optionOrPrompt<T>(questions: Generator.Questions<T
     if (option !== undefined) {
       // add to answers
       answers[question.name] = option;
+      // followUp questions
+      await mergeFolloUpAnswersIn.bind(this)(answers, question);
       // skip the prompt
       continue;
     }
@@ -45,10 +67,23 @@ export default async function optionOrPrompt<T>(questions: Generator.Questions<T
   return answers;
 }
 
-function isQuestionsArray<T>(questions: Generator.Questions<T>): questions is Array<Generator.Question<T>> {
+async function mergeFolloUpAnswersIn(answers: any, question: AdvancedQuestion): Promise<void> {
+  if (isFollowUpQuestion(question)) {
+    if (!answers[question.name]) {
+      return;
+    }
+    const followUpAnswers = await optionOrPrompt.bind(this)(question.followUpQuestions);
+    _.merge(answers, followUpAnswers);
+  }
+}
+
+function isQuestionsArray<T>(questions: AdvancedQuestions<T>): questions is Array<AdvancedQuestions<T>> {
   return _.isArray(questions);
 }
 
-function isQuestion<T>(questions: Generator.Questions<T>): questions is Generator.Question<T> {
-  return !_.isArray(questions);
+function isFollowUpQuestion<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+>(question: AdvancedQuestion<A, AFollowUp>): question is FollowUpQuestion<A, AFollowUp> {
+  return question.type === 'confirm' && (question as any).followUpQuestions;
 }
