@@ -1,96 +1,89 @@
 import * as Generator from 'yeoman-generator';
 import * as _ from 'lodash';
-import * as q from 'q';
 
-export default function optionOrPrompt<T>(questions: Generator.Questions<T>, callback?: any): void {
-  // This method will only show prompts that haven't been supplied as options. This makes the generator more composable.
-  const filteredQuestions: Generator.Questions<T>[] = [];
-  const props: any = {};
+type FollowUpQuestion<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+> = Generator.Question<A> & {
+  type: 'confirm';
+  followUpQuestions?: Generator.Questions<AFollowUp>;
+};
 
+type AdvancedQuestion<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+> = Generator.Question<A> | FollowUpQuestion<A, AFollowUp>;
+
+export type AdvancedQuestions<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+> = AdvancedQuestion<A, AFollowUp> | Array<AdvancedQuestion<A, AFollowUp>>;
+
+export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>): Promise<T> {
+  const answers: any = {};
+
+  // if the question is a single question
   if (!isQuestionsArray(questions)) {
-    throw new Error('Only array is supported');
+    const answer = await this.prompt(questions);
+
+    await mergeFolloUpAnswersIn.bind(this)(answer, questions);
+
+    return answer;
   }
-  const backup: any = this;
-  const promptNotSuppliedOptions = (_notSuppliedOptions: any, props: any, callback: any): void => {
-    // The when functions that may be specified with a prompt should receive all the already given answers.
-    // That's why we have to do this overcomplex looking approach with promise (to make sure every when function
-    // gets the latest answers given).
-    this.log('BF2');
-    const prompts = filteredQuestions.map(filteredQuestion => {
-      if (!isQuestion(filteredQuestion)) {
-        throw new Error('filteredQuestion array not supported now.');
-      }
 
-      return (() => {
-        var promise = q.defer();
-        this.log('TEST 1');
-        var isWhenConditionFulfilled =
-          typeof filteredQuestion.when !== 'function' ||
-          (typeof filteredQuestion.when === 'function' && filteredQuestion.when(props));
-
-        if (isWhenConditionFulfilled) {
-          delete filteredQuestion.when;
-
-          this.log('TEST isWhenConditionFulfilled BF', this);
-          backup.prompt(filteredQuestion, (mergeProps: any) => {
-            this.log('CALLBACK ');
-            // Merge mergeProps into props/
-            _.assign(props, mergeProps);
-            promise.resolve();
-          });
-          this.log('TEST isWhenConditionFulfilled AF');
-        } else {
-          promise.resolve();
-        }
-        this.log('TEST RETURN');
-        return promise.promise;
-      }).bind(this);
-    });
-
-    this.log('AF2', typeof prompts[0]);
-    this.log('AF2 - log', prompts[0]);
-    let currentPrompt = prompts[0]();
-    this.log('AF2.1');
-    for (var i = 1; i < questions.length; i++) {
-      this.log('FOR' + i);
-      currentPrompt = currentPrompt.then(prompts[i]);
-    }
-    this.log('AF3');
-    currentPrompt.then(() => {
-      callback && callback(props);
-    });
-  };
-
-  questions.forEach((question): void => {
+  for (const question of questions as any) {
+    // add the option to the set of expected options
     this.option(question.name);
+
+    // resolve the option from command
     const option = this.options[question.name];
-
+    // if option is supplied
     if (option !== undefined) {
-      // Options supplied, add to props
-      props[question.name] = option;
-    } else {
-      // No option supplied, user will be prompted
-      filteredQuestions.push(question);
+      // add to answers
+      answers[question.name] = option;
+      // followUp questions
+      await mergeFolloUpAnswersIn.bind(this)(answers, question);
+      // skip the prompt
+      continue;
     }
-  }, this);
 
-  this.log('HI');
+    if (typeof question.when === 'function') {
+      // call the when resolver
+      const shouldAskQuestion = await question.when(answers);
+      // ignore the question if when result is falsy
+      if (!shouldAskQuestion) {
+        continue;
+      }
+      // remove the condition, because it is checked already
+      delete question.when;
+    }
 
-  if (filteredQuestions.length) {
-    // Some options were not supplied, prompting required.
-    this.log('BEF');
-    promptNotSuppliedOptions(filteredQuestions, props, callback);
-    this.log('AF');
-  } else {
-    // No prompting required call the callback right away.
-    callback && callback(props);
+    // recursive call to ask question or process questions
+    const promptAnswers = await optionOrPrompt.bind(this)(question);
+    // merge the suppied answers to all answers
+    _.merge(answers, promptAnswers);
+  }
+
+  return answers;
+}
+
+async function mergeFolloUpAnswersIn(answers: any, question: AdvancedQuestion): Promise<void> {
+  if (isFollowUpQuestion(question)) {
+    if (!answers[question.name]) {
+      return;
+    }
+    const followUpAnswers = await optionOrPrompt.bind(this)(question.followUpQuestions);
+    _.merge(answers, followUpAnswers);
   }
 }
 
-function isQuestionsArray<T>(questions: Generator.Questions<T>): questions is Array<Generator.Question<T>> {
+function isQuestionsArray<T>(questions: AdvancedQuestions<T>): questions is Array<AdvancedQuestions<T>> {
   return _.isArray(questions);
 }
 
-function isQuestion<T>(questions: Generator.Questions<T>): questions is Generator.Question<T> {
-  return !_.isArray(questions);
+function isFollowUpQuestion<
+  A extends Generator.Answers = Generator.Answers,
+  AFollowUp extends Generator.Answers = Generator.Answers
+>(question: AdvancedQuestion<A, AFollowUp>): question is FollowUpQuestion<A, AFollowUp> {
+  return question.type === 'confirm' && (question as any).followUpQuestions;
 }

@@ -1,9 +1,9 @@
 import * as Generator from 'yeoman-generator';
-import * as optionOrPrompt from 'yeoman-option-or-prompt';
+import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
 
 class BaseTemplateGenerator extends Generator {
   protected answers: any;
-  protected optionOrPrompt = optionOrPrompt.bind(this);
+  protected optionOrPrompt: (questions: AdvancedQuestions) => Promise<any> = optionOrPrompt.bind(this);
 
   constructor(args: any, options: any) {
     super(args, options);
