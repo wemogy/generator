@@ -11,8 +11,12 @@ class ProjectGenerator extends BaseSelectionGenerator {
         generator: 'wemogy:project-core'
       },
       {
-        name: '.NET SDK',
+        name: 'SDK (.NET)',
         generator: 'wemogy:project-sdk-dotnet'
+      },
+      {
+        name: '(Micro-)service (.NET)',
+        generator: 'wemogy:project-service-dotnet'
       }
     ];
   }

@@ -22,6 +22,12 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         name: 'parentPath',
         message: 'Project parent folder path (from repository root)',
         default: 'src'
+      },
+      {
+        type: 'confirm',
+        name: 'unitTests',
+        message: 'Add Unit Tests',
+        default: true
       }
     ]);
   }
@@ -31,8 +37,20 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+    this.fs.copy(
+      this.templatePath('Project.csproj'),
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
+    this.fs.copyTpl(this.templatePath('Dockerfile'), this.destinationPath('Dockerfile'), this.answers);
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+
+    if (this.answers.unitTests) {
+      this.composeWith('wemogy:dotnet-xunit', {
+        name: `${this.answers.name}.Tests`,
+        referenceProjectToTest: true,
+        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`
+      });
+    }
   }
 
   // Where installation are run (npm, bower)

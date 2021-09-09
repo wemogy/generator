@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
+class DotnetMicroserviceProjectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -25,10 +25,10 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeWith('wemogy:dotnet-classlib', {
-      destinationRoot: this.destinationRoot('src/sdk'),
+    this.composeWith('wemogy:dotnet-aspnet', {
+      destinationRoot: this.destinationRoot(`src/services/${this.answers.name.toLowerCase()}`),
       name: this.answers.name,
-      nuget: true,
+      parentPath: `src/services/${this.answers.name.toLowerCase()}`,
       unitTests: true
     });
   }
@@ -40,4 +40,4 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotnetSdkProjectGenerator;
+export default DotnetMicroserviceProjectGenerator;

@@ -17,6 +17,19 @@ class DotXunitGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Project name',
         default: this.appname
+      },
+      {
+        type: 'confirm',
+        name: 'referenceProjectToTest',
+        message: 'Reference project to test',
+        default: false,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'projectToTest',
+            message: 'Project to test'
+          }
+        ]
       }
     ]);
   }
@@ -26,10 +39,12 @@ class DotXunitGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(
+    this.fs.copyTpl(
       this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`),
+      this.answers
     );
+    this.log('asdsa');
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
   }
 

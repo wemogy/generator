@@ -11,11 +11,17 @@ ARG NUGET_TOKEN
 COPY <%= parentPath %>/*/*.csproj ./
 RUN for file in $(ls *.csproj); do mkdir -p <%= parentPath %>/${file%.*}/ && mv $file <%= parentPath %>/${file%.*}/; done
 
+# Restore NuGet packages
 RUN dotnet nuget add source https://pkgs.dev.azure.com/wemogy/_packaging/wemogy/nuget/v3/index.json --name wemogy --username $NUGET_USERNAME --password $NUGET_TOKEN --store-password-in-clear-text
 RUN dotnet restore <%= parentPath %>/<%= name %>/<%= name %>.csproj
+<% if(unitTests) { %>RUN dotnet restore <%= parentPath %>/<%= name %>.Tests/<%= name %>.Tests.csproj<% } %>
 
 # Copy the rest of the files over
 COPY . .
+
+<% if(unitTests) { %># Run unit tests
+WORKDIR /<%= parentPath %>/<%= name %>.Tests/
+RUN dotnet test --configuration Release<% } %>
 
 # Build the application
 WORKDIR /<%= parentPath %>/<%= name %>/

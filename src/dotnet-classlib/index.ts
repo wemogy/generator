@@ -21,7 +21,7 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'nuget',
         message: 'Packable via NuGet?',
-        default: this.appname,
+        default: true,
         followUpQuestions: [
           {
             type: 'input',
@@ -34,6 +34,12 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
             message: 'NuGet package description'
           }
         ]
+      },
+      {
+        type: 'confirm',
+        name: 'unitTests',
+        message: 'Add Unit Tests',
+        default: true
       }
     ]);
   }
@@ -49,6 +55,14 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
       this.answers
     );
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+
+    if (this.answers.unitTests) {
+      this.composeWith('wemogy:dotnet-xunit', {
+        name: `${this.answers.name}.Tests`,
+        referenceProjectToTest: true,
+        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`
+      });
+    }
   }
 
   // Where installation are run (npm, bower)
