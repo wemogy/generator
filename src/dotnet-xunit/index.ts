@@ -1,9 +1,7 @@
 const yosay = require('yosay');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotXunitGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class DotXunitGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -13,7 +11,7 @@ class DotXunitGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',
@@ -28,7 +26,10 @@ class DotXunitGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+    this.fs.copy(
+      this.templatePath('Project.csproj'),
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
   }
 

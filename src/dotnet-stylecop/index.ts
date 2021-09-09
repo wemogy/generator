@@ -1,7 +1,6 @@
-const yosay = require('yosay');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotStyleCopGenerator extends Generator {
+class DotStyleCopGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }

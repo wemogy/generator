@@ -9,16 +9,33 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
   public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {}
+  public async prompting() {
+    this.answers = await this.optionOrPrompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name',
+        default: this.appname
+      }
+    ]);
+  }
 
   // Saving configurations and configure the project (creating .editorconfig files and other metadata files
   public configuring(): void {}
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    // Class Library
     this.composeWith('wemogy:dotnet-classlib', {
       destinationRoot: this.destinationRoot('src/sdk'),
-      nuget: 'true'
+      name: this.answers.name,
+      nuget: true
+    });
+
+    // Unit Test
+    this.composeWith('wemogy:dotnet-xunit', {
+      destinationRoot: this.destinationRoot('src/sdk'),
+      name: `${this.answers.name}.Tests`
     });
   }
 

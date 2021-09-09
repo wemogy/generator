@@ -1,9 +1,6 @@
-const yosay = require('yosay');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotSolutionGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class DotSolutionGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -13,7 +10,7 @@ class DotSolutionGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',

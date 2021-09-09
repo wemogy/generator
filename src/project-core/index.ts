@@ -1,8 +1,6 @@
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class EmptyProjectGenerator extends Generator {
-  answers: any; // Answers captured by prompt
-
+class CoreProjectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,12 +10,12 @@ class EmptyProjectGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',
         message: 'Your project name',
-        default: this.appname // Default to current folder name
+        default: this.appname
       }
     ]);
   }
@@ -50,4 +48,4 @@ class EmptyProjectGenerator extends Generator {
   public end(): void {}
 }
 
-export default EmptyProjectGenerator;
+export default CoreProjectGenerator;

@@ -8,7 +8,7 @@ class ProjectGenerator extends BaseSelectionGenerator {
     this.generators = [
       {
         name: 'Base Structure',
-        generator: 'wemogy:project-empty'
+        generator: 'wemogy:project-core'
       },
       {
         name: '.NET SDK',

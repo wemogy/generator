@@ -1,5 +1,4 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
-import * as optionOrPrompt from 'yeoman-option-or-prompt';
 
 class YeomanTemplateGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {

@@ -1,9 +1,6 @@
-const yosay = require('yosay');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class TerraformEmptyGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class TerraformEmptyGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }

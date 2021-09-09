@@ -28,7 +28,7 @@ class AppGenerator extends BaseSelectionGenerator {
       // 	generator: 'wemogy:github-actions'
       // }
     ];
-    this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator 2!`));
+    this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
   }
 }
 

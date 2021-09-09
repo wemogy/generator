@@ -1,6 +1,5 @@
 const yosay = require('yosay');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
-import * as Generator from 'yeoman-generator';
 
 class TerraformAksGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {

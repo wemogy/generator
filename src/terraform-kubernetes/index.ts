@@ -1,8 +1,6 @@
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class TerraformKubernetesGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class TerraformKubernetesGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }

@@ -32,8 +32,10 @@ export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>)
   }
 
   for (const question of questions as any) {
-    // add the option to the set of expected options
-    this.option(question.name);
+    // add the option to the set of expected options or arguments
+    question.type === 'confirm'
+      ? this.option(question.name)
+      : this.argument(question.name, { type: String, required: false });
 
     // resolve the option from command
     const option = this.options[question.name];

@@ -1,14 +1,8 @@
-import * as chalk from 'chalk';
-import { timeStamp } from 'node:console';
-const yosay = require('yosay');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class GitHubGenerator extends Generator {
-  answers: any; // Answers captured by prompt
-
+class GitHubGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
-    this.argument('name', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -16,12 +10,12 @@ class GitHubGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',
         message: 'Your project name',
-        default: this.appname // Default to current folder name
+        default: this.appname
       },
       {
         type: 'confirm',

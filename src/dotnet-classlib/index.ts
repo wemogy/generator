@@ -45,7 +45,7 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
   public writing(): void {
     this.fs.copyTpl(
       this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}.csproj`),
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`),
       this.answers
     );
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
