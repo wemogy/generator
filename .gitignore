@@ -40,3 +40,5 @@ nuget.config
 
 # build output
 generators
+
+/test

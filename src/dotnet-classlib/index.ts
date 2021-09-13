@@ -1,8 +1,7 @@
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import { getSlnSelectionOptions, addProjectToSln } from '../DotnetHelpers';
 
-class DotClasslibGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class DotClasslibGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,7 +11,7 @@ class DotClasslibGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',
@@ -23,19 +22,31 @@ class DotClasslibGenerator extends Generator {
         type: 'confirm',
         name: 'nuget',
         message: 'Packable via NuGet?',
-        default: this.appname
+        default: true,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'nugetRepoUrl',
+            message: 'Nuget: GitHub Repository Url'
+          },
+          {
+            type: 'input',
+            name: 'nugetDescription',
+            message: 'NuGet: Package description'
+          }
+        ]
       },
       {
-        when: (answers: any) => answers.nuget,
-        type: 'input',
-        name: 'nugetRepoUrl',
-        message: 'GitHub Repository Url'
+        type: 'confirm',
+        name: 'unitTests',
+        message: 'Add Unit Tests',
+        default: true
       },
       {
-        when: (answers: any) => answers.nuget,
-        type: 'input',
-        name: 'nugetDescription',
-        message: 'NuGet package description'
+        type: 'list',
+        name: 'solution',
+        message: 'Add to Solution',
+        choices: getSlnSelectionOptions()
       }
     ]);
   }
@@ -45,16 +56,34 @@ class DotClasslibGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    // Project file
     this.fs.copyTpl(
       this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}.csproj`),
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`),
       this.answers
     );
+
+    // Project content
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+
+    // Unit Tests
+    if (this.answers.unitTests) {
+      this.composeWith('wemogy:dotnet-xunit', {
+        name: `${this.answers.name}.Tests`,
+        referenceProjectToTest: true,
+        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
+        solution: this.answers.solution
+      });
+    }
   }
 
   // Where installation are run (npm, bower)
-  public install(): void {}
+  public install(): void {
+    addProjectToSln.bind(this)(
+      this.answers.solution,
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
+  }
 
   // Called last, cleanup, say good bye, etc
   public end(): void {}

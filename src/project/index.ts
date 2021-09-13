@@ -1,53 +1,29 @@
-import * as Generator from 'yeoman-generator';
+import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import BaseSelectionGenerator from '../BaseSelectionGenerator';
 
-class ProjectGenerator extends Generator {
-  answers: any; // Answers captured by prompt
-
+class ProjectGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
-  }
 
-  // Your initialization methods (checking current project state, getting configs, etc
-  public initialize(): void {}
-
-  // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {
-    this.answers = await this.prompt([
+    this.generators = [
       {
-        type: 'input',
-        name: 'name',
-        message: 'Your project name',
-        default: this.appname // Default to current folder name
-      }
-    ]);
-  }
-
-  // Saving configurations and configure the project (creating .editorconfig files and other metadata files
-  public configuring(): void {}
-
-  //  Where you write the generator specific files (routes, controllers, etc)
-  public writing(): void {
-    this.fs.copyTpl(
-      this.templatePath(),
-      this.destinationPath(),
-      {
-        ...this.answers
+        name: 'Basic project structure',
+        generator: 'wemogy:project-core'
       },
-      null,
-      // Include dotfiles (like .gitignore)
       {
-        globOptions: {
-          dot: true
-        }
+        name: 'SDK (.NET)',
+        generator: 'wemogy:project-sdk-dotnet'
+      },
+      {
+        name: 'Service / Microservice (.NET)',
+        generator: 'wemogy:project-service-dotnet'
+      },
+      {
+        name: 'Class Library (.NET)',
+        generator: 'wemogy:project-lib-dotnet'
       }
-    );
+    ];
   }
-
-  // Where installation are run (npm, bower)
-  public install(): void {}
-
-  // Called last, cleanup, say good bye, etc
-  public end(): void {}
 }
 
-export default ProjectGenerator;
+export default resolveGeneratorInheritance(ProjectGenerator);

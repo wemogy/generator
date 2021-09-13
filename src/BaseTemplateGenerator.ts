@@ -1,6 +1,10 @@
-import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import * as Generator from 'yeoman-generator';
+import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
 
-class DotStyleCopGenerator extends BaseTemplateGenerator {
+class BaseTemplateGenerator extends Generator {
+  protected answers: any;
+  protected optionOrPrompt: (questions: AdvancedQuestions) => Promise<any> = optionOrPrompt.bind(this);
+
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -15,13 +19,7 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
   public configuring(): void {}
 
   //  Where you write the generator specific files (routes, controllers, etc)
-  public writing(): void {
-    this.fs.copy(this.templatePath(), this.destinationPath(), null, {
-      globOptions: {
-        dot: true // Include dotfiles (like .stylecop)
-      }
-    });
-  }
+  public writing(): void {}
 
   // Where installation are run (npm, bower)
   public install(): void {}
@@ -30,4 +28,4 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotStyleCopGenerator;
+export default BaseTemplateGenerator;

@@ -1,8 +1,8 @@
-import * as Generator from 'yeoman-generator';
+import * as _ from 'lodash';
+import { addProjectToSln, getSlnSelectionOptions } from '../DotnetHelpers';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotAspNetGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class DotAspNetGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,7 +12,7 @@ class DotAspNetGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',
@@ -21,9 +21,21 @@ class DotAspNetGenerator extends Generator {
       },
       {
         type: 'input',
-        name: 'path',
+        name: 'parentPath',
         message: 'Project parent folder path (from repository root)',
         default: 'src'
+      },
+      {
+        type: 'confirm',
+        name: 'unitTests',
+        message: 'Add Unit Tests',
+        default: true
+      },
+      {
+        type: 'list',
+        name: 'solution',
+        message: 'Add to Solution',
+        choices: getSlnSelectionOptions()
       }
     ]);
   }
@@ -33,12 +45,30 @@ class DotAspNetGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+    this.fs.copy(
+      this.templatePath('Project.csproj'),
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
+    this.fs.copyTpl(this.templatePath('Dockerfile'), this.destinationPath('Dockerfile'), this.answers);
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+
+    if (this.answers.unitTests) {
+      this.composeWith('wemogy:dotnet-xunit', {
+        name: `${this.answers.name}.Tests`,
+        referenceProjectToTest: true,
+        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
+        solution: this.answers.solution
+      });
+    }
   }
 
   // Where installation are run (npm, bower)
-  public install(): void {}
+  public install(): void {
+    addProjectToSln.bind(this)(
+      this.answers.solution,
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
+  }
 
   // Called last, cleanup, say good bye, etc
   public end(): void {}

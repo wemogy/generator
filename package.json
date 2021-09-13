@@ -17,15 +17,16 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "directory-exists": "^2.0.1",
+    "glob": "^7.1.7",
     "lodash": "^4.17.21",
     "yeoman-generator": "5.4.0",
-    "yeoman-merge-ui": "^1.1.0",
     "yosay": "^2.0.2"
   },
   "files": [
     "generators"
   ],
   "devDependencies": {
+    "@types/glob": "^7.1.4",
     "@types/lodash": "^4.14.168",
     "@types/node": "^16.4.13",
     "@types/yeoman-generator": "5.2.2",

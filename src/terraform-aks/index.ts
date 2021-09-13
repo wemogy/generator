@@ -1,10 +1,7 @@
 const yosay = require('yosay');
-const { Conflicter, Adapter } = require('yeoman-merge-ui');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class TerraformAksGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class TerraformAksGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }

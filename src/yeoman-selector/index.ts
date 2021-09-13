@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotStyleCopGenerator extends BaseTemplateGenerator {
+class YeomanSelectorGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -9,18 +9,27 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
   public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {}
+  public async prompting() {
+    this.answers = await this.optionOrPrompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Generator Name'
+      },
+      {
+        type: 'input',
+        name: 'className',
+        message: 'Class Name'
+      }
+    ]);
+  }
 
   // Saving configurations and configure the project (creating .editorconfig files and other metadata files
   public configuring(): void {}
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath(), this.destinationPath(), null, {
-      globOptions: {
-        dot: true // Include dotfiles (like .stylecop)
-      }
-    });
+    this.fs.copyTpl(`${this.templatePath()}`, `${this.destinationPath()}/${this.answers.name}`, this.answers);
   }
 
   // Where installation are run (npm, bower)
@@ -30,4 +39,4 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotStyleCopGenerator;
+export default YeomanSelectorGenerator;

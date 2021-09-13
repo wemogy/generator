@@ -1,9 +1,8 @@
-const yosay = require('yosay');
-import * as Generator from 'yeoman-generator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import * as _ from 'lodash';
+import { addProjectToSln, getSlnSelectionOptions } from '../DotnetHelpers';
 
-class DotXunitGenerator extends Generator {
-  private answers: any; // Answers captured by prompt
-
+class DotXunitGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -13,12 +12,31 @@ class DotXunitGenerator extends Generator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
         type: 'input',
         name: 'name',
         message: 'Project name',
         default: this.appname
+      },
+      {
+        type: 'confirm',
+        name: 'referenceProjectToTest',
+        message: 'Reference project to test',
+        default: false,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'projectToTest',
+            message: 'Project to test'
+          }
+        ]
+      },
+      {
+        type: 'list',
+        name: 'solution',
+        message: 'Add to Solution',
+        choices: getSlnSelectionOptions()
       }
     ]);
   }
@@ -28,12 +46,21 @@ class DotXunitGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Project.csproj'), this.destinationPath(`${this.answers.name}.csproj`));
+    this.fs.copyTpl(
+      this.templatePath('Project.csproj'),
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`),
+      this.answers
+    );
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
   }
 
   // Where installation are run (npm, bower)
-  public install(): void {}
+  public install(): void {
+    addProjectToSln.bind(this)(
+      this.answers.solution,
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
+  }
 
   // Called last, cleanup, say good bye, etc
   public end(): void {}

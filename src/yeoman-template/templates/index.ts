@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotStyleCopGenerator extends BaseTemplateGenerator {
+class <%= className %> extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -9,14 +9,29 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
   public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {}
+  public async prompting() {
+    this.answers = await this.optionOrPrompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name',
+        default: this.appname
+      },
+      {
+        type: 'input',
+        name: 'path',
+        message: 'Path',
+        default: '.'
+      },
+    ]);
+  }
 
   // Saving configurations and configure the project (creating .editorconfig files and other metadata files
   public configuring(): void {}
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath(), this.destinationPath(), null, {
+    this.fs.copy(this.templatePath(), `${this.destinationPath()}/${this.answers.path}`, null, {
       globOptions: {
         dot: true // Include dotfiles (like .stylecop)
       }
@@ -30,4 +45,4 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotStyleCopGenerator;
+export default <%= className %>;

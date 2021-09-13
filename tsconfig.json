@@ -20,8 +20,9 @@
     "removeComments": true,
     "noLib": false,
     "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "allowJs": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/templates"]
+  "include": ["src/**/*", "decs.d.ts"],
+  "exclude": ["node_modules", "src/**/templates"]
 }

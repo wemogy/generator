@@ -1,6 +1,8 @@
+import { enforceSolutionFilePresence, getSlnFiles } from '../DotnetHelpers';
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
-class GitHubGenerator extends BaseTemplateGenerator {
+class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -11,16 +13,12 @@ class GitHubGenerator extends BaseTemplateGenerator {
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
+      this.slnPrompt, // Ask for a solution name, if none was found
       {
         type: 'input',
-        name: 'name',
-        message: 'Your project name',
+        name: 'folder',
+        message: 'Folder name',
         default: this.appname
-      },
-      {
-        type: 'confirm',
-        name: 'cool',
-        message: 'Would you like to enable the Cool feature?'
       }
     ]);
   }
@@ -30,9 +28,12 @@ class GitHubGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.sourceRoot(), process.cwd(), {
-      name: this.options.name,
-      ...this.answers
+    this.composeSolutionIfNeeded();
+
+    this.composeWith('wemogy:dotnet-classlib', {
+      destinationRoot: this.destinationRoot(`src/shared/${this.answers.folder.toLowerCase()}`),
+      unitTests: true,
+      solution: this.getSolutionPath()
     });
   }
 
@@ -43,4 +44,4 @@ class GitHubGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default GitHubGenerator;
+export default DotnetLibraryProjectGenerator;
