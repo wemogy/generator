@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+import { addProjectToSln, getSlnSelectionOptions } from '../DotnetHelpers';
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class DotAspNetGenerator extends BaseTemplateGenerator {
@@ -28,6 +30,12 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         name: 'unitTests',
         message: 'Add Unit Tests',
         default: true
+      },
+      {
+        type: 'list',
+        name: 'solution',
+        message: 'Add to Solution',
+        choices: getSlnSelectionOptions()
       }
     ]);
   }
@@ -48,13 +56,19 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
       this.composeWith('wemogy:dotnet-xunit', {
         name: `${this.answers.name}.Tests`,
         referenceProjectToTest: true,
-        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`
+        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
+        solution: this.answers.solution
       });
     }
   }
 
   // Where installation are run (npm, bower)
-  public install(): void {}
+  public install(): void {
+    addProjectToSln.bind(this)(
+      this.answers.solution,
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+    );
+  }
 
   // Called last, cleanup, say good bye, etc
   public end(): void {}

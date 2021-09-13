@@ -1,6 +1,7 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import * as _ from 'lodash';
 
-class DotSolutionGenerator extends BaseTemplateGenerator {
+class DotNetSolutionGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -44,4 +45,4 @@ class DotSolutionGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotSolutionGenerator;
+export default DotNetSolutionGenerator;

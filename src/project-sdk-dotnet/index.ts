@@ -1,21 +1,26 @@
+import { enforceSolutionFilePresence } from '../DotnetHelpers';
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
-class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
+class DotnetSdkProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
-  public initialize(): void {}
+  public initialize(): void {
+    enforceSolutionFilePresence.bind(this)();
+  }
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
+      this.slnPrompt, // Ask for a solution name, if none was found
       {
         type: 'input',
-        name: 'name',
-        message: 'Project name',
-        default: this.appname
+        name: 'folder',
+        message: 'Folder name',
+        default: 'dotnet'
       }
     ]);
   }
@@ -25,11 +30,13 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    this.composeSolutionIfNeeded();
+
     this.composeWith('wemogy:dotnet-classlib', {
-      destinationRoot: this.destinationRoot('src/sdk'),
-      name: this.answers.name,
+      destinationRoot: this.destinationRoot(`src/sdk/${this.answers.folder.toLowerCase()}`),
       nuget: true,
-      unitTests: true
+      unitTests: true,
+      solution: this.getSolutionPath()
     });
   }
 

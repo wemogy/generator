@@ -1,15 +1,14 @@
-import { enforceSolutionFilePresence } from '../DotnetHelpers';
+import { enforceSolutionFilePresence, getSlnFiles } from '../DotnetHelpers';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
-class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
+class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
-  public initialize(): void {
-    enforceSolutionFilePresence.bind(this)();
-  }
+  public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
@@ -31,9 +30,8 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public writing(): void {
     this.composeSolutionIfNeeded();
 
-    this.composeWith('wemogy:dotnet-aspnet', {
-      destinationRoot: this.destinationRoot(`src/services/${this.answers.folder.toLowerCase()}`),
-      parentPath: `src/services/${this.answers.folder.toLowerCase()}`,
+    this.composeWith('wemogy:dotnet-classlib', {
+      destinationRoot: this.destinationRoot(`src/shared/${this.answers.folder.toLowerCase()}`),
       unitTests: true,
       solution: this.getSolutionPath()
     });
@@ -46,4 +44,4 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public end(): void {}
 }
 
-export default DotnetServiceProjectGenerator;
+export default DotnetLibraryProjectGenerator;
