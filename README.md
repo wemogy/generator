@@ -16,14 +16,22 @@ yo wemogy
 
 ### New wemogy project
 
-| Type | Description | Direct command |
-|---|---|---|
-| Basic project structure | Scaffolds the basic components of every repository like EditorConfig and Readme. | `yo wemogy-project-core` |
-| SDK (.NET) | An SDK Class Library for other .NET projects | `yo wemogy-project-sdk-dotnet` |
-| Service / Microservice (.NET) | ASP.NET Web Api project to create small services | `yo wemogy-project-service-dotnet` |
-| Class Library (.NET)  | .NET Class Library for shared components. | `yo wemogy-project-lib-dotnet` |
+Choose these to generate a new project for a wemogy repository. They will automatically create the correct folder structure.
+
+> **Hint:** Please make sure to call these generators from the repository root.
+
+| Type | Description | Folder | Direct command |
+|---|---|---|---|
+| Basic project structure | Scaffolds the basic components of every repository like EditorConfig and Readme. | `/` | `yo wemogy-project-core` |
+| SDK (.NET) | An SDK Class Library for other .NET projects | `src/sdk/...` | `yo wemogy-project-sdk-dotnet` |
+| Service / Microservice (.NET) | ASP.NET Web Api project to create small services | `src/services/...` | `yo wemogy-project-service-dotnet` |
+| Class Library (.NET)  | .NET Class Library for shared components. | `src/shared/...` | `yo wemogy-project-lib-dotnet` |
+
+
 
 ### Other templates
+
+Choose these to generate basic templates for specific technologies. They will not generate any specific folder structure.
 
 | Category | Type | Description | Direct command |
 |---|---|---|---|
