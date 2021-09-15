@@ -7,12 +7,20 @@ class YeomanGenerator extends BaseSelectionGenerator {
 
     this.generators = [
       {
-        name: 'Template Generator',
+        name: 'Selector Generator',
+        generator: 'wemogy:yeoman-selector'
+      },
+      {
+        name: 'Generic Template Generator',
         generator: 'wemogy:yeoman-template'
       },
       {
-        name: 'Selector Generator',
-        generator: 'wemogy:yeoman-selector'
+        name: 'Generic Project Template Generator',
+        generator: 'wemogy:yeoman-template'
+      },
+      {
+        name: '.NET Template Generator',
+        generator: 'wemogy:yeoman-template-dotnet'
       }
     ];
   }

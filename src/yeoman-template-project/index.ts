@@ -1,7 +1,6 @@
-import { toPascalCase } from '../DotnetHelpers';
-import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
+class YeomanProjectTemplateGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,12 +11,16 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
-      this.slnPrompt, // Ask for a solution name, if none was found
       {
         type: 'input',
-        name: 'folder',
-        message: 'Subfolder name',
-        default: toPascalCase(this.appname)
+        name: 'name',
+        message: 'Generator Name',
+        default: `project-${this.appname.toLowerCase()}`
+      },
+      {
+        type: 'input',
+        name: 'className',
+        message: 'Class Name'
       }
     ]);
   }
@@ -27,13 +30,12 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeSolutionIfNeeded();
-
-    this.composeWith('wemogy:dotnet-classlib', {
-      destinationRoot: this.destinationRoot(`src/shared/${this.answers.folder.toLowerCase()}`),
-      unitTests: true,
-      solution: this.getSolutionPath()
-    });
+    this.fs.copyTpl(
+      `${this.templatePath()}/index.ts`,
+      `${this.destinationPath()}/${this.answers.name}/index.ts`,
+      this.answers
+    );
+    this.fs.copy(`${this.templatePath()}/templates`, `${this.destinationPath()}/${this.answers.name}/templates`);
   }
 
   // Where installation are run (npm, bower)
@@ -43,4 +45,4 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public end(): void {}
 }
 
-export default DotnetLibraryProjectGenerator;
+export default YeomanProjectTemplateGenerator;

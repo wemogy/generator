@@ -18,8 +18,8 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
       {
         type: 'input',
         name: 'folder',
-        message: 'Folder name',
-        default: this.appname
+        message: 'Subfolder name',
+        default: 'main'
       }
     ]);
   }

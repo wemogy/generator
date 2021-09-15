@@ -1,8 +1,7 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
-import * as _ from 'lodash';
-import { addProjectToSln, getSlnSelectionOptions, toPascalCase } from '../DotnetHelpers';
+import { addProjectToSln, getSlnSelectionOptions } from '../DotnetHelpers';
 
-class DotXunitGenerator extends BaseTemplateGenerator {
+class <%= className %> extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -17,20 +16,14 @@ class DotXunitGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: `Wemogy.${toPascalCase(this.appname)}.Tests`
+        default: this.appname
       },
+      // ...
       {
         type: 'confirm',
-        name: 'referenceProjectToTest',
-        message: 'Reference project to test',
-        default: false,
-        followUpQuestions: [
-          {
-            type: 'input',
-            name: 'projectToTest',
-            message: 'Project to test'
-          }
-        ]
+        name: 'unitTests',
+        message: 'Add Unit Tests',
+        default: true
       },
       {
         type: 'list',
@@ -46,12 +39,24 @@ class DotXunitGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(
+    // Project file
+    this.fs.copy(
       this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`),
-      this.answers
+      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
     );
+
+    // Project Content
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+
+    // Unit Tests
+    if (this.answers.unitTests) {
+      this.composeWith('wemogy:dotnet-xunit', {
+        name: `${this.answers.name}.Tests`,
+        referenceProjectToTest: true,
+        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
+        solution: this.answers.solution
+      });
+    }
   }
 
   // Where installation are run (npm, bower)
@@ -66,4 +71,4 @@ class DotXunitGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default DotXunitGenerator;
+export default <%= className %>;
