@@ -1,5 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 import * as _ from 'lodash';
+import { toPascalCase } from '../DotnetHelpers';
 
 class DotNetSolutionGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
@@ -16,7 +17,7 @@ class DotNetSolutionGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Solution name',
-        default: this.appname
+        default: `Wemogy.${toPascalCase(this.appname)}`
       },
       {
         type: 'confirm',

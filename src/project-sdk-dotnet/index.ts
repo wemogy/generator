@@ -19,7 +19,7 @@ class DotnetSdkProjectGenerator extends BaseDotnetProjectTemplateGenerator {
       {
         type: 'input',
         name: 'folder',
-        message: 'Folder name',
+        message: 'Subfolder name',
         default: 'dotnet'
       }
     ]);

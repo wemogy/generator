@@ -1,5 +1,5 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
-import { getSlnSelectionOptions, addProjectToSln } from '../DotnetHelpers';
+import { getSlnSelectionOptions, addProjectToSln, toPascalCase } from '../DotnetHelpers';
 
 class DotClasslibGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
@@ -16,7 +16,7 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.appname
+        default: `Wemogy.Shared.${toPascalCase(this.appname)}`
       },
       {
         type: 'confirm',

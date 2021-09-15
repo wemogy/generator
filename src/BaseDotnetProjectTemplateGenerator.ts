@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import BaseTemplateGenerator from './BaseTemplateGenerator';
-import { getSlnFiles } from './DotnetHelpers';
+import { getSlnFiles, toPascalCase } from './DotnetHelpers';
 
 class BaseDotnetProjectTemplateGenerator extends BaseTemplateGenerator {
   private slnAvailable: boolean;
@@ -10,7 +10,7 @@ class BaseDotnetProjectTemplateGenerator extends BaseTemplateGenerator {
     type: 'input',
     name: 'solutionName',
     message: 'Solution name',
-    default: _.upperFirst(_.camelCase(this.appname))
+    default: `Wemogy.${toPascalCase(this.appname)}`
   };
 
   constructor(args: any, options: any) {

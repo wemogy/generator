@@ -1,7 +1,6 @@
-import { toPascalCase } from '../DotnetHelpers';
-import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
+class <%= className %> extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,12 +11,11 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
-      this.slnPrompt, // Ask for a solution name, if none was found
       {
         type: 'input',
-        name: 'folder',
-        message: 'Subfolder name',
-        default: toPascalCase(this.appname)
+        name: 'name',
+        message: 'Project name',
+        default: this.appname
       }
     ]);
   }
@@ -27,12 +25,10 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeSolutionIfNeeded();
-
-    this.composeWith('wemogy:dotnet-classlib', {
-      destinationRoot: this.destinationRoot(`src/shared/${this.answers.folder.toLowerCase()}`),
-      unitTests: true,
-      solution: this.getSolutionPath()
+    this.fs.copy(this.templatePath(), `${this.destinationPath()}/${this.answers.path}`, null, {
+      globOptions: {
+        dot: true // Include dotfiles (like .stylecop)
+      }
     });
   }
 
@@ -43,4 +39,4 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public end(): void {}
 }
 
-export default DotnetLibraryProjectGenerator;
+export default <%= className %>;

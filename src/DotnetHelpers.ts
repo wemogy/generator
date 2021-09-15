@@ -1,6 +1,6 @@
 import { glob } from 'glob';
 import path = require('path/posix');
-import { timer } from 'rxjs';
+import * as _ from 'lodash';
 
 export const NO_SOLUTION_SELECTED = 'None';
 
@@ -28,4 +28,8 @@ export function enforceSolutionFilePresence(): void {
     );
     this.cancelCancellableTasks();
   }
+}
+
+export function toPascalCase(name: string): string {
+  return _.upperFirst(_.camelCase(name));
 }

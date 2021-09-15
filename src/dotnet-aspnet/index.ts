@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { addProjectToSln, getSlnSelectionOptions } from '../DotnetHelpers';
+import { addProjectToSln, getSlnSelectionOptions, toPascalCase } from '../DotnetHelpers';
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class DotAspNetGenerator extends BaseTemplateGenerator {
@@ -17,7 +17,7 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.appname
+        default: `Wemogy.Services.${toPascalCase(this.appname)}`
       },
       {
         type: 'input',
