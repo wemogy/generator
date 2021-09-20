@@ -10,6 +10,10 @@ class OtherGenerator extends BaseSelectionGenerator {
         generator: 'wemogy:dotnet'
       },
       {
+        name: 'TypeScript',
+        generator: 'wemogy:typescript'
+      },
+      {
         name: 'Terraform',
         generator: 'wemogy:terraform'
       },

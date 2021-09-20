@@ -21,6 +21,10 @@ class ProjectGenerator extends BaseSelectionGenerator {
       {
         name: 'Class Library (.NET)',
         generator: 'wemogy:project-lib-dotnet'
+      },
+      {
+        name: 'Web Frontend (React)',
+        generator: 'wemogy:project-frontend-react'
       }
     ];
   }

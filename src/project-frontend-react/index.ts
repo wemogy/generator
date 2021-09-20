@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class <%= className %> extends BaseTemplateGenerator {
+class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -13,8 +13,8 @@ class <%= className %> extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'folder',
-        message: 'Subfolder name'
+        name: 'name',
+        message: 'Project Name'
       }
     ]);
   }
@@ -24,8 +24,9 @@ class <%= className %> extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeWith('wemogy:another-generator', {
-      destinationRoot: this.destinationRoot(`src/demo/${this.answers.folder.toLowerCase()}`)
+    this.composeWith('wemogy:typescript-react', {
+      destinationRoot: this.destinationRoot(`src/frontend/${this.answers.name.toLowerCase()}`),
+      name: this.answers.name
     });
   }
 
@@ -36,4 +37,4 @@ class <%= className %> extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default <%= className %>;
+export default ReactFrontendProjectGenerator;
