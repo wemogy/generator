@@ -1,46 +1,32 @@
-import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import BaseSelectionGenerator from '../BaseSelectionGenerator';
 
-class GitHubGenerator extends BaseTemplateGenerator {
+class GitHubActionsGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
-  }
-
-  // Your initialization methods (checking current project state, getting configs, etc
-  public initialize(): void {}
-
-  // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {
-    this.answers = await this.optionOrPrompt([
+    this.generators = [
       {
-        type: 'input',
-        name: 'name',
-        message: 'Your project name',
-        default: this.appname
+        name: 'Action for .NET Builds',
+        generator: 'wemogy:github-actions-action-build-dotnet'
       },
       {
-        type: 'confirm',
-        name: 'cool',
-        message: 'Would you like to enable the Cool feature?'
+        name: 'Action for JavaScript Builds',
+        generator: 'wemogy:github-actions-action-build-javascript'
+      },
+      {
+        name: 'Action for Container Image Builds',
+        generator: 'wemogy:github-actions-action-containers'
+      },
+      {
+        name: 'Pipeline for Builds',
+        generator: 'wemogy:github-actions-pipeline-build'
+      },
+      {
+        name: 'Pipeline for Releases',
+        generator: 'wemogy:github-actions-pipeline-release'
       }
-    ]);
+    ];
   }
-
-  // Saving configurations and configure the project (creating .editorconfig files and other metadata files
-  public configuring(): void {}
-
-  //  Where you write the generator specific files (routes, controllers, etc)
-  public writing(): void {
-    this.fs.copyTpl(this.sourceRoot(), process.cwd(), {
-      name: this.options.name,
-      ...this.answers
-    });
-  }
-
-  // Where installation are run (npm, bower)
-  public install(): void {}
-
-  // Called last, cleanup, say good bye, etc
-  public end(): void {}
 }
 
-export default GitHubGenerator;
+export default resolveGeneratorInheritance(GitHubActionsGenerator);

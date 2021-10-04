@@ -8,17 +8,20 @@ class AppGenerator extends BaseSelectionGenerator {
     super(args, options);
     this.generators = [
       {
-        name: 'New wemogy project',
+        name: 'New wemogy project component',
         generator: 'wemogy:project'
       },
       {
-        name: 'Other templates',
-        generator: 'wemogy:other'
+        name: 'Single template',
+        generator: 'wemogy:template'
       }
     ];
     this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
-
-    this.log(`Choose "${chalk.cyan(this.generators[0].name)}" to generate a new project for a wemogy repository.`);
+    this.log(
+      `Choose "${chalk.cyan(
+        this.generators[0].name
+      )}" to generate a new project component (part of a larger wemogy project) for a wemogy repository.`
+    );
     this.log('This will automatically create the correct folder structure.');
     this.log(`${chalk.yellow('Hint:')} Please make sure to call this generator from the repository root.`);
     this.log('');

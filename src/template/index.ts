@@ -10,17 +10,21 @@ class OtherGenerator extends BaseSelectionGenerator {
         generator: 'wemogy:dotnet'
       },
       {
+        name: 'TypeScript',
+        generator: 'wemogy:typescript'
+      },
+      {
         name: 'Terraform',
         generator: 'wemogy:terraform'
       },
       {
         name: 'Yeoman',
         generator: 'wemogy:yeoman'
+      },
+      {
+        name: 'GitHub Actions',
+        generator: 'wemogy:github-actions'
       }
-      // {
-      // 	name: 'GitHub Actions',
-      // 	generator: 'wemogy:github-actions'
-      // }
     ];
   }
 }

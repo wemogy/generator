@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class <%= className %> extends BaseTemplateGenerator {
+class GitHubActionsBuildJavaScriptActionGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -13,8 +13,9 @@ class <%= className %> extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'folder',
-        message: 'Subfolder name'
+        name: 'jsPath',
+        message: 'Folder that contains JavaScript project to build',
+        default: 'src/frontend'
       }
     ]);
   }
@@ -24,9 +25,7 @@ class <%= className %> extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeWith('wemogy:another-generator', {
-      destinationRoot: this.destinationRoot(`src/demo/${this.answers.folder.toLowerCase()}`)
-    });
+    this.fs.copyTpl(this.templatePath(), this.destinationPath('.github/workflows'), this.answers);
   }
 
   // Where installation are run (npm, bower)
@@ -36,4 +35,4 @@ class <%= className %> extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default <%= className %>;
+export default GitHubActionsBuildJavaScriptActionGenerator;
