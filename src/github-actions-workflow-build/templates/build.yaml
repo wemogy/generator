@@ -15,20 +15,20 @@ jobs:
       - name: Build .NET
         uses: <%= buildDotnetActionPath %>
         with:
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: 0.0.0-test
 <% } if(dotnet) { %>
       - name: Build JavaScript
         uses: <%= buildJavaScriptActionPath %>
         with:
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: 0.0.0-test
 <% } if(containers) { %>
       - name: Build Containers
         uses: <%= containersActionPath %>
         with:
           container-registry-server: test
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: 0.0.0-test
           push: false
 <% } %>

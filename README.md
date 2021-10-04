@@ -40,8 +40,8 @@ Choose these to generate basic templates for specific technologies. They will no
 | GitHub Actions | Action for .NET Builds |  | `yo github-actions-action-build-dotnet` |
 | GitHub Actions | Action for JavaScript Builds |  | `yo github-actions-action-build-javascript` |
 | GitHub Actions | Action to Build and Push Containers |  | `yo github-actions-action-containers` |
-| GitHub Actions | Pipeline for Builds |  | `yo github-actions-pipeline-build` |
-| GitHub Actions | Pipeline for Releases |  | `yo github-actions-pipeline-release` |
+| GitHub Actions | Workflow for Builds |  | `yo github-actions-workflow-build` |
+| GitHub Actions | workflow for Releases |  | `yo github-actions-workflow-release` |
 | Terraform | Azure Kubernetes Service (AKS) |  | `yo wemogy-terraform-aks` |
 | Terraform | Kubernetes Cluster configuration |  | `yo wemogy-terraform-kubernetes` |
 | Yeoman | Template Generator |  | `yo wemogy-terraform-template` |
