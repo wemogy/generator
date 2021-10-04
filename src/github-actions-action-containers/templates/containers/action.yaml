@@ -1,0 +1,28 @@
+name: "Containers"
+description: "Builds and optionally pushes container images"
+inputs:
+  container-registry-server:
+    description: "Container registry server"
+    required: false
+  wemogy-packages-token:
+    description: "The token to use to authenticate with the wemogy-packages service"
+    required: true
+  version:
+    description: "The version of the container image"
+    required: true
+  push:
+    description: "Whether to push the container image to the registry"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - name: Build and push
+      uses: docker/build-push-action@v2.5.0
+      with:
+        build-args: |
+          NUGET_USERNAME=${GITHUB_ACTOR}
+          NUGET_TOKEN=${{ inputs.wemogy-packages-token }}
+        file: <%= dockerfilePath %>
+        push: ${{ inputs.push }}
+        tags: ${{ inputs.container-registry-server }}/<%= containerName %>:${{ inputs.version }}

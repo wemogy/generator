@@ -1,0 +1,30 @@
+name: "Build JavaScript"
+description: "Builds JavaScript"
+inputs:
+  wemogy-packages-token:
+    description: "The token to use to authenticate with the wemogy-packages service"
+    required: true
+  version:
+    description: "The version of the build"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 12
+        registry-url: https://npm.pkg.github.com/
+    - name: Set version number
+      shell: bash
+      run: npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
+    - name: Install packages
+      working-directory: <%= jsPath %>
+      shell: bash
+      run: yarn install
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.wemogy-packages-token }}
+    - name: Build application
+      working-directory: <%= jsPath %>
+      shell: bash
+      run: yarn build

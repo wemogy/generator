@@ -20,11 +20,11 @@ class OtherGenerator extends BaseSelectionGenerator {
       {
         name: 'Yeoman',
         generator: 'wemogy:yeoman'
+      },
+      {
+        name: 'GitHub Actions',
+        generator: 'wemogy:github-actions'
       }
-      // {
-      // 	name: 'GitHub Actions',
-      // 	generator: 'wemogy:github-actions'
-      // }
     ];
   }
 }
