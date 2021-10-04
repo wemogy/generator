@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class GitHubActionsBuildPipelineGenerator extends BaseTemplateGenerator {
+class GitHubActionsWorkflowPipelineGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -13,8 +13,8 @@ class GitHubActionsBuildPipelineGenerator extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'confirm',
-        name: 'dotnet',
-        message: 'Build .NET?',
+        name: 'nuget',
+        message: 'Publish NuGet package?',
         default: true,
         followUpQuestions: [
           {
@@ -27,8 +27,8 @@ class GitHubActionsBuildPipelineGenerator extends BaseTemplateGenerator {
       },
       {
         type: 'confirm',
-        name: 'javaScript',
-        message: 'Build JavaScript?',
+        name: 'npm',
+        message: 'Publish NPM package?',
         default: true,
         followUpQuestions: [
           {
@@ -42,14 +42,52 @@ class GitHubActionsBuildPipelineGenerator extends BaseTemplateGenerator {
       {
         type: 'confirm',
         name: 'containers',
-        message: 'Build Containers?',
-        default: false,
+        message: 'Publish Container image?',
+        default: true,
         followUpQuestions: [
           {
             type: 'input',
             name: 'containersActionPath',
             message: 'Path to Containers Action',
             default: './.github/workflows/containers'
+          },
+          {
+            type: 'input',
+            name: 'containerRegistryServer',
+            message: 'Container Registry Server',
+            default: '${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}'
+          },
+          {
+            type: 'input',
+            name: 'containerRegistryUsername',
+            message: 'Container Registry Username',
+            default: '${{ secrets.CONTAINER_REGISTRY_USERNAME }}'
+          },
+          {
+            type: 'input',
+            name: 'containerRegistryPassword',
+            message: 'Container Registry Password (please use a GitHub Secret)',
+            default: '${{ secrets.CONTAINER_REGISTRY_PASSWORD }}'
+          }
+        ]
+      },
+      {
+        type: 'confirm',
+        name: 'helm',
+        message: 'Publish Helm Chart?',
+        default: true,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'helmChartName',
+            message: 'Helm Chart Name',
+            default: 'wemogy-demo'
+          },
+          {
+            type: 'input',
+            name: 'helmPath',
+            message: 'Path to Helm Chart',
+            default: 'env/helm'
           }
         ]
       }
@@ -71,4 +109,4 @@ class GitHubActionsBuildPipelineGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default GitHubActionsBuildPipelineGenerator;
+export default GitHubActionsWorkflowPipelineGenerator;

@@ -30,7 +30,7 @@ jobs:
       - name: Build .NET
         uses: <%= buildDotnetActionPath %>
         with:
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: ${{ needs.setup.outputs.next-version }}
       - name: Create Nuget package(s)
         run: dotnet pack --configuration Release /p:VersionPrefix=${{ needs.setup.outputs.next-version }}
@@ -49,7 +49,7 @@ jobs:
       - name: Build JavaScript
         uses: <%= buildJavaScriptActionPath %>
         with:
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: ${{ needs.setup.outputs.next-version }}
       - name: Publish NPM package
         run: npm publish
@@ -72,7 +72,7 @@ jobs:
         uses: <%= containersActionPath %>
         with:
           container-registry-server: ${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: ${{ needs.setup.outputs.next-version }}
           push: true
 <% } if(helm) { %>
