@@ -18,12 +18,12 @@ class GitHubActionsGenerator extends BaseSelectionGenerator {
         generator: 'wemogy:github-actions-action-containers'
       },
       {
-        name: 'Pipeline for Builds',
-        generator: 'wemogy:github-actions-pipeline-build'
+        name: 'Workflow for Builds',
+        generator: 'wemogy:github-actions-workflow-build'
       },
       {
-        name: 'Pipeline for Releases',
-        generator: 'wemogy:github-actions-pipeline-release'
+        name: 'Workflow for Releases',
+        generator: 'wemogy:github-actions-workflow-release'
       }
     ];
   }
