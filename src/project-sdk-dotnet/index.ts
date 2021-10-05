@@ -8,9 +8,7 @@ class DotnetSdkProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
-  public initialize(): void {
-    enforceSolutionFilePresence.bind(this)();
-  }
+  public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {

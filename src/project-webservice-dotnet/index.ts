@@ -7,9 +7,7 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
-  public initialize(): void {
-    enforceSolutionFilePresence.bind(this)();
-  }
+  public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
@@ -32,8 +30,8 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
     this.composeSolutionIfNeeded();
 
     this.composeWith('wemogy:dotnet-aspnet', {
-      destinationRoot: this.destinationRoot(`src/services/${this.answers.folder.toLowerCase()}`),
-      parentPath: `src/services/${this.answers.folder.toLowerCase()}`,
+      destinationRoot: this.destinationRoot(`src/webservices/${this.answers.folder.toLowerCase()}`),
+      parentPath: `src/webservices/${this.answers.folder.toLowerCase()}`,
       unitTests: true,
       solution: this.getSolutionPath()
     });

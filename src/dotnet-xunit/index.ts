@@ -17,7 +17,7 @@ class DotXunitGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: `Wemogy.${toPascalCase(this.appname)}.Tests`
+        default: `Wemogy.${toPascalCase(this.appname)}.UnitTests`
       },
       {
         type: 'confirm',
