@@ -25,14 +25,17 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    // .gitignore has to be created manually, as it will be ignored when placing it into /templates by default.
+    // See this issue for more: https://github.com/yeoman/generator/issues/812
+    this.fs.copy(this.templatePath('gitignore/gitignore-content'), this.destinationPath('.gitignore'));
     this.fs.copyTpl(
-      this.templatePath(),
+      this.templatePath('root'),
       this.destinationPath(),
       {
         ...this.answers
       },
       null,
-      // Include dotfiles (like .gitignore)
+      // Include dotfiles (like .editorconfig)
       {
         globOptions: {
           dot: true
