@@ -1,0 +1,71 @@
+name: "Terraform"
+description: "Deploys Infrastructure"
+inputs:
+  client-id:
+    description: "The Azure Service Principal Client ID"
+    required: true
+  client-secret:
+    description: "The Azure Service Principal Client Secret"
+    required: true
+  tenant-id:
+    description: "The Azure Tenant ID"
+    required: true
+  backend-storage-account-name:
+    description: "The Azure Storage Account Name"
+    required: <%= !sameBackends %>
+    <% if(sameBackends) { %>default: "<%= storageAccountName %>"<% } %>
+  backend-access-key:
+    description: "The Azure Storage Account Access Key"
+    required: true
+  backend-container-name:
+    description: "The Azure Storage Account Container Name"
+    required: true
+  # Add additional inputs here:
+  # my-input:
+  #   description: "My manual input"
+  #   required: true
+
+outputs:
+  output:
+    description: "The Terraform output"
+    value: ${{ steps.terraform-infrastructure.outputs.output }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Terraform Infrastructure
+      uses: wemogy/terraform-action@1.2.0
+      id: terraform-infrastructure
+      with:
+        working-directory: env/terraform/infrastructure
+        client-id:  ${{ inputs.client-id }}
+        client-secret: ${{ inputs.client-secret }}
+        tenant-id: ${{ inputs.tenant-id }}
+        backend-storage-account-name: ${{ inputs.backend-storage-account-name }}
+        backend-container-name: ${{ inputs.backend-container-name }}
+        backend-key: terraform-infrastructure.tfstate
+        backend-access-key: ${{ inputs.backend-access-key }}
+      # Add additional inputs here:
+      # env:
+      #   TF_VAR_my_input: ${{ inputs.my-input }}
+<% if(kubernetes) { %>
+    - name: Terraform Kubernetes
+      uses: wemogy/terraform-action@1.2.0
+      id: terraform-kubernetes
+      with:
+        working-directory: env/terraform/kubernetes
+        client-id:  ${{ inputs.client-id }}
+        client-secret: ${{ inputs.client-secret }}
+        tenant-id: ${{ inputs.tenant-id }}
+        backend-storage-account-name:  ${{ inputs.backend-storage-account-name }}
+        backend-container-name: ${{ inputs.backend-container-name }}
+        backend-key: terraform-kubernetes.tfstate
+        backend-access-key: ${{ inputs.backend-access-key }}
+      env:
+        TF_VAR_aks_name: ${{ fromJSON(steps.terraform-infrastructure.outputs.output).azure_kubernetes_cluster_name.value }}
+        TF_VAR_aks_resource_group: ${{ fromJSON(steps.terraform-infrastructure.outputs.output).azure_resource_group_name.value }}
+        TF_VAR_aad_pod_identity_resource_id: ${{ fromJSON(steps.terraform-infrastructure.outputs.output).aad_pod_identity_resource_id.value }}
+        TF_VAR_aad_pod_identity_client_id: ${{ fromJSON(steps.terraform-infrastructure.outputs.output).aad_pod_identity_client_id.value }}
+        TF_VAR_ingress_ip_address: ${{ fromJSON(steps.terraform-infrastructure.outputs.output).aks_public_ip.value }}
+        TF_VAR_ingress_ip_address_resource_group: ${{ fromJSON(steps.terraform-infrastructure.outputs.output).azure_resource_group_name.value }}
+<% } %>
