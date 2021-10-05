@@ -17,7 +17,24 @@ jobs:
         id: release-version
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-<% if(nuget) { %>
+<% if(infrastructure) { %>
+  infrastructure:
+    name: Infrastructure
+    needs: setup
+    runs-on: ubuntu-latest
+    outputs:
+      terraform-output: ${{ steps.terraform.outputs.output }}
+    steps:
+      - name: Terraform
+        uses: <%= terraformActionPath %>
+        id: terraform
+        with:
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+          backend-container-name: <%= terraformBackendContainerName %>
+<% } if(nuget) { %>
   nuget:
     name: Build and publish NuGet package
     needs: setup
