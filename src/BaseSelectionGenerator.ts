@@ -1,9 +1,10 @@
 import * as Generator from 'yeoman-generator';
 import GeneratorSelection from './GeneratorSelection';
+import SeparatorSelection from './SeparatorSelection';
 
 class BaseSelectionGenerator extends Generator {
   private answers: any;
-  protected generators: GeneratorSelection[];
+  protected generators: (GeneratorSelection | SeparatorSelection)[];
 
   constructor(args: any, options: any) {
     super(args, options);
@@ -19,7 +20,15 @@ class BaseSelectionGenerator extends Generator {
         type: 'list',
         name: 'selectedGenerator',
         message: 'What do you want to generate?',
-        choices: this.generators.map(x => x.name)
+        choices: this.generators.map(x => {
+          if (x instanceof GeneratorSelection) {
+            return x.name;
+          }
+
+          if (x instanceof SeparatorSelection) {
+            return { type: 'separator', line: x.line };
+          }
+        })
       }
     ]);
   }
@@ -29,7 +38,8 @@ class BaseSelectionGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    const selection = this.generators.find(x => x.name === this.answers.selectedGenerator);
+    const generatorSelections = this.generators.filter(x => x instanceof GeneratorSelection) as GeneratorSelection[];
+    const selection = generatorSelections.find(x => x.name === this.answers.selectedGenerator);
     this.composeWith(selection.generator);
   }
 

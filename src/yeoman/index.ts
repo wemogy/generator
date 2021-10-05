@@ -1,27 +1,16 @@
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
+import GeneratorSelection from '../GeneratorSelection';
 
 class YeomanGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
-
     this.generators = [
-      {
-        name: 'Selector Generator',
-        generator: 'wemogy:yeoman-selector'
-      },
-      {
-        name: 'Generic Template Generator',
-        generator: 'wemogy:yeoman-template'
-      },
-      {
-        name: 'Generic Project Template Generator',
-        generator: 'wemogy:yeoman-template'
-      },
-      {
-        name: '.NET Template Generator',
-        generator: 'wemogy:yeoman-template-dotnet'
-      }
+      new GeneratorSelection('Selector Generator', 'wemogy:yeoman-selector'),
+      new GeneratorSelection('Generic Template Generator', 'wemogy:yeoman-template'),
+      new GeneratorSelection('.NET Template Generator', 'wemogy:yeoman-template-dotnet'),
+      new GeneratorSelection('Generic Project Template Generator', 'wemogy:yeoman-template-project'),
+      new GeneratorSelection('.NET Project Template Generator', 'wemogy:yeoman-template-project-dotnet')
     ];
   }
 }
