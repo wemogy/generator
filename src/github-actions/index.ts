@@ -18,12 +18,20 @@ class GitHubActionsGenerator extends BaseSelectionGenerator {
         generator: 'wemogy:github-actions-action-containers'
       },
       {
+        name: 'Action for Terraform',
+        generator: 'wemogy:github-actions-action-terraform'
+      },
+      {
         name: 'Workflow for Builds',
         generator: 'wemogy:github-actions-workflow-build'
       },
       {
         name: 'Workflow for Releases',
         generator: 'wemogy:github-actions-workflow-release'
+      },
+      {
+        name: 'Workflow for Coding Style Checks',
+        generator: 'wemogy:github-actions-workflow-style'
       }
     ];
   }
