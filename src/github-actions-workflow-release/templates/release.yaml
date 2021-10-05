@@ -114,10 +114,10 @@ jobs:
     name: Create GitHub Release
     needs:
       - setup
-      <% if(nuget) { %>- nuget <% } %>
-      <% if(npm) { %>- npm <% } %>
-      <% if(containers) { %>- containers <% } %>
-      <% if(helm) { %>- helm <% } %>
+      <% if(nuget) { %>- nuget<% } %>
+      <% if(npm) { %>- npm<% } %>
+      <% if(containers) { %>- containers<% } %>
+      <% if(helm) { %>- helm<% } %>
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub Release
