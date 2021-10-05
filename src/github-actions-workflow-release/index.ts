@@ -79,14 +79,14 @@ class GitHubActionsWorkflowPipelineGenerator extends BaseTemplateGenerator {
         followUpQuestions: [
           {
             type: 'input',
-            name: 'helmChartName',
+            name: 'helmName',
             message: 'Helm Chart Name',
             default: 'wemogy-demo'
           },
           {
             type: 'input',
             name: 'helmPath',
-            message: 'Path to Helm Chart',
+            message: 'Path to Helm Chart folder',
             default: 'env/helm'
           }
         ]

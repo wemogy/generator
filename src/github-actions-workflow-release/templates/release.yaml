@@ -88,10 +88,9 @@ jobs:
             --app-version ${{ needs.setup.outputs.next-version }} \
             --version ${{ needs.setup.outputs.next-version }}
       - name: Publish Helm Chart
-        uses: wemogy/publish-helm-chart-action@1.0.1
+        uses: wemogy/publish-helm-chart-action@1.1.0
         with:
-          name: <%= helmChartName %>
-          path: <%= helmChartName %>-${{ needs.setup.outputs.next-version }}.tgz
+          path: <%= helmName %>-${{ needs.setup.outputs.next-version }}.tgz
           token: ${{ secrets.HELM_REPO_TOKEN }}
 <% } %>
   github-release:
