@@ -22,8 +22,8 @@ Choose these to generate a new project for a wemogy repository. They will automa
 
 | Type | Description | Folder | Direct command |
 |---|---|---|---|
-| Basic project structure | Scaffolds the basic components of every repository like EditorConfig and Readme. | `/` | `yo wemogy-project-core` |
-| SDK (.NET) | An SDK Class Library for other .NET projects | `src/sdk/...` | `yo wemogy-project-sdk-dotnet` |
+| Basic project structure | Scaffolds the basic components of every repository like EditorConfig and Readme. | `/` | `yo wemogy-project-empty` |
+| SDK (.NET) | An SDK Class Library for other .NET projects | `src/sdk/dotnet/...` | `yo wemogy-project-sdk-dotnet` |
 | Service (.NET) | ASP.NET Web Api project to create small services | `src/services/...` | `yo wemogy-project-service-dotnet` |
 | Class Library (.NET)  | .NET Class Library for shared components. | `src/shared/...` | `yo wemogy-project-lib-dotnet` |
 
@@ -41,9 +41,11 @@ Choose these to generate basic templates for specific technologies. They will no
 | GitHub Actions | Action for JavaScript Builds |  | `yo github-actions-action-build-javascript` |
 | GitHub Actions | Action to Build and Push Containers |  | `yo github-actions-action-containers` |
 | GitHub Actions | Workflow for Builds |  | `yo github-actions-workflow-build` |
-| GitHub Actions | workflow for Releases |  | `yo github-actions-workflow-release` |
+| GitHub Actions | Workflow for Releases |  | `yo github-actions-workflow-release` |
 | Terraform | Azure Kubernetes Service (AKS) |  | `yo wemogy-terraform-aks` |
 | Terraform | Kubernetes Cluster configuration |  | `yo wemogy-terraform-kubernetes` |
+| TypeScript | Empty |  | `yo wemogy-typescript-empty` |
+| TypeScript | React |  | `yo wemogy-typescript-react` |
 | Yeoman | Template Generator |  | `yo wemogy-terraform-template` |
 | Yeoman | Selector Generator |  | `yo wemogy-terraform-selector` |
 

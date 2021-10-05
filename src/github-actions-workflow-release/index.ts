@@ -1,3 +1,4 @@
+import chalk = require('chalk');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class GitHubActionsWorkflowPipelineGenerator extends BaseTemplateGenerator {
@@ -11,6 +12,26 @@ class GitHubActionsWorkflowPipelineGenerator extends BaseTemplateGenerator {
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
+      {
+        type: 'confirm',
+        name: 'infrastructure',
+        message: 'Deploy Infrastructure (Terraform)?',
+        default: false,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'terraformActionPath',
+            message: 'Path to Terraform Action',
+            default: './.github/workflows/terraform'
+          },
+          {
+            type: 'input',
+            name: 'terraformBackendContainerName',
+            message: 'Terraform Backend container name',
+            default: 'tfstate-dev'
+          }
+        ]
+      },
       {
         type: 'confirm',
         name: 'nuget',
@@ -79,14 +100,14 @@ class GitHubActionsWorkflowPipelineGenerator extends BaseTemplateGenerator {
         followUpQuestions: [
           {
             type: 'input',
-            name: 'helmChartName',
+            name: 'helmName',
             message: 'Helm Chart Name',
             default: 'wemogy-demo'
           },
           {
             type: 'input',
             name: 'helmPath',
-            message: 'Path to Helm Chart',
+            message: 'Path to Helm Chart folder',
             default: 'env/helm'
           }
         ]
@@ -106,7 +127,18 @@ class GitHubActionsWorkflowPipelineGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    if (this.answers.infrastructure) {
+      this.log(
+        `${chalk.yellow('Hint:')} Please don't forget to set the following GitHub Secrets for Terraform or check,` +
+          'if they are already part of the company-wide secrets:'
+      );
+      this.log('- AZURE_APP_ID');
+      this.log('- AZURE_PASSWORD');
+      this.log('- AZURE_TENANT_ID');
+      this.log('- TERRAFORM_BACKEND_ACCESS_KEY');
+    }
+  }
 }
 
 export default GitHubActionsWorkflowPipelineGenerator;

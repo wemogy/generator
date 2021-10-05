@@ -1,4 +1,3 @@
 export default class GeneratorSelection {
-  name: string;
-  generator: string;
+  constructor(public name: string, public generator: string) {}
 }
