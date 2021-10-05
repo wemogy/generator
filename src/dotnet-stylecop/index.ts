@@ -16,11 +16,7 @@ class DotStyleCopGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath(), this.destinationPath(), null, {
-      globOptions: {
-        dot: true // Include dotfiles (like .stylecop)
-      }
-    });
+    this.fs.copy(this.templatePath(), this.destinationPath());
   }
 
   // Where installation are run (npm, bower)
