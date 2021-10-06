@@ -4,6 +4,8 @@ import { getSlnSelectionOptions, addProjectToSln, toPascalCase } from '../Dotnet
 class DotClasslibGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
+
+    this.argument('defaultName', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -16,7 +18,7 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: `Wemogy.Shared.${toPascalCase(this.appname)}`
+        default: this.options.defaultName || 'Project'
       },
       {
         type: 'confirm',
@@ -69,7 +71,7 @@ class DotClasslibGenerator extends BaseTemplateGenerator {
     // Unit Tests
     if (this.answers.unitTests) {
       this.composeWith('wemogy:dotnet-xunit', {
-        name: `${this.answers.name}.Tests`,
+        name: `${this.answers.name}.UnitTests`,
         referenceProjectToTest: true,
         projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
         solution: this.answers.solution

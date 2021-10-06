@@ -15,6 +15,7 @@ class AppGenerator extends BaseSelectionGenerator {
       new GeneratorSelection('wemogy Web Frontend (React)', 'wemogy:project-frontend-react'),
       new GeneratorSelection('wemogy SDK (.NET)', 'wemogy:project-sdk-dotnet'),
       new GeneratorSelection('wemogy SDK (JavaScript)', 'wemogy:project-sdk-javascript'),
+      new GeneratorSelection('wemogy Frontend (React)', 'wemogy:project-frontend-react'),
       new SeparatorSelection(),
       new GeneratorSelection('.NET', 'wemogy:dotnet'),
       new GeneratorSelection('TypeScript', 'wemogy:typescript'),

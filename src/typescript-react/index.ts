@@ -15,7 +15,7 @@ class ReactGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.appname
+        default: this.options.defaultName || this.appname
       }
     ]);
   }

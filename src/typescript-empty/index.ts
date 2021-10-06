@@ -3,6 +3,8 @@ import BaseTemplateGenerator from '../BaseTemplateGenerator';
 class ReactGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
+
+    this.argument('defaultName', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -15,7 +17,7 @@ class ReactGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.appname
+        default: this.options.defaultName || this.appname
       }
     ]);
   }

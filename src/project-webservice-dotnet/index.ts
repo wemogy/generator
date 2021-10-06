@@ -1,4 +1,4 @@
-import { enforceSolutionFilePresence } from '../DotnetHelpers';
+import { enforceSolutionFilePresence, toPascalCase } from '../DotnetHelpers';
 import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
 class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
@@ -31,6 +31,7 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
 
     this.composeWith('wemogy:dotnet-aspnet', {
       destinationRoot: this.destinationRoot(`src/webservices/${this.answers.folder.toLowerCase()}`),
+      defaultName: `Wemogy.${toPascalCase(this.appname)}.WebServices.${toPascalCase(this.answers.folder)}`,
       parentPath: `src/webservices/${this.answers.folder.toLowerCase()}`,
       unitTests: true,
       solution: this.getSolutionPath()
@@ -41,7 +42,9 @@ class DotnetServiceProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.eclint();
+  }
 }
 
 export default DotnetServiceProjectGenerator;
