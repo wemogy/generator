@@ -1,5 +1,4 @@
-import { enforceSolutionFilePresence } from '../DotnetHelpers';
-import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import { toPascalCase } from '../DotnetHelpers';
 import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
 class DotnetSdkProjectGenerator extends BaseDotnetProjectTemplateGenerator {
@@ -32,6 +31,7 @@ class DotnetSdkProjectGenerator extends BaseDotnetProjectTemplateGenerator {
 
     this.composeWith('wemogy:dotnet-classlib', {
       destinationRoot: this.destinationRoot(`src/sdk/${this.answers.folder.toLowerCase()}`),
+      defaultName: `Wemogy.${toPascalCase(this.appname)}.Sdk`,
       nuget: true,
       unitTests: true,
       solution: this.getSolutionPath()
@@ -42,7 +42,9 @@ class DotnetSdkProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.eclint();
+  }
 }
 
 export default DotnetSdkProjectGenerator;

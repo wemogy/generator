@@ -26,7 +26,8 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     this.composeWith('wemogy:typescript-empty', {
-      destinationRoot: this.destinationRoot(`src/sdk/${this.answers.folder.toLowerCase()}`)
+      destinationRoot: this.destinationRoot(`src/sdk/${this.answers.folder.toLowerCase()}`),
+      defaultName: `@wemogy/${this.appname.toLowerCase()}-sdk`
     });
   }
 
@@ -34,7 +35,9 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.eclint();
+  }
 }
 
 export default DotnetSdkProjectGenerator;

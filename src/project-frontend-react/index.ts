@@ -13,8 +13,9 @@ class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'name',
-        message: 'Project Name'
+        name: 'folder',
+        message: 'Subfolder name',
+        default: 'web'
       }
     ]);
   }
@@ -25,8 +26,8 @@ class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     this.composeWith('wemogy:typescript-react', {
-      destinationRoot: this.destinationRoot(`src/frontend/${this.answers.name.toLowerCase()}`),
-      name: this.answers.name
+      destinationRoot: this.destinationRoot(`src/frontend/${this.answers.folder.toLowerCase()}`),
+      defaultName: `@wemogy/${this.appname.toLowerCase()}-${this.answers.folder.toLowerCase()}`
     });
   }
 
@@ -34,7 +35,9 @@ class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.eclint();
+  }
 }
 
 export default ReactFrontendProjectGenerator;
