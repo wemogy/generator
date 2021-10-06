@@ -36,7 +36,9 @@ class <%= className %> extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.eclint();
+  }
 }
 
 export default <%= className %>;

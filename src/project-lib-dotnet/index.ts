@@ -17,7 +17,7 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
         type: 'input',
         name: 'folder',
         message: 'Subfolder name',
-        default: toPascalCase(this.appname)
+        default: 'core'
       }
     ]);
   }
@@ -31,6 +31,7 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
 
     this.composeWith('wemogy:dotnet-classlib', {
       destinationRoot: this.destinationRoot(`src/shared/${this.answers.folder.toLowerCase()}`),
+      defaultName: `Wemogy.${toPascalCase(this.appname)}.Shared.${toPascalCase(this.answers.folder)}`,
       unitTests: true,
       solution: this.getSolutionPath()
     });
@@ -40,7 +41,9 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.eclint();
+  }
 }
 
 export default DotnetLibraryProjectGenerator;

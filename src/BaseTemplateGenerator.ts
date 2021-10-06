@@ -26,6 +26,11 @@ class BaseTemplateGenerator extends Generator {
 
   // Called last, cleanup, say good bye, etc
   public end(): void {}
+
+  protected eclint(): void {
+    this.log('Applying EditorConfig rules by running eclint...');
+    this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
+  }
 }
 
 export default BaseTemplateGenerator;

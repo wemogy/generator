@@ -5,6 +5,8 @@ import { addProjectToSln, getSlnSelectionOptions, toPascalCase } from '../Dotnet
 class DotXunitGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
+
+    this.argument('defaultName', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -17,7 +19,7 @@ class DotXunitGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: `Wemogy.${toPascalCase(this.appname)}.Tests`
+        default: this.options.defaultName || 'Project.UnitTests'
       },
       {
         type: 'confirm',

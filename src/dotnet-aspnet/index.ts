@@ -5,6 +5,8 @@ import BaseTemplateGenerator from '../BaseTemplateGenerator';
 class DotAspNetGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
+
+    this.argument('defaultName', { type: String, required: false });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -17,7 +19,7 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: `Wemogy.Services.${toPascalCase(this.appname)}`
+        default: this.options.defaultName || 'Project'
       },
       {
         type: 'input',
@@ -52,9 +54,10 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
     this.fs.copyTpl(this.templatePath('Dockerfile'), this.destinationPath('Dockerfile'), this.answers);
     this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
 
+    // Unit Tests
     if (this.answers.unitTests) {
       this.composeWith('wemogy:dotnet-xunit', {
-        name: `${this.answers.name}.Tests`,
+        name: `${this.answers.name}.UnitTests`,
         referenceProjectToTest: true,
         projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
         solution: this.answers.solution

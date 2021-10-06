@@ -2,7 +2,7 @@
   "name": "generator-wemogy",
   "version": "1.0.0",
   "description": "A yeoman code generator for common wemogy templates",
-  "repository": "https://github.com/wemogy/generator-wemogy",
+  "repository": "https://github.com/wemogy/generator",
   "keywords": [
     "yeoman-generator"
   ],
@@ -17,6 +17,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "directory-exists": "^2.0.1",
+    "eclint": "^2.8.1",
     "glob": "^7.1.7",
     "lodash": "^4.17.21",
     "yeoman-generator": "5.4.0",

@@ -60,6 +60,11 @@ export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>)
       delete question.when;
     }
 
+    if (typeof question.default === 'function') {
+      // call the default resolver
+      question.default = question.default(answers);
+    }
+
     // recursive call to ask question or process questions
     const promptAnswers = await optionOrPrompt.bind(this)(question);
     // merge the suppied answers to all answers
