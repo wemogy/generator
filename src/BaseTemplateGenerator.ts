@@ -64,7 +64,7 @@ class BaseTemplateGenerator extends Generator {
     this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
   }
 
-  protected copyTemplateToDestination(destinationSubPath: string, params?: object): void {
+  protected copyTemplateToDestination(destinationSubPath?: string, params?: object): void {
     if (!params) {
       params = {};
     }
@@ -87,7 +87,10 @@ class BaseTemplateGenerator extends Generator {
         },
         processDestinationPath: (filePath: string): string => {
           for (let argName of argNames) {
-            filePath = filePath.replace('${' + argName + '}', this.pascalCase(args[argName]));
+            filePath = filePath.replace('${' + argName + '}', args[argName]);
+            filePath = filePath.replace('${' + argName + '.pascalCase}', args[argName].pascalCase);
+            filePath = filePath.replace('${' + argName + '.snakeCase}', args[argName].snakeCase);
+            filePath = filePath.replace('${' + argName + '.kebabCase}', args[argName].kebabCase);
           }
 
           return filePath;
