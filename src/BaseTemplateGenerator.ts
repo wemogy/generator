@@ -2,6 +2,37 @@ import _ = require('lodash');
 import * as Generator from 'yeoman-generator';
 import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
 
+class TemplateArgument {
+  public get pascalCase(): string {
+    return _.upperFirst(_.camelCase(this.toString()));
+  }
+
+  public get camelCase(): string {
+    return _.camelCase(this.toString());
+  }
+
+  public get snakeCase(): string {
+    return _.snakeCase(this.toString());
+  }
+
+  public get kebabCase(): string {
+    return _.kebabCase(this.toString());
+  }
+
+  public constructor(private readonly arg: any) {}
+
+  public toString(): string {
+    return this.arg.toString();
+  }
+}
+
+function toTemplateArguments(obj: object): object {
+  for (const propertyName in obj) {
+    obj[propertyName] = new TemplateArgument(obj[propertyName]);
+  }
+  return obj;
+}
+
 class BaseTemplateGenerator extends Generator {
   protected answers: any;
   protected optionOrPrompt: (questions: AdvancedQuestions) => Promise<any> = optionOrPrompt.bind(this);
@@ -38,12 +69,16 @@ class BaseTemplateGenerator extends Generator {
       params = {};
     }
 
-    const args = { ...this.answers, ...params };
+    const args = {
+      ...toTemplateArguments(this.answers),
+      ...toTemplateArguments(params)
+    };
+
     const argNames = Object.keys(args);
 
     this.fs.copyTpl(
       this.templatePath(),
-      `${this.destinationPath()}/${destinationSubPath}`,
+      this.destinationPath(destinationSubPath),
       args,
       {},
       {
@@ -52,7 +87,7 @@ class BaseTemplateGenerator extends Generator {
         },
         processDestinationPath: (filePath: string): string => {
           for (let argName of argNames) {
-            filePath = filePath.replace(`$${argName}`, this.upperCamelCase(args[argName]));
+            filePath = filePath.replace('${' + argName + '}', this.pascalCase(args[argName]));
           }
 
           return filePath;
@@ -63,7 +98,7 @@ class BaseTemplateGenerator extends Generator {
 
   //#region conventions
 
-  protected upperCamelCase(str: string): string {
+  protected pascalCase(str: string): string {
     return _.upperFirst(_.camelCase(str));
   }
 
