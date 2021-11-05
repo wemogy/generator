@@ -20,7 +20,7 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'helmChartName',
-        message: 'Helm Chart Name',
+        message: 'Helm Chart Folder Name',
         default: this.appname
       }
     ]);

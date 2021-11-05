@@ -20,10 +20,10 @@ class GitHubGenerator extends BaseSelectionGenerator {
         'Workflow for Module Deployments (without GitHub Environments)',
         'wemogy:github-workflow-deploy-module'
       ),
-      new GeneratorSelection(
-        'Workflow for App Deployments (without GitHub Environments)',
-        'wemogy:github-workflow-deploy-app'
-      ),
+      // new GeneratorSelection(
+      //   'Workflow for App Deployments (without GitHub Environments)',
+      //   'wemogy:github-workflow-deploy-app'
+      // ),
       new GeneratorSelection('Workflow for Pull Request Deployments', 'wemogy:github-workflow-deploy-pr'),
       new GeneratorSelection('Workflow for Coding Style Checks', 'wemogy:github-workflow-style'),
       new GeneratorSelection('Workflow for Secret Scans', 'wemogy:github-workflow-secrets')
