@@ -1,0 +1,168 @@
+# Releases the application to different environments based on the branch it is running on
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+    paths:
+      - '.github/actions/**'
+      - 'src/**'
+      - 'env/**'
+
+env:
+  VERSION: 1.0.${{ github.run_id }}
+
+jobs:
+  build:
+    name: Build Container Images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and Push Container images
+        uses: ./.github/actions/containers
+        with:
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          container-registry-username: ${{ secrets.AZURE_APP_ID }}
+          container-registry-password: ${{ secrets.AZURE_PASSWORD }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ env.VERSION }}
+          push: true
+
+  dev:
+    if: contains(github.ref, 'refs/heads/main')
+    name: Deploy to Development
+    environment: Development
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency: terraform
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Terraform Infrastructure
+        uses: wemogy/terraform-action@1.4.0
+        id: terraform
+        with:
+          apply: true
+          working-directory: env/terraform/stage
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-storage-account-name: digittooltfstate
+          backend-container-name: tfstate
+          backend-key: dev.tfstate
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+        env:
+          TF_VAR_environment: dev
+          TF_VAR_azure_aks_name: ${{ secrets.AKS_NAME }}
+          TF_VAR_azure_aks_resource_group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+      - name: Deploy Helm Chart
+        uses: ./.github/actions/helm-deploy
+        with:
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          name: digittool-dev
+          version: ${{ env.VERSION }}
+          domain-prefix: dev
+          terraform-output: ${{ steps.terraform.outputs.output }}
+          namespace: digittool-dev
+          aks-name: ${{ secrets.AKS_NAME }}
+          aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          wemogy-pull-secret-username: ${{ secrets.WEMOGY_PULL_SECRET_USERNAME }}
+          wemogy-pull-secret-password: ${{ secrets.WEMOGY_PULL_SECRET_PASSWORD }}
+
+  staging:
+    if: contains(github.ref, 'refs/heads/release')
+    name: Deploy to Staging
+    environment: Staging
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency: terraform
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Terraform Infrastructure
+        uses: wemogy/terraform-action@1.4.0
+        id: terraform
+        with:
+          apply: true
+          working-directory: env/terraform/stage
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-storage-account-name: digittooltfstate
+          backend-container-name: tfstate
+          backend-key: staging.tfstate
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+        env:
+          TF_VAR_environment: staging
+          TF_VAR_azure_aks_name: ${{ secrets.AKS_NAME }}
+          TF_VAR_azure_aks_resource_group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          TF_VAR_smtp_password: ${{ secrets.SMTP_PASSWORD }}
+
+      - name: Deploy Helm Chart
+        uses: ./.github/actions/helm-deploy
+        with:
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          name: digittool-staging
+          version: ${{ env.VERSION }}
+          domain-prefix: staging
+          terraform-output: ${{ steps.terraform.outputs.output }}
+          namespace: digittool-staging
+          aks-name: ${{ secrets.AKS_NAME }}
+          aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          wemogy-pull-secret-username: ${{ secrets.WEMOGY_PULL_SECRET_USERNAME }}
+          wemogy-pull-secret-password: ${{ secrets.WEMOGY_PULL_SECRET_PASSWORD }}
+
+  prod:
+    if: contains(github.ref, 'refs/heads/release')
+    name: Deploy to Production
+    environment: Production
+    needs: [build, staging]
+    runs-on: ubuntu-latest
+    concurrency: terraform
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Terraform Infrastructure
+        uses: wemogy/terraform-action@1.4.0
+        id: terraform
+        with:
+          apply: true
+          working-directory: env/terraform/stage
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-storage-account-name: digittooltfstate
+          backend-container-name: tfstate
+          backend-key: prod.tfstate
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+        env:
+          TF_VAR_environment: prod
+          TF_VAR_azure_aks_name: ${{ secrets.AKS_NAME }}
+          TF_VAR_azure_aks_resource_group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+      - name: Deploy Helm Chart
+        uses: ./.github/actions/helm-deploy
+        with:
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          name: digittool-prod
+          version: ${{ env.VERSION }}
+          domain-prefix: ""
+          terraform-output: ${{ steps.terraform.outputs.output }}
+          namespace: digittool-prod
+          aks-name: ${{ secrets.AKS_NAME }}
+          aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          wemogy-pull-secret-username: ${{ secrets.WEMOGY_PULL_SECRET_USERNAME }}
+          wemogy-pull-secret-password: ${{ secrets.WEMOGY_PULL_SECRET_PASSWORD }}

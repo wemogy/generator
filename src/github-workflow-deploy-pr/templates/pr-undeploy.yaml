@@ -1,0 +1,80 @@
+name: Undeploy Pull Request
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'env/**'
+    types:
+      - unlabeled
+      - closed
+
+env:
+  VERSION: 1.0.${{ github.run_id }}
+  SLUG: pr${{ github.event.pull_request.number }}
+
+jobs:
+  setup:
+    name: Setup
+    # If this workflow gets executed by unlabeling a PR, the label must contain 'deploy' to execute this job
+    # As all other jobs depend on 'setup', we only need to ckeck this once here
+    if: github.event.label.name == '' || contains(github.event.label.name, 'deploy')
+    runs-on: ubuntu-latest
+    outputs:
+      is-deployment-needed: ${{ steps.get-environment.outputs.is-deployment-needed }}
+      is-custom-environment: ${{ steps.get-environment.outputs.is-custom-environment }}
+      env: ${{ steps.get-environment.outputs.env }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get Environment
+        id: get-environment
+        uses: wemogy/get-environment-action@v2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  undeploy-pr:
+    name: Remove Pull Request Deployment
+    if: needs.setup.outputs.is-deployment-needed == 'true'
+    needs: setup
+    runs-on: ubuntu-latest
+    concurrency: terraform
+    steps:
+      - name: Delete Helm Deployment
+        uses: ./.github/actions/helm-undeploy
+        with:
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          name: digittool-${{ env.SLUG }}
+          namespace: digittool-${{ env.SLUG }}
+          aks-name: ${{ secrets.AKS_NAME }}
+          aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+      - name: Destroy Stage Infrastrucure
+        if: steps.get-environment.outputs.is-custom-environment == 'true'
+        uses: wemogy/terraform-action@1.4.0
+        id: terraform
+        with:
+          apply: false
+          destroy: true
+          working-directory: env/terraform/stage
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-storage-account-name: digittooltfstate
+          backend-container-name: tfstate
+          backend-key: ${{ needs.setup.outputs.env }}.tfstate
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+        env:
+          TF_VAR_environment: ${{ needs.setup.outputs.env }}
+          TF_VAR_azure_aks_name: ${{ secrets.AKS_NAME }}
+          TF_VAR_azure_aks_resource_group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+      - name: Post comment to Pull Request
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: "Your Pull Request Deployment has been deleted."
+          check_for_duplicate_msg: true

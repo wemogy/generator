@@ -1,0 +1,48 @@
+name: "Delete Helm Chart"
+description: "Delete the Helm Chart and Kubernetes Namespace"
+inputs:
+  client-id:
+    description: "The Azure Service Principal Client ID"
+    required: true
+  client-secret:
+    description: "The Azure Service Principal Client Secret"
+    required: true
+  tenant-id:
+    description: "The Azure Tenant ID"
+    required: true
+  name:
+    description: "The name of the Helm Release"
+    required: true
+  namespace:
+    description: "The Kubernetes namespace to deploy into"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: AKS Login
+      uses: wemogy/aks-login-action@1.0.0
+      with:
+        name: ${{ inputs.aks-name }}
+        resource-group: ${{ inputs.aks-resource-group }}
+        client-id:  ${{ inputs.client-id }}
+        client-secret: ${{ inputs.client-secret }}
+        tenant-id: ${{ inputs.tenant-id }}
+
+    - name: Delete Helm chart
+      shell: bash
+      run: |
+        if helm status ${{ inputs.name }} --namespace ${{ inputs.namespace }} > /dev/null ; then
+          helm delete ${{ inputs.name }} --namespace ${{ inputs.namespace }}
+        else
+          echo "Helm Chart ${{ inputs.name }} in namespace ${{ inputs.namespace }} not found."
+        fi
+
+    - name: Delete Kubernetes Namespace
+      shell: bash
+      run: |
+        if kubectl get namespace ${{ inputs.namespace }} > /dev/null ; then
+          kubectl delete namespace  ${{ inputs.namespace }}
+        else
+          echo "Namespace ${{ inputs.namespace }} not found."
+        fi

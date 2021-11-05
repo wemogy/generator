@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release/**
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      next-version: ${{ steps.release-version.outputs.next-version }}
+    steps:
+      - name: Get version for next release
+        uses: wemogy/release-version-action@1.0.1
+        id: release-version
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+<% if(nuget) { %>
+  nuget:
+    name: Build and publish NuGet package
+    needs: setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build .NET
+        uses: <%= buildDotnetActionPath %>
+        with:
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ needs.setup.outputs.next-version }}
+      - name: Create Nuget package(s)
+        run: dotnet pack --configuration Release /p:VersionPrefix=${{ needs.setup.outputs.next-version }}
+      - name: Publish Nuget package(s)
+        run: dotnet nuget push **/*.nupkg  --skip-duplicate --source https://nuget.pkg.github.com/${{ github.repository_owner }} --api-key ${{ secrets.GITHUB_TOKEN }}
+<% } if(npm) { %>
+  npm:
+    name: Build and publish NPM package
+    needs: setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/frontend
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build JavaScript
+        uses: <%= buildJavaScriptActionPath %>
+        with:
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ needs.setup.outputs.next-version }}
+      - name: Publish NPM package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+<% } if(containers) { %>
+  containers:
+    name: Build and push Container image
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: <%= containerRegistryServer %>
+          username: <%= containerRegistryUsername %>
+          password: <%= containerRegistryPassword %>
+      - name: Build Containers
+        uses: <%= containersActionPath %>
+        with:
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ needs.setup.outputs.next-version }}
+          push: true
+<% } if(helm) { %>
+  helm:
+    name: Publish Helm Chart
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Package Helm chart
+        run: |
+          helm dependency update <%= helmPath %>
+          helm package <%= helmPath %> \
+            --app-version ${{ needs.setup.outputs.next-version }} \
+            --version ${{ needs.setup.outputs.next-version }}
+      - name: Publish Helm Chart
+        uses: wemogy/publish-helm-chart-action@1.1.0
+        with:
+          path: <%= helmName %>-${{ needs.setup.outputs.next-version }}.tgz
+          token: ${{ secrets.HELM_REPO_TOKEN }}
+<% } %>
+  github-release:
+    name: Create GitHub Release
+    needs:
+      - setup
+      <% if(nuget) { %>- nuget<% } %>
+      <% if(npm) { %>- npm<% } %>
+      <% if(containers) { %>- containers<% } %>
+      <% if(helm) { %>- helm<% } %>
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.setup.outputs.next-version }}
+          name: Version ${{ needs.setup.outputs.next-version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
