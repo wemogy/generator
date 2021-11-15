@@ -1,0 +1,165 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - release
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+      - 'env/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - labeled
+      - synchronize
+
+jobs:
+  setup:
+    name: Setup
+    # If this workflow gets executed by labeling a PR, the label must contain 'deploy' to execute this job
+    # As all other jobs depend on 'setup', we only need to ckech this once here
+    if: github.event.label.name == '' || contains(github.event.label.name, 'deploy')
+    runs-on: ubuntu-latest
+    outputs:
+      is-deployment-neededed: steps.get-environment.outputs.is-deployment-needed
+      is-pull-request: ${{ steps.get-environment.outputs.is-pull-request }}
+      is-custom-environment: ${{ steps.get-environment.outputs.is-custom-environment }}
+      env: ${{ steps.get-environment.outputs.env }}
+      domain-pefix: ${{ steps.get-environment.outputs.domain-prefix }}
+      slug: ${{ steps.get-environment.outputs.slug }}
+      version: 1.0.${{ github.run_id }}-${{ steps.get-environment.outputs.slug }}
+      shared-infrastructure-changed: ${{ steps.path-filter.outputs.changes.shared-infrastructure }}
+      stage-infrastructure-changed: ${{ steps.path-filter.outputs.stage-infrastructure }}
+      src-changed: ${{ steps.path-filter.outputs.src }}
+      helm-changed: ${{ steps.path-filter.outputs.helm }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Environment
+        id: get-environment
+        uses: wemogy/get-environment-action@v2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: dorny/paths-filter@v2
+        id: path-filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            shared-infrastructure: 'env/terraform/shared/**'
+            stage-infrastructure: 'env/terraform/individual/**'
+            src: 'src/**'
+            helm: 'env/helm/**'
+
+  infrastructure:
+    if: |
+      needs.setup.outputs.is-deployment-neededed == 'true' && (
+        needs.setup.outputs.shared-infrastructure-changed == 'true' ||
+        needs.setup.outputs.stage-infrastructure-changed == 'true' ||
+        needs.setup.outputs.helm-changed == 'true' ||
+        needs.setup.outputs.src-changed == 'true'
+      )
+    name: Infrastructure
+    runs-on: ubuntu-latest
+    needs: [setup]
+    outputs:
+      terraform-shared-output: ${{ steps.terraform-shared.outputs.output }}
+      terraform-stage-output: ${{ steps.terraform-stage.outputs.output }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Shared Infrastrucure
+        uses: ./.github/workflows/terraform/shared
+        id: terraform-shared
+        with:
+          apply:  ${{ needs.setup.outputs.shared-infrastructure-changed == 'true' }}
+          client-id: ${{ secrets.ISI_AZURE_APP_ID }}
+          client-secret: ${{ secrets.ISI_AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.ISI_AZURE_TENANT_ID }}
+          backend-access-key: ${{ secrets.ISI_TERRAFORM_BACKEND_ACCESS_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Stage Infrastrucure
+        uses: ./.github/workflows/terraform/individual
+        id: terraform-stage
+        with:
+          apply: ${{ needs.setup.outputs.stage-infrastructure-changed == 'true' || needs.setup.outputs.is-custom-environment == 'true' }}
+          client-id: ${{ secrets.ISI_AZURE_APP_ID }}
+          client-secret: ${{ secrets.ISI_AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.ISI_AZURE_TENANT_ID }}
+          backend-access-key: ${{ secrets.ISI_TERRAFORM_BACKEND_ACCESS_KEY }}
+          environment: ${{ needs.setup.outputs.env }}
+          aks-name: ${{ fromJSON(steps.terraform-shared.outputs.output).azure_kubernetes_cluster_name.value }}
+          aks-resource-group: ${{ fromJSON(steps.terraform-shared.outputs.output).azure_resource_group_name.value }}
+          smtp-password: ${{ secrets.ISI_SMTP_PASSWORD }}
+          jwt-private-key: ${{ secrets.ISI_JWT_PRIVATE_KEY_RSA_XML }}
+          jwt-public-key: ${{ secrets.ISI_JWT_PUBLIC_KEY_RSA_XML }}
+          wemogy-realtime-api-key: ${{ secrets.ISI_WEMOGY_REALTIME_API_KEY }}
+
+  containers:
+    if: |
+      needs.setup.outputs.is-deployment-neededed == 'true' && (
+        needs.setup.outputs.src-changed == 'true' ||
+        needs.setup.outputs.helm-changed == 'true'
+      )
+    name: Containers
+    needs: [setup, infrastructure]
+    runs-on: ubuntu-latest
+    env:
+      CONTAINER_REGISTRY_SERVER: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_container_registry_login_server.value }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY_SERVER }}
+          username: ${{ secrets.ISI_AZURE_APP_ID }}
+          password: ${{ secrets.ISI_AZURE_PASSWORD }}
+      - name: Build and Push Container images
+        uses: ./.github/workflows/containers
+        with:
+          container-registry-server: ${{ env.CONTAINER_REGISTRY_SERVER }}
+          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
+          old-azure-devops-nuget-token: ${{ secrets.ISI_NUGET_TOKEN }}
+          version: ${{ needs.setup.outputs.version }}
+          push: true
+
+  kubernetes:
+    name: Kubernetes
+    if: |
+      needs.setup.outputs.is-deployment-neededed == 'true' && (
+        needs.setup.outputs.helm-changed == 'true' ||
+        needs.setup.outputs.src-changed == 'true'
+      )
+    needs: [setup, infrastructure, containers]
+    runs-on: ubuntu-latest
+    env:
+      AKS_NAME: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_kubernetes_cluster_name.value }}
+      AKS_RESOURCE_GROUP: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_resource_group_name.value }}
+      CONTAINER_REGISTRY_SERVER: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_container_registry_login_server.value }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Helm Charts
+        uses: ./.github/workflows/helm/deploy
+        with:
+          client-id: ${{ secrets.ISI_AZURE_APP_ID }}
+          client-secret: ${{ secrets.ISI_AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.ISI_AZURE_TENANT_ID }}
+          name: digittool-${{ needs.setup.outputs.slug }}
+          version: ${{ needs.setup.outputs.version }}
+          domain-prefix: ${{ needs.setup.outputs.domain-pefix }}
+          terraform-output: ${{ needs.infrastructure.outputs.terraform-stage-output }}
+          namespace: digittool-${{ needs.setup.outputs.slug }}
+          aks-name: ${{ env.AKS_NAME }}
+          aks-resource-group: ${{ env.AKS_RESOURCE_GROUP }}
+          container-registry-server: ${{ env.CONTAINER_REGISTRY_SERVER }}
+          wemogy-pull-secret-username: ${{ secrets.ISI_WEMOGY_PULL_SECRET_USERNAME }}
+          wemogy-pull-secret-password: ${{ secrets.ISI_WEMOGY_PULL_SECRET_PASSWORD }}
+      - name: Post comment to Pull Request
+        if: needs.setup.outputs.is-pull-request == 'true'
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: "Your Pull Request Deployment is ready for review at https://app.${{ needs.setup.outputs.domain-pefix }}.digittool.de"
+          check_for_duplicate_msg: true

@@ -20,7 +20,7 @@ class AppGenerator extends BaseSelectionGenerator {
       new GeneratorSelection('TypeScript', 'wemogy:typescript'),
       new GeneratorSelection('Terraform', 'wemogy:terraform'),
       new GeneratorSelection('Yeoman', 'wemogy:yeoman'),
-      new GeneratorSelection('GitHub Actions', 'wemogy:github-actions'),
+      new GeneratorSelection('GitHub', 'wemogy:github'),
       new SeparatorSelection(),
       new GeneratorSelection('wemogy CLI', 'wemogy:wemogy-cli'),
       new SeparatorSelection()
