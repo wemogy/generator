@@ -10,7 +10,14 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.optionOrPrompt([]);
+    this.answers = await this.optionOrPrompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name (lowercase)',
+        default: this.appname
+      }
+    ]);
   }
 
   // Saving configurations and configure the project (creating .editorconfig files and other metadata files

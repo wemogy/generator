@@ -10,6 +10,7 @@ on:
       - '.github/actions/**'
       - 'src/**'
       - 'env/**'
+      - '!env/terraform/shared/**'
 
 env:
   VERSION: 1.0.${{ github.run_id }}
@@ -50,7 +51,7 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          backend-storage-account-name: digittooltfstate
+          backend-storage-account-name: <%= name %>tfstate
           backend-container-name: tfstate
           backend-key: dev.tfstate
           backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
@@ -65,11 +66,11 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          name: digittool-dev
+          name: <%= name %>-dev
           version: ${{ env.VERSION }}
           domain-prefix: dev
           terraform-output: ${{ steps.terraform.outputs.output }}
-          namespace: digittool-dev
+          namespace: <%= name %>-dev
           aks-name: ${{ secrets.AKS_NAME }}
           aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
           container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
@@ -95,7 +96,7 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          backend-storage-account-name: digittooltfstate
+          backend-storage-account-name: <%= name %>tfstate
           backend-container-name: tfstate
           backend-key: staging.tfstate
           backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
@@ -111,11 +112,11 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          name: digittool-staging
+          name: <%= name %>-staging
           version: ${{ env.VERSION }}
           domain-prefix: staging
           terraform-output: ${{ steps.terraform.outputs.output }}
-          namespace: digittool-staging
+          namespace: <%= name %>-staging
           aks-name: ${{ secrets.AKS_NAME }}
           aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
           container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
@@ -141,7 +142,7 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          backend-storage-account-name: digittooltfstate
+          backend-storage-account-name: <%= name %>tfstate
           backend-container-name: tfstate
           backend-key: prod.tfstate
           backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
@@ -156,11 +157,11 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          name: digittool-prod
+          name: <%= name %>-prod
           version: ${{ env.VERSION }}
           domain-prefix: ""
           terraform-output: ${{ steps.terraform.outputs.output }}
-          namespace: digittool-prod
+          namespace: <%= name %>-prod
           aks-name: ${{ secrets.AKS_NAME }}
           aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
           container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}

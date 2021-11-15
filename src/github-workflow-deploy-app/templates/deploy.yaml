@@ -10,6 +10,7 @@ on:
       - '.github/workflows/**'
       - 'src/**'
       - 'env/**'
+      - '!env/terraform/shared/**'
   pull_request:
     types:
       - opened
@@ -32,8 +33,7 @@ jobs:
       domain-pefix: ${{ steps.get-environment.outputs.domain-prefix }}
       slug: ${{ steps.get-environment.outputs.slug }}
       version: 1.0.${{ github.run_id }}-${{ steps.get-environment.outputs.slug }}
-      shared-infrastructure-changed: ${{ steps.path-filter.outputs.changes.shared-infrastructure }}
-      stage-infrastructure-changed: ${{ steps.path-filter.outputs.stage-infrastructure }}
+      individual-infrastructure-changed: ${{ steps.path-filter.outputs.individual-infrastructure }}
       src-changed: ${{ steps.path-filter.outputs.src }}
       helm-changed: ${{ steps.path-filter.outputs.helm }}
     steps:
@@ -48,16 +48,14 @@ jobs:
         with:
           base: ${{ github.ref }}
           filters: |
-            shared-infrastructure: 'env/terraform/shared/**'
-            stage-infrastructure: 'env/terraform/individual/**'
+            individual-infrastructure: 'env/terraform/individual/**'
             src: 'src/**'
             helm: 'env/helm/**'
 
   infrastructure:
     if: |
       needs.setup.outputs.is-deployment-neededed == 'true' && (
-        needs.setup.outputs.shared-infrastructure-changed == 'true' ||
-        needs.setup.outputs.stage-infrastructure-changed == 'true' ||
+        needs.setup.outputs.individual-infrastructure-changed == 'true' ||
         needs.setup.outputs.helm-changed == 'true' ||
         needs.setup.outputs.src-changed == 'true'
       )
@@ -69,32 +67,24 @@ jobs:
       terraform-stage-output: ${{ steps.terraform-stage.outputs.output }}
     steps:
       - uses: actions/checkout@v2
-      - name: Shared Infrastrucure
-        uses: ./.github/workflows/terraform/shared
-        id: terraform-shared
+
+      - name: Terraform Infrastructure
+        uses: wemogy/terraform-action@1.4.0
+        id: terraform
         with:
-          apply:  ${{ needs.setup.outputs.shared-infrastructure-changed == 'true' }}
-          client-id: ${{ secrets.ISI_AZURE_APP_ID }}
-          client-secret: ${{ secrets.ISI_AZURE_PASSWORD }}
-          tenant-id: ${{ secrets.ISI_AZURE_TENANT_ID }}
-          backend-access-key: ${{ secrets.ISI_TERRAFORM_BACKEND_ACCESS_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Stage Infrastrucure
-        uses: ./.github/workflows/terraform/individual
-        id: terraform-stage
-        with:
-          apply: ${{ needs.setup.outputs.stage-infrastructure-changed == 'true' || needs.setup.outputs.is-custom-environment == 'true' }}
-          client-id: ${{ secrets.ISI_AZURE_APP_ID }}
-          client-secret: ${{ secrets.ISI_AZURE_PASSWORD }}
-          tenant-id: ${{ secrets.ISI_AZURE_TENANT_ID }}
-          backend-access-key: ${{ secrets.ISI_TERRAFORM_BACKEND_ACCESS_KEY }}
-          environment: ${{ needs.setup.outputs.env }}
-          aks-name: ${{ fromJSON(steps.terraform-shared.outputs.output).azure_kubernetes_cluster_name.value }}
-          aks-resource-group: ${{ fromJSON(steps.terraform-shared.outputs.output).azure_resource_group_name.value }}
-          smtp-password: ${{ secrets.ISI_SMTP_PASSWORD }}
-          jwt-private-key: ${{ secrets.ISI_JWT_PRIVATE_KEY_RSA_XML }}
-          jwt-public-key: ${{ secrets.ISI_JWT_PUBLIC_KEY_RSA_XML }}
-          wemogy-realtime-api-key: ${{ secrets.ISI_WEMOGY_REALTIME_API_KEY }}
+          apply: ${{ needs.setup.outputs.individual-infrastructure-changed == 'true' || needs.setup.outputs.is-custom-environment == 'true' }}
+          working-directory: env/terraform/individual
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-storage-account-name: <%= name %>tfstate
+          backend-container-name: tfstate
+          backend-key: ${{ needs.setup.outputs.env }}.tfstate
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+        env:
+          TF_VAR_environment: ${{ needs.setup.outputs.env }}
+          TF_VAR_azure_aks_name: ${{ secrets.AKS_NAME }}
+          TF_VAR_azure_aks_resource_group: ${{ secrets.AKS_RESOURCE_GROUP }}
 
   containers:
     if: |
@@ -105,23 +95,17 @@ jobs:
     name: Containers
     needs: [setup, infrastructure]
     runs-on: ubuntu-latest
-    env:
-      CONTAINER_REGISTRY_SERVER: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_container_registry_login_server.value }}
     steps:
       - uses: actions/checkout@v2
-      - name: Login to Azure Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY_SERVER }}
-          username: ${{ secrets.ISI_AZURE_APP_ID }}
-          password: ${{ secrets.ISI_AZURE_PASSWORD }}
+
       - name: Build and Push Container images
-        uses: ./.github/workflows/containers
+        uses: ./.github/actions/containers
         with:
-          container-registry-server: ${{ env.CONTAINER_REGISTRY_SERVER }}
-          wemogy-packages-token: ${{ secrets.ISI_WEMOGY_PACKAGES_TOKEN }}
-          old-azure-devops-nuget-token: ${{ secrets.ISI_NUGET_TOKEN }}
-          version: ${{ needs.setup.outputs.version }}
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          container-registry-username: ${{ secrets.AZURE_APP_ID }}
+          container-registry-password: ${{ secrets.AZURE_PASSWORD }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ env.VERSION }}
           push: true
 
   kubernetes:
@@ -133,33 +117,31 @@ jobs:
       )
     needs: [setup, infrastructure, containers]
     runs-on: ubuntu-latest
-    env:
-      AKS_NAME: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_kubernetes_cluster_name.value }}
-      AKS_RESOURCE_GROUP: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_resource_group_name.value }}
-      CONTAINER_REGISTRY_SERVER: ${{ fromJSON(needs.infrastructure.outputs.terraform-shared-output).azure_container_registry_login_server.value }}
     steps:
       - uses: actions/checkout@v2
-      - name: Deploy Helm Charts
-        uses: ./.github/workflows/helm/deploy
+
+      - name: Deploy Helm Chart
+        uses: ./.github/actions/helm-deploy
         with:
-          client-id: ${{ secrets.ISI_AZURE_APP_ID }}
-          client-secret: ${{ secrets.ISI_AZURE_PASSWORD }}
-          tenant-id: ${{ secrets.ISI_AZURE_TENANT_ID }}
-          name: digittool-${{ needs.setup.outputs.slug }}
-          version: ${{ needs.setup.outputs.version }}
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          name: <%= name %>-${{ needs.setup.outputs.slug }}
+          version: ${{ env.VERSION }}
           domain-prefix: ${{ needs.setup.outputs.domain-pefix }}
           terraform-output: ${{ needs.infrastructure.outputs.terraform-stage-output }}
-          namespace: digittool-${{ needs.setup.outputs.slug }}
-          aks-name: ${{ env.AKS_NAME }}
-          aks-resource-group: ${{ env.AKS_RESOURCE_GROUP }}
-          container-registry-server: ${{ env.CONTAINER_REGISTRY_SERVER }}
-          wemogy-pull-secret-username: ${{ secrets.ISI_WEMOGY_PULL_SECRET_USERNAME }}
-          wemogy-pull-secret-password: ${{ secrets.ISI_WEMOGY_PULL_SECRET_PASSWORD }}
+          namespace: <%= name %>-${{ needs.setup.outputs.slug }}
+          aks-name: ${{ secrets.AKS_NAME }}
+          aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          wemogy-pull-secret-username: ${{ secrets.WEMOGY_PULL_SECRET_USERNAME }}
+          wemogy-pull-secret-password: ${{ secrets.WEMOGY_PULL_SECRET_PASSWORD }}
+
       - name: Post comment to Pull Request
         if: needs.setup.outputs.is-pull-request == 'true'
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: "Your Pull Request Deployment is ready for review at https://app.${{ needs.setup.outputs.domain-pefix }}.digittool.de"
+          msg: "Your Pull Request Deployment is ready for review at https://app.${{ needs.setup.outputs.domain-pefix }}.<%= name %>.de"
           check_for_duplicate_msg: true
