@@ -14,12 +14,8 @@ class YeomanSelectorGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'name',
-        message: 'Generator Name'
-      },
-      {
-        type: 'input',
-        name: 'className',
-        message: 'Class Name'
+        message: 'Generator Name',
+        default: 'my-generator'
       }
     ]);
   }
@@ -29,7 +25,7 @@ class YeomanSelectorGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(`${this.templatePath()}`, `${this.destinationPath()}/${this.answers.name}`, this.answers);
+    this.copyTemplateToDestination('src');
   }
 
   // Where installation are run (npm, bower)
