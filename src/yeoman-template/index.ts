@@ -1,3 +1,4 @@
+import _ = require('lodash');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class YeomanTemplateGenerator extends BaseTemplateGenerator {
@@ -24,7 +25,7 @@ class YeomanTemplateGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(`src/${this.answers.name}`);
+    this.copyTemplateToDestination(_.kebabCase(this.answers.name));
   }
 
   // Where installation are run (npm, bower)
