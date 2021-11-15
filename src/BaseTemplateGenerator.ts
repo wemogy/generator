@@ -64,7 +64,7 @@ class BaseTemplateGenerator extends Generator {
     this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
   }
 
-  protected copyTemplateToDestination(destinationSubPath?: string, params?: object, sourceSubPath = '.'): void {
+  protected copyTemplateToDestination(params?: object, sourceSubPath = '.', destinationSubPath = '.'): void {
     if (!destinationSubPath) {
       destinationSubPath = '.';
     }

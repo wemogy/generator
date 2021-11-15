@@ -33,12 +33,6 @@ class DaprSecretStore extends BaseTemplateGenerator {
         name: 'localStorePath',
         message: 'Path to local Secrets file (relative to where you call dapr run from)',
         default: 'env/dapr/secrets/secrets.json'
-      },
-      {
-        type: 'input',
-        name: 'path',
-        message: 'Path',
-        default: '.'
       }
     ]);
   }
@@ -47,13 +41,13 @@ class DaprSecretStore extends BaseTemplateGenerator {
   public writing(): void {
     switch (this.answers.environment) {
       case 'Local':
-        this.copyTemplateToDestination(this.answers.path, this.answers, 'local');
+        this.copyTemplateToDestination(this.answers, 'local');
         this.log.info(
           `Don't forget to move the secrets.json file to ${this.answers.localStorePath} and update it with your credentials!`
         );
         break;
       case 'Kubernetes':
-        this.copyTemplateToDestination(this.answers.path, this.answers, 'kubernetes');
+        this.copyTemplateToDestination(this.answers, 'kubernetes');
         break;
       default:
         this.log.error('Unknown Environment');

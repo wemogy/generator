@@ -31,7 +31,7 @@ class WemogyCliCommand extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     const namespace = this.pascalCase(this.answers.path.replace('/', ' '));
-    this.copyTemplateToDestination(this.answers.path, { namespace });
+    this.copyTemplateToDestination({ namespace }, this.answers.path);
   }
 
   // Where installation are run (npm, bower)
