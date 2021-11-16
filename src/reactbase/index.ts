@@ -6,7 +6,7 @@ class Reactbase extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
 
-    this.generators = [new GeneratorSelection('Create component', 'wemogy:reactbase-component')];
+    this.generators = [new GeneratorSelection('Component', 'wemogy:reactbase-component')];
   }
 }
 
