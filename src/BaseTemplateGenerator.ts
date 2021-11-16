@@ -51,7 +51,9 @@ class BaseTemplateGenerator extends Generator {
   public configuring(): void {}
 
   //  Where you write the generator specific files (routes, controllers, etc)
-  public writing(): void {}
+  public writing(): void {
+    this.copyTemplateToDestination();
+  }
 
   // Where installation are run (npm, bower)
   public install(): void {}
