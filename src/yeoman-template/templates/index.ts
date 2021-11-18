@@ -14,19 +14,13 @@ class <%= name.pascalCase %> extends BaseTemplateGenerator {
         name: 'name',
         message: 'Project name',
         default: this.appname
-      },
-      {
-        type: 'input',
-        name: 'path',
-        message: 'Path',
-        default: '.'
-      },
+      }
     ]);
   }
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.answers.path);
+    this.copyTemplateToDestination();
   }
 }
 

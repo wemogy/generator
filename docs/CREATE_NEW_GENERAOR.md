@@ -29,7 +29,7 @@ The `copyTemplateToDestination` function is used to copy all files from the `/te
 
 ```typescript
 public writing(): void {
-  this.copyTemplateToDestination(this.answers.path, this.answers);
+  this.copyTemplateToDestination(this.answers.path);
 }
 ```
 

@@ -1,6 +1,7 @@
 import _ = require('lodash');
 import * as Generator from 'yeoman-generator';
 import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
+import { replaceAll } from './StringHelpers';
 
 class TemplateArgument {
   public get pascalCase(): string {
@@ -27,6 +28,7 @@ class TemplateArgument {
 }
 
 function toTemplateArguments(obj: object): object {
+  obj = _.cloneDeep(obj);
   for (const propertyName in obj) {
     obj[propertyName] = new TemplateArgument(obj[propertyName]);
   }
@@ -66,11 +68,7 @@ class BaseTemplateGenerator extends Generator {
     this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
   }
 
-  protected copyTemplateToDestination(destinationSubPath?: string, params?: object, sourceSubPath = '.'): void {
-    if (!destinationSubPath) {
-      destinationSubPath = '.';
-    }
-
+  protected copyTemplateToDestination(destinationSubPath = '.', params?: object, sourceSubPath = '.'): void {
     if (!params) {
       params = {};
     }
@@ -93,13 +91,12 @@ class BaseTemplateGenerator extends Generator {
         },
         processDestinationPath: (filePath: string): string => {
           for (let argName of argNames) {
-            filePath = filePath.replace('${' + argName + '}', args[argName]);
-            filePath = filePath.replace('${' + argName + '.camelCase}', args[argName].camelCase);
-            filePath = filePath.replace('${' + argName + '.pascalCase}', args[argName].pascalCase);
-            filePath = filePath.replace('${' + argName + '.snakeCase}', args[argName].snakeCase);
-            filePath = filePath.replace('${' + argName + '.kebabCase}', args[argName].kebabCase);
+            filePath = replaceAll(filePath, '${' + argName + '}', args[argName]);
+            filePath = replaceAll(filePath, '${' + argName + '.camelCase}', args[argName].camelCase);
+            filePath = replaceAll(filePath, '${' + argName + '.pascalCase}', args[argName].pascalCase);
+            filePath = replaceAll(filePath, '${' + argName + '.snakeCase}', args[argName].snakeCase);
+            filePath = replaceAll(filePath, '${' + argName + '.kebabCase}', args[argName].kebabCase);
           }
-
           return filePath;
         }
       }

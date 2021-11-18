@@ -1,5 +1,5 @@
 import { glob } from 'glob';
-import path = require('path/posix');
+import path = require('path');
 import * as _ from 'lodash';
 
 export const NO_SOLUTION_SELECTED = 'None';
