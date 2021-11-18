@@ -29,6 +29,24 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
       },
       {
         type: 'confirm',
+        name: 'dapr',
+        message: 'Use Dapr?',
+        default: true
+      },
+      {
+        type: 'confirm',
+        name: 'wemogyIdentity',
+        message: 'Use wemogy Identity?',
+        default: true
+      },
+      {
+        type: 'confirm',
+        name: 'authorization',
+        message: 'Use Authorization?',
+        default: true
+      },
+      {
+        type: 'confirm',
         name: 'unitTests',
         message: 'Add Unit Tests',
         default: true
