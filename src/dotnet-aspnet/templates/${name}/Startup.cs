@@ -50,7 +50,7 @@ namespace <%= name %>
             // Add Swagger
             var xmlDocsFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
             services.AddSwagger("1.0", "<%= name %> API", "1.0", "This is the <%= name %> API.", xmlDocsFilePath);
-<% } %>        
+<% } %>
             // Add Logging
             services.AddApplicationInsightsTelemetry(Configuration["AzureApplicationInsightsInstrumentationKey"]);
             services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameTelemetryInitializer(Configuration["AzureApplicationInsightsCloudRole"]));
@@ -78,7 +78,7 @@ namespace <%= name %>
             }
 
             app.UseCors("CorsPolicy");
-<% if (wemogyIdentity) { %>            
+<% if (wemogyIdentity) { %>
             app.UseAuthentication();
 <% } %>
             // Use Swagger
