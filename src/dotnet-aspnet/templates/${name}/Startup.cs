@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+<% if (wemogyIdentity) { %>using Wemogy.Identity.AspNetCore;<% } %>
 
 namespace <%= name %>
 {
@@ -27,10 +28,44 @@ namespace <%= name %>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen(c =>
+<% if (wemogyIdentity) { %>
+            // Add Wemogy Authentication
+            services.AddWemogyIdentity(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Wemogy.Subscriptions.Api", Version = "v1" });
+                options.OAuthJwtAuthority = Configuration["OAuthJwtAuthority"];
+                options.OAuthJwtAudience = Configuration["OAuthJwtAudience"];
             });
+<% } %>
+<% if (authorization) { %>
+            // Add Swagger
+            var xmlDocsFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+            services.AddSwagger("1.0", "<%= name %> API", "1.0", "This is the <%= name %> API.", xmlDocsFilePath, "Bearer", new OpenApiSecurityScheme
+            {
+                Description = Strings.ApiAuthenticationDescription,
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey
+            });
+<% } else { %>
+            // Add Swagger
+            var xmlDocsFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+            services.AddSwagger("1.0", "<%= name %> API", "1.0", "This is the <%= name %> API.", xmlDocsFilePath);
+<% } %>
+            // Add Logging
+            services.AddApplicationInsightsTelemetry(Configuration["AzureApplicationInsightsInstrumentationKey"]);
+            services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameTelemetryInitializer(Configuration["AzureApplicationInsightsCloudRole"]));
+
+            // CORS
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+
+            // Enforce lowercase routes
+            services.AddRouting(options => options.LowercaseUrls = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,11 +74,21 @@ namespace <%= name %>
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Wemogy.Subscriptions.Api v1"));
+                TelemetryDebugWriter.IsTracingDisabled = true;
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors("CorsPolicy");
+<% if (wemogyIdentity) { %>
+            app.UseAuthentication();
+<% } %>
+            // Use Swagger
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.DocumentTitle = "<%= name %> API";
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseRouting();
 
