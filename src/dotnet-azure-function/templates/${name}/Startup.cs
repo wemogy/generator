@@ -19,7 +19,7 @@ namespace <%= name %>
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddDefaultJsonFiles()
                 .AddEnvironmentVariables()
-                .Build();            
+                .Build();
         }
     }
 }

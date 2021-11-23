@@ -22,7 +22,7 @@ namespace <%= name %>
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "greet/{name}")] HttpRequest req, string name,
             ILogger log)
-        {        
+        {
             return new OkObjectResult($"Hello {name}");
         }
     }
