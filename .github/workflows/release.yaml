@@ -39,5 +39,6 @@ jobs:
         with:
           tag_name: ${{ steps.release-version.outputs.next-version }}
           name: Version ${{ steps.release-version.outputs.next-version }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
