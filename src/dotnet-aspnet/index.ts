@@ -19,13 +19,31 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.options.defaultName || 'Project'
+        default: this.pascalCase(this.options.defaultName) || 'MyProject'
       },
       {
         type: 'input',
         name: 'parentPath',
         message: 'Project parent folder path (from repository root)',
         default: 'src'
+      },
+      {
+        type: 'confirm',
+        name: 'dapr',
+        message: 'Use Dapr?',
+        default: true
+      },
+      {
+        type: 'confirm',
+        name: 'wemogyIdentity',
+        message: 'Use wemogy Identity?',
+        default: true
+      },
+      {
+        type: 'confirm',
+        name: 'authorization',
+        message: 'Use Authorization?',
+        default: true
       },
       {
         type: 'confirm',
@@ -47,12 +65,7 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(
-      this.templatePath('Project.csproj'),
-      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
-    );
-    this.fs.copyTpl(this.templatePath('Dockerfile'), this.destinationPath('Dockerfile'), this.answers);
-    this.fs.copyTpl(this.templatePath('content'), this.destinationPath(this.answers.name), this.answers);
+    this.copyTemplateToDestination();
 
     // Unit Tests
     if (this.answers.unitTests) {

@@ -12,7 +12,7 @@
     "build": "tsc && npm run copy-templates",
     "develop": "tsc-watch & npm run watch-templates --silent",
     "watch-templates": "onchange 'src/*/templates/**' --initial -- npm run copy-templates --silent",
-    "copy-templates": "copyfiles --all --up 1 'src/*/templates/**' generators"
+    "copy-templates": "rm -rf generators/*/templates/* && copyfiles --all --up 1 'src/*/templates/**' generators"
   },
   "dependencies": {
     "chalk": "^4.1.0",

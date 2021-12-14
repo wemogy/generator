@@ -1,48 +1,53 @@
 # Adding a new generator
 
-1. Create a new folder for the generator under the `src/` folder. The folder name will be the name of the generator. Example: `src/my-generator`.
-1. Create an `index.ts` file in the folder with the following empty structure
+
+## Creating new generators
+
+### Selector Generator
+
+1. Run `yo wemogy:yeoman`
+1. Select `Selector Generator`
+1. Enter the name of the selector generator in kebab case. (e.g. `wemogy-cli`)
+1. Now the selector generator is created, add it to the `generators` array in the `app/index.ts` file
 
     ```typescript
-    import * as Generator from 'yeoman-generator';
-
-    class MyGenerator extends Generator {
-
-      constructor(args: any, options: any) {
-        super(args, options);
-      }
-
-      // Your initialization methods (checking current project state, getting configs, etc
-      public initialize(): void {}
-
-      // Where you prompt users for options (where you’d call this.prompt())
-      public async prompting() {}
-
-      // Saving configurations and configure the project (creating .editorconfig files and other metadata files
-      public configuring(): void {}
-
-      //  Where you write the generator specific files (routes, controllers, etc)
-      public writing(): void {}
-
-      // Where installation are run (npm, bower)
-      public install(): void {}
-
-      // Called last, cleanup, say good bye, etc
-      public end(): void {}
-    }
-
-    export default MyGenerator;
+    new GeneratorSelection('.NET', 'wemogy:dotnet'),
     ```
 
-1. Create a `template/` directory in the same folder as your new generator and put all template files in there.
-1. In `app/index.ts`, add your generator to the `generators` array.
+### Template generator
 
-    ```typescript
-    private generators = [
-      // ...
-      {
-        name: 'My Generator',
-        generator: 'wemogy:my-generator'
-      }
-    ];
-    ```
+1. Run `yo wemogy:yeoman`
+1. Select the template generator type (e.g. `Template Generator (Generic)`)
+1. Enter the name of the template generator. The name **must** start with the name of the selector generator (by convention). (e.g. `wemogy-cli-command`)
+1. Add the created template generator to the belonging selection generator `generators` array: `new GeneratorSelection('Generator name', 'wemogy:wemogy-cli-command')`
+
+## Tools and Tricks
+
+### Copying`
+
+The `copyTemplateToDestination` function is used to copy all files from the `/templates` folder to the destination path and process the case functions in the file names.
+
+```typescript
+public writing(): void {
+  this.copyTemplateToDestination(this.answers.path);
+}
+```
+
+### Case
+
+#### File name
+
+Assuming a parameter `name: myTest` exists:
+
+- Template file name `hello${name}world` becomes `hellomyTestworld`
+- Template file name `hello${name.snakeCase}world` becomes `hellomy_testworld`
+- Template file name `hello${name.pascalCase}world` becomes `helloMyTestworld`
+
+#### In-Template Variables
+
+Assuming a parameter `name: myTest` exists:
+
+- Template variable `<%= name.pascalCase %>` becomes `MyTest`
+- Template variable `<%= name.camelCase %>` becomes `myTest`
+- Template variable `<%= name.snakeCase %>` becomes `my_test`
+- Template variable `<%= name.kebabCase %>` becomes `my-test`

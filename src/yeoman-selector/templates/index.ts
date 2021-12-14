@@ -1,21 +1,13 @@
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
+import GeneratorSelection from '../GeneratorSelection';
 
-class <%= className %> extends BaseSelectionGenerator {
+class <%= name.pascalCase %> extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
 
-    this.generators = [
-      {
-        name: 'Test Generator A',
-        generator: 'wemogy:test-a'
-      },
-      {
-        name: 'Test Generator B',
-        generator: 'wemogy:test-b'
-      }
-    ];
+    this.generators = this.generators = [new GeneratorSelection('Test A', 'wemogy:test-a')];
   }
 }
 
-export default resolveGeneratorInheritance(<%= className %>);
+export default resolveGeneratorInheritance(<%= name.pascalCase %>);

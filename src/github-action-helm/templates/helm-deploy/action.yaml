@@ -1,0 +1,91 @@
+name: "Deploy Helm"
+description: "Builds and deploys the Helm Charts"
+inputs:
+  client-id:
+    description: "The Azure Service Principal Client ID"
+    required: true
+  client-secret:
+    description: "The Azure Service Principal Client Secret"
+    required: true
+  tenant-id:
+    description: "The Azure Tenant ID"
+    required: true
+  name:
+    description: "The name of the Helm Release"
+    required: true
+  domain-prefix:
+    description: "The domain prefix"
+    required: true
+  version:
+    description: "The Helm Chart version"
+    required: true
+  namespace:
+    description: "The Kubernetes namespace to deploy into"
+    required: true
+  aks-name:
+    description: "Name of the shared AKS cluster"
+    required: true
+  aks-resource-group:
+    description: "Name of the shared AKS cluster's resource group"
+    required: true
+  container-registry-server:
+    description: "The container registry server"
+    required: true
+  terraform-output:
+    description: "The Terraform output from previous steps"
+    required: true
+  wemogy-pull-secret-username:
+    description: "The username for the wemogy Docker Registry"
+    required: true
+  wemogy-pull-secret-password:
+    description: "The password for the wemogy Docker Registry"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: AKS Login
+      uses: wemogy/aks-login-action@1.0.0
+      with:
+        name: ${{ inputs.aks-name }}
+        resource-group: ${{ inputs.aks-resource-group }}
+        client-id:  ${{ inputs.client-id }}
+        client-secret: ${{ inputs.client-secret }}
+        tenant-id: ${{ inputs.tenant-id }}
+
+    - name: Restore Helm chart dependnecies
+      shell: bash
+      run: helm dependency update <%= helmChartName %>
+      working-directory: <%= helmPath %>
+
+    - name: Package Helm chart
+      shell: bash
+      run: helm package <%= helmChartName %> --app-version ${{ inputs.version }} --version ${{ inputs.version }}
+      working-directory: <%= helmPath %>
+
+    - name: Install Helm Chart
+      shell: bash
+      working-directory: <%= helmPath %>
+      run: |
+        helm upgrade ${{ inputs.name }} <%= helmChartName %>-${{ inputs.version }}.tgz \
+          --install \
+          --namespace ${{ inputs.namespace }} \
+          --create-namespace \
+          --wait \
+          --set images.mainapi.repository=${{ inputs.container-registry-server }}/isi-digittool-mainapi \
+          --set images.mainapi.tag=${{ inputs.version }} \
+          --set images.apigateway.repository=${{ inputs.container-registry-server }}/isi-digittool-apigateway \
+          --set images.apigateway.tag=${{ inputs.version }} \
+          --set images.web.repository=${{ inputs.container-registry-server }}/isi-digittool-web \
+          --set images.web.tag=${{ inputs.version }} \
+          --set images.wemogy.pullSecret.username=${{ inputs.wemogy-pull-secret-username }} \
+          --set images.wemogy.pullSecret.password=${{ inputs.wemogy-pull-secret-password }} \
+          --set settings.cloudStorageUrl=${{ fromJSON(inputs.terraform-output).azure_blob_storage_url.value }} \
+          --set settings.azure.keyVault.name=${{ fromJSON(inputs.terraform-output).azure_keyvault_name.value }} \
+          --set settings.azure.keyVault.secretNames.cosmosDbConnectionString=${{ fromJSON(inputs.terraform-output).azure_keyvault_cosmos_db_connection_string_name.value }} \
+          --set settings.azure.keyVault.secretNames.redisCacheConnectionString=${{ fromJSON(inputs.terraform-output).azure_keyvault_redis_cache_connection_string_name.value }} \
+          --set settings.azure.keyVault.secretNames.serviceBusConnectionString=${{ fromJSON(inputs.terraform-output).azure_keyvault_service_bus_connection_string_name.value }} \
+          --set settings.azure.managedIdentity.resourceId=${{ fromJSON(inputs.terraform-output).aad_pod_identity_resource_id.value }} \
+          --set settings.azure.managedIdentity.clientId=${{ fromJSON(inputs.terraform-output).aad_pod_identity_client_id.value }} \
+          --set ingress.domain.prefix=${{ inputs.domain-prefix }} \
+          --set ingress.tls.letsencrypt.environment=prod

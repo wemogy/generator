@@ -16,6 +16,12 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Your project name',
         default: this.appname
+      },
+      {
+        type: 'confirm',
+        name: 'emptyFolders',
+        message: 'Generate empty folder structure?',
+        default: false
       }
     ]);
   }
@@ -42,6 +48,14 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
         }
       }
     );
+
+    if (this.answers.emptyFolders) {
+      this.fs.copy(this.templatePath('folders'), this.destinationPath(), {
+        globOptions: {
+          dot: true
+        }
+      });
+    }
   }
 
   // Where installation are run (npm, bower)

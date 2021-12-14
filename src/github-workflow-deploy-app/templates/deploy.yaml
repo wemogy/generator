@@ -1,0 +1,147 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - release
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+      - 'env/**'
+      - '!env/terraform/shared/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - labeled
+      - synchronize
+
+jobs:
+  setup:
+    name: Setup
+    # If this workflow gets executed by labeling a PR, the label must contain 'deploy' to execute this job
+    # As all other jobs depend on 'setup', we only need to ckech this once here
+    if: github.event.label.name == '' || contains(github.event.label.name, 'deploy')
+    runs-on: ubuntu-latest
+    outputs:
+      is-deployment-neededed: steps.get-environment.outputs.is-deployment-needed
+      is-pull-request: ${{ steps.get-environment.outputs.is-pull-request }}
+      is-custom-environment: ${{ steps.get-environment.outputs.is-custom-environment }}
+      env: ${{ steps.get-environment.outputs.env }}
+      domain-pefix: ${{ steps.get-environment.outputs.domain-prefix }}
+      slug: ${{ steps.get-environment.outputs.slug }}
+      version: 1.0.${{ github.run_id }}-${{ steps.get-environment.outputs.slug }}
+      individual-infrastructure-changed: ${{ steps.path-filter.outputs.individual-infrastructure }}
+      src-changed: ${{ steps.path-filter.outputs.src }}
+      helm-changed: ${{ steps.path-filter.outputs.helm }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Environment
+        id: get-environment
+        uses: wemogy/get-environment-action@v2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: dorny/paths-filter@v2
+        id: path-filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            individual-infrastructure: 'env/terraform/individual/**'
+            src: 'src/**'
+            helm: 'env/helm/**'
+
+  infrastructure:
+    if: |
+      needs.setup.outputs.is-deployment-neededed == 'true' && (
+        needs.setup.outputs.individual-infrastructure-changed == 'true' ||
+        needs.setup.outputs.helm-changed == 'true' ||
+        needs.setup.outputs.src-changed == 'true'
+      )
+    name: Infrastructure
+    runs-on: ubuntu-latest
+    needs: [setup]
+    outputs:
+      terraform-shared-output: ${{ steps.terraform-shared.outputs.output }}
+      terraform-stage-output: ${{ steps.terraform-stage.outputs.output }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Terraform Infrastructure
+        uses: wemogy/terraform-action@1.4.0
+        id: terraform
+        with:
+          apply: ${{ needs.setup.outputs.individual-infrastructure-changed == 'true' || needs.setup.outputs.is-custom-environment == 'true' }}
+          working-directory: env/terraform/individual
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          backend-storage-account-name: <%= name %>tfstate
+          backend-container-name: tfstate
+          backend-key: ${{ needs.setup.outputs.env }}.tfstate
+          backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
+        env:
+          TF_VAR_environment: ${{ needs.setup.outputs.env }}
+          TF_VAR_azure_aks_name: ${{ secrets.AKS_NAME }}
+          TF_VAR_azure_aks_resource_group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+  containers:
+    if: |
+      needs.setup.outputs.is-deployment-neededed == 'true' && (
+        needs.setup.outputs.src-changed == 'true' ||
+        needs.setup.outputs.helm-changed == 'true'
+      )
+    name: Containers
+    needs: [setup, infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and Push Container images
+        uses: ./.github/actions/containers
+        with:
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          container-registry-username: ${{ secrets.AZURE_APP_ID }}
+          container-registry-password: ${{ secrets.AZURE_PASSWORD }}
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ env.VERSION }}
+          push: true
+
+  kubernetes:
+    name: Kubernetes
+    if: |
+      needs.setup.outputs.is-deployment-neededed == 'true' && (
+        needs.setup.outputs.helm-changed == 'true' ||
+        needs.setup.outputs.src-changed == 'true'
+      )
+    needs: [setup, infrastructure, containers]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy Helm Chart
+        uses: ./.github/actions/helm-deploy
+        with:
+          client-id: ${{ secrets.AZURE_APP_ID }}
+          client-secret: ${{ secrets.AZURE_PASSWORD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          name: <%= name %>-${{ needs.setup.outputs.slug }}
+          version: ${{ env.VERSION }}
+          domain-prefix: ${{ needs.setup.outputs.domain-pefix }}
+          terraform-output: ${{ needs.infrastructure.outputs.terraform-stage-output }}
+          namespace: <%= name %>-${{ needs.setup.outputs.slug }}
+          aks-name: ${{ secrets.AKS_NAME }}
+          aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          container-registry-server: ${{ secrets.CONTAINER_REGISTRY_SERVER }}
+          wemogy-pull-secret-username: ${{ secrets.WEMOGY_PULL_SECRET_USERNAME }}
+          wemogy-pull-secret-password: ${{ secrets.WEMOGY_PULL_SECRET_PASSWORD }}
+
+      - name: Post comment to Pull Request
+        if: needs.setup.outputs.is-pull-request == 'true'
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: "Your Pull Request Deployment is ready for review at https://app.${{ needs.setup.outputs.domain-pefix }}.<%= name %>.de"
+          check_for_duplicate_msg: true
