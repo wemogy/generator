@@ -14,13 +14,13 @@ class TerraformKubernetesConfigGenerator extends BaseTemplateGenerator {
     this.answers = await this.prompt([
       {
         type: 'input',
-        name: 'id',
+        name: 'ingressLoadBalancerIp',
         message: 'Ingress: controller.service.loadBalancerIP',
         default: 'azurerm_public_ip.ingress_ip.ip_address'
       },
       {
         type: 'input',
-        name: 'name',
+        name: 'ingressLoadBalancerIpResourceGroup',
         message:
           'Ingress: controller.service.annotations.service\\.beta\\.kubernetes\\.io\\/azure-load-balancer-resource-group',
         default: 'azurerm_resource_group.default.name'
