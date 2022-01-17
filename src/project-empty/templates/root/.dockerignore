@@ -1,12 +1,15 @@
 # General
-Dockerfile
-.dockerignore
-.DS_Store
+**/.git
+**/.DS_Store
 *.md
 **/env
 **/docs
 **/demo
 **/.vscode
+
+# Docker
+**/Dockerfile
+**/.dockerignore
 
 # .NET Core
 **/bin
@@ -14,7 +17,7 @@ Dockerfile
 **/*.Development.json
 
 # Azure Functions
-local.settings.json
+**/local.settings.json
 
 # JavaScript
 **/node_modules
