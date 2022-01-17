@@ -82,7 +82,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           name: digittool-${{ env.SLUG }}
           version: ${{ env.VERSION }}
-          domain-prefix: env.SLUG
+          domain-prefix: ${{ github.event.pull_request.number }}.pr
           terraform-output: ${{ steps.terraform.outputs.output }}
           namespace: digittool-${{ env.SLUG }}
           aks-name: ${{ secrets.AKS_NAME }}
