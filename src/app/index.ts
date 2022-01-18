@@ -9,12 +9,15 @@ class AppGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
     this.generators = [
-      new GeneratorSelection('wemogy Empty project structure', 'wemogy:project-empty'),
-      new GeneratorSelection('wemogy Web Service (.NET)', 'wemogy:project-webservice-dotnet'),
-      new GeneratorSelection('wemogy Class Library (.NET)', 'wemogy:project-lib-dotnet'),
-      new GeneratorSelection('wemogy SDK (.NET)', 'wemogy:project-sdk-dotnet'),
-      new GeneratorSelection('wemogy SDK (JavaScript)', 'wemogy:project-sdk-javascript'),
-      new GeneratorSelection('wemogy Frontend (React)', 'wemogy:project-frontend-react'),
+      new GeneratorSelection('Project: Empty structure', 'wemogy:project-empty'),
+      new GeneratorSelection('Project: Customer project', 'wemogy:project-customer'),
+      new GeneratorSelection('Project: wemogy Module', 'wemogy:project-module'),
+      new SeparatorSelection(),
+      new GeneratorSelection('Subproject: Web Service (.NET)', 'wemogy:subproject-webservice-dotnet'),
+      new GeneratorSelection('Subproject: Class Library (.NET)', 'wemogy:subproject-lib-dotnet'),
+      new GeneratorSelection('Subproject: SDK (.NET)', 'wemogy:subproject-sdk-dotnet'),
+      new GeneratorSelection('Subproject: SDK (JavaScript)', 'wemogy:subproject-sdk-javascript'),
+      new GeneratorSelection('Subproject: Frontend (React)', 'wemogy:subproject-frontend-react'),
       new SeparatorSelection(),
       new GeneratorSelection('.NET', 'wemogy:dotnet'),
       new GeneratorSelection('TypeScript', 'wemogy:typescript'),

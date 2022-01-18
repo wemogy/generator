@@ -1,7 +1,7 @@
 import { toPascalCase } from '../DotnetHelpers';
 import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
-class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
+class DotnetSdkSubprojectGenerator extends BaseDotnetProjectTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -17,7 +17,7 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
         type: 'input',
         name: 'folder',
         message: 'Subfolder name',
-        default: 'core'
+        default: 'dotnet'
       }
     ]);
   }
@@ -30,8 +30,9 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
     this.composeSolutionIfNeeded();
 
     this.composeWith('wemogy:dotnet-classlib', {
-      destinationRoot: this.destinationRoot(`src/shared/${this.answers.folder.toLowerCase()}`),
-      defaultName: `Wemogy.${toPascalCase(this.appname)}.Shared.${toPascalCase(this.answers.folder)}`,
+      destinationRoot: this.destinationRoot(`src/sdk/${this.answers.folder.toLowerCase()}`),
+      defaultName: `Wemogy.${toPascalCase(this.appname)}.Sdk`,
+      nuget: true,
       unitTests: true,
       solution: this.getSolutionPath()
     });
@@ -46,4 +47,4 @@ class DotnetLibraryProjectGenerator extends BaseDotnetProjectTemplateGenerator {
   }
 }
 
-export default DotnetLibraryProjectGenerator;
+export default DotnetSdkSubprojectGenerator;

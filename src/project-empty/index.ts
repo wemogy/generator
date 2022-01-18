@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class CoreProjectGenerator extends BaseTemplateGenerator {
+class EmptyProjectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -67,4 +67,4 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
   }
 }
 
-export default CoreProjectGenerator;
+export default EmptyProjectGenerator;

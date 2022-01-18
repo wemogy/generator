@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
+class ReactFrontendSubprojectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -16,6 +16,12 @@ class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
         name: 'folder',
         message: 'Subfolder name',
         default: 'web'
+      },
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name',
+        default: `@wemogy/${this.appname.toLowerCase()}-web`
       }
     ]);
   }
@@ -27,7 +33,7 @@ class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
   public writing(): void {
     this.composeWith('wemogy:typescript-react', {
       destinationRoot: this.destinationRoot(`src/frontend/${this.answers.folder.toLowerCase()}`),
-      defaultName: `@wemogy/${this.appname.toLowerCase()}-${this.answers.folder.toLowerCase()}`
+      name: this.answers.name
     });
   }
 
@@ -40,4 +46,4 @@ class ReactFrontendProjectGenerator extends BaseTemplateGenerator {
   }
 }
 
-export default ReactFrontendProjectGenerator;
+export default ReactFrontendSubprojectGenerator;

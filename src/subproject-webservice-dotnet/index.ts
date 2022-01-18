@@ -1,6 +1,7 @@
-import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import { enforceSolutionFilePresence, toPascalCase } from '../DotnetHelpers';
+import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGenerator';
 
-class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
+class DotnetServiceSubprojectGenerator extends BaseDotnetProjectTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -11,11 +12,12 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
+      this.slnPrompt, // Ask for a solution name, if none was found
       {
         type: 'input',
         name: 'folder',
         message: 'Subfolder name',
-        default: 'javascript'
+        default: 'main'
       }
     ]);
   }
@@ -25,9 +27,14 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeWith('wemogy:typescript-empty', {
-      destinationRoot: this.destinationRoot(`src/sdk/${this.answers.folder.toLowerCase()}`),
-      defaultName: `@wemogy/${this.appname.toLowerCase()}-sdk`
+    this.composeSolutionIfNeeded();
+
+    this.composeWith('wemogy:dotnet-aspnet', {
+      destinationRoot: this.destinationRoot(`src/webservices/${this.answers.folder.toLowerCase()}`),
+      defaultName: `Wemogy.${toPascalCase(this.appname)}.WebServices.${toPascalCase(this.answers.folder)}`,
+      parentPath: `src/webservices/${this.answers.folder.toLowerCase()}`,
+      unitTests: true,
+      solution: this.getSolutionPath()
     });
   }
 
@@ -40,4 +47,4 @@ class DotnetSdkProjectGenerator extends BaseTemplateGenerator {
   }
 }
 
-export default DotnetSdkProjectGenerator;
+export default DotnetServiceSubprojectGenerator;
