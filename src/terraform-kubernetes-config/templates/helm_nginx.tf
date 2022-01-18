@@ -25,12 +25,12 @@ resource "helm_release" "nginx" {
 
   set {
     name  = "controller.service.loadBalancerIP"
-    value = azurerm_public_ip.ingress_ip.ip_address
+    value = <%= ingressLoadBalancerIp %>
   }
 
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io\\/azure-load-balancer-resource-group"
-    value = azurerm_resource_group.default.name
+    value = <%= ingressLoadBalancerIpResourceGroup %>
     type  = "string"
   }
 }
