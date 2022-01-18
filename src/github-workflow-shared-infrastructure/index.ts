@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class GitHubStyleWorkflowGenerator extends BaseTemplateGenerator {
+class GitHubSharedInfrastructureWorkflowGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -9,7 +9,16 @@ class GitHubStyleWorkflowGenerator extends BaseTemplateGenerator {
   public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {}
+  public async prompting() {
+    this.answers = await this.optionOrPrompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name (lowercase)',
+        default: this.appname
+      }
+    ]);
+  }
 
   // Saving configurations and configure the project (creating .editorconfig files and other metadata files
   public configuring(): void {}
@@ -26,4 +35,4 @@ class GitHubStyleWorkflowGenerator extends BaseTemplateGenerator {
   public end(): void {}
 }
 
-export default GitHubStyleWorkflowGenerator;
+export default GitHubSharedInfrastructureWorkflowGenerator;
