@@ -19,9 +19,15 @@ az account set --subscription $subscription
 echo "Creating an AAD group for Developers..."
 
 # Create new AD Group for Developers
-groupName = $(az ad group create \
+group=$(az ad group create \
   --display-name "$projectName Developers" \
-  --mail-nickname "$projectName-developers" --query name --output tsv)
+  --mail-nickname "$projectName-developers")
+groupName=$(echo $group | jq -r .name)
+
+az role assignment create \
+  --assignee $(echo $group | jq -r .objectId) \
+  --role "Contributor" \
+  --scope "/subscriptions/$subscription"
 
 # Add current user to the group
 az ad group member add \
