@@ -51,3 +51,7 @@ terraform.tfstate.d/
 
 # Secrets
 .cert
+
+# Yalc
+.yalc
+yalc.lock
