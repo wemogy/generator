@@ -7,7 +7,8 @@ class AzureGenerator extends BaseSelectionGenerator {
     super(args, options);
 
     this.generators = this.generators = [
-      new GeneratorSelection('Customer Project Scaffolding', 'wemogy:azure-project-customer')
+      new GeneratorSelection('Customer Project', 'wemogy:azure-project-customer'),
+      new GeneratorSelection('wemogy Module', 'wemogy:azure-project-module')
     ];
   }
 }
