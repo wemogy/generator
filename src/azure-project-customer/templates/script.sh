@@ -10,6 +10,13 @@ echo "Subscription ID: $subscription"
 echo "Location: $location"
 echo "Add GitHub Secrets: $addGitHubSecrets"
 
+# Make sure that the script is exected as it@wemogy.com admin account
+user=$(az account show --query user.name -o tsv)
+if [ "$user" != "it@wemogy.com" ]; then
+  echo "ERROR: This script must be executed as it@wemogy.com. Please login with that account by running 'az login' and try again."
+  exit 1
+fi
+
 az account set --subscription $subscription
 
 # ---------
@@ -22,11 +29,15 @@ echo "Creating an AAD group for Developers..."
 group=$(az ad group create \
   --display-name "$projectName Developers" \
   --mail-nickname "$projectName-developers")
-groupName=$(echo $group | jq -r .name)
+
+groupName=$(echo $group | jq -r .displayName)
+groupObjectId=$(echo $group | jq -r .objectId)
+
+sleep 10
 
 az role assignment create \
-  --assignee $(echo $group | jq -r .objectId) \
-  --role "Contributor" \
+  --assignee $groupObjectId \
+  --role "Reader" \
   --scope "/subscriptions/$subscription"
 
 # ------------------
@@ -35,11 +46,14 @@ az role assignment create \
 
 # Create Service Principal for local development
 echo "Creating Service Principal for Local Development..."
-localDevAppId=$(az ad sp create-for-rbac \
+
+localDevServicePrincipal=$(az ad sp create-for-rbac \
   --name "$projectName Local Development" \
-  --skip-assignment \
-  --query appId \
-  --output tsv)
+  --skip-assignment)
+
+localDevAppId=$(echo $localDevServicePrincipal | jq -r .appId)
+localDevTenantId=$(echo $localDevServicePrincipal | jq -r .tenant)
+localDevPassword=$(echo $localDevServicePrincipal | jq -r .password)
 
 # Add the service principal to the developers group
 az ad group member add \
@@ -49,7 +63,7 @@ az ad group member add \
 # Create Service for GitHub Actions
 echo "Creating Service Principal for GitHub Actions..."
 gitHubActions=$(az ad sp create-for-rbac \
-  --name "Customer-A Project-B GitHub Actions" \
+  --name "$projectName GitHub Actions" \
   --role contributor)
 
 if [ "$addGitHubSecrets" = true ]; then
@@ -78,6 +92,48 @@ az storage account create \
   --location $location \
   --kind StorageV2
 
+sleep 10
+
 az storage container create \
   --name tfstate \
   --account-name ${projectName}tfstate
+
+# ---------------------
+# Development Key Vault
+# ---------------------
+
+echo "Creating Development Key Vault..."
+
+# Create Development Resource Group
+az group create \
+  --name "general" \
+  --location $location
+
+# Create Azure Key Vault for Developer Secrets
+az keyvault create \
+  --name "${projectName}devvault" \
+  --resource-group "general" \
+  --location $location
+
+# Give Developers AAD Group read-access
+az keyvault set-policy \
+  --name "${projectName}devvault" \
+  --resource-group "general" \
+  --object-id $groupObjectId \
+  --secret-permissions get list
+
+# Add Local Development Service Principal Secrets
+az keyvault secret set \
+  --vault-name "${projectName}devvault" \
+  --name "LocalDevServicePrincipalAppId" \
+  --value "$localDevAppId"
+
+az keyvault secret set \
+  --vault-name "${projectName}devvault" \
+  --name "LocalDevServicePrincipalTenantId" \
+  --value "$localDevTenantId"
+
+az keyvault secret set \
+  --vault-name "${projectName}devvault" \
+  --name "LocalDevServicePrincipalPassword" \
+  --value "$localDevPassword"
