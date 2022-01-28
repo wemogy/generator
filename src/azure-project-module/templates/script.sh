@@ -1,11 +1,11 @@
-projectName=$1
+moduleName=$1
 subscription=$2
 location=$3
 addGitHubSecrets=$4
 
 echo 'This script expects that, you have the following tools available in your $PATH: az, jq, gh'
 
-echo "Project name: $projectName"
+echo "Module name: $moduleName"
 echo "Subscription ID: $subscription"
 echo "Location: $location"
 echo "Add GitHub Secrets: $addGitHubSecrets"
@@ -20,8 +20,8 @@ echo "Creating an AAD group for Developers..."
 
 # Create new AD Group for Developers
 group=$(az ad group create \
-  --display-name "$projectName Developers" \
-  --mail-nickname "$projectName-developers")
+  --display-name "wemogy $moduleName Developers" \
+  --mail-nickname "wemogy-$moduleName-developers")
 groupName=$(echo $group | jq -r .name)
 
 az role assignment create \
@@ -36,7 +36,7 @@ az role assignment create \
 # Create Service Principal for local development
 echo "Creating Service Principal for Local Development..."
 localDevAppId=$(az ad sp create-for-rbac \
-  --name "$projectName Local Development" \
+  --name "wemogy $moduleName Local Development" \
   --skip-assignment \
   --query appId \
   --output tsv)
@@ -63,21 +63,3 @@ else
   echo "gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)"
   echo "gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)"
 fi
-
-# ---------
-# Terraform
-# ---------
-
-echo "Creating Terraform Remote State resources..."
-
-az group create --name terraform --location $location
-
-az storage account create \
-  --name ${projectName}tfstate \
-  --resource-group terraform \
-  --location $location \
-  --kind StorageV2
-
-az storage container create \
-  --name tfstate \
-  --account-name ${projectName}tfstate
