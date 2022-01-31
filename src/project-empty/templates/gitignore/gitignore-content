@@ -51,6 +51,7 @@ terraform.tfstate.d/
 
 # Secrets
 .cert
+secrets.json
 
 # Yalc
 .yalc
