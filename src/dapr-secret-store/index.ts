@@ -35,6 +35,13 @@ class DaprSecretStore extends BaseTemplateGenerator {
         default: 'env/dapr/secrets/secrets.json'
       },
       {
+        when: (answers: any) => answers.environment === 'Local',
+        type: 'input',
+        name: 'secretScriptPath',
+        message: 'Where to store the script to generate secrets?',
+        default: 'env/scripts/secrets.sh'
+      },
+      {
         type: 'input',
         name: 'path',
         message: 'Path',
@@ -47,10 +54,9 @@ class DaprSecretStore extends BaseTemplateGenerator {
   public writing(): void {
     switch (this.answers.environment) {
       case 'Local':
-        this.copyTemplateToDestination(this.answers.path, undefined, 'local');
-        this.log.info(
-          `Don't forget to move the secrets.json file to ${this.answers.localStorePath} and update it with your credentials!`
-        );
+        this.copyTemplateToDestination(`${this.answers.path}/secretStore.yaml`, undefined, 'local/secretStore.yaml');
+        this.copyTemplateToDestination(this.answers.localStorePath, undefined, 'local/secrets.json');
+        this.copyTemplateToDestination(this.answers.secretScriptPath, undefined, 'local/secrets.sh');
         break;
       case 'Kubernetes':
         this.copyTemplateToDestination(this.answers.path, undefined, 'kubernetes');
