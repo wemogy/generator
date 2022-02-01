@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,9 +15,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Wemogy.AspNetCore.Monitoring;
+using Wemogy.AspNetCore.Swagger;
 <% if (wemogyIdentity) { %>using Wemogy.Identity.AspNetCore;<% } %>
 
-namespace <%= name %>
+namespace <%= name %>.Api
 {
     public class Startup
     {
@@ -41,7 +47,7 @@ namespace <%= name %>
             var xmlDocsFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
             services.AddSwagger("1.0", "<%= name %> API", "1.0", "This is the <%= name %> API.", xmlDocsFilePath, "Bearer", new OpenApiSecurityScheme
             {
-                Description = Strings.ApiAuthenticationDescription,
+                Description = "API Key",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey

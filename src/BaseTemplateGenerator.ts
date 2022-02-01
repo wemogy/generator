@@ -80,6 +80,8 @@ class BaseTemplateGenerator extends Generator {
 
     const argNames = Object.keys(args);
 
+    this.log(args);
+
     this.fs.copyTpl(
       this.templatePath(sourceSubPath),
       this.destinationPath(destinationSubPath),

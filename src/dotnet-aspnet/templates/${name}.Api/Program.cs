@@ -7,9 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Wemogy.Core.Configuration;
-<% if (dapr) { %>using Dapr.Client;<% } %>
+using System.IO;
+<% if (dapr) { %>using Dapr.Client;
+using Wemogy.Configuration;<% } %>
 
-namespace <%= name %>
+namespace <%= name %>.Api
 {
     public class Program
     {
@@ -22,19 +24,16 @@ namespace <%= name %>
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(config =>
                 {
-<% if (dapr) { %>
-                    var daprClient = new DaprClientBuilder().Build();
+<% if (dapr) { %>                    var daprClient = new DaprClientBuilder().Build();
                     config
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddDefaultJsonFiles()
                         .AddDaprSecretStore(daprClient, "secret-store")
                         .AddEnvironmentVariables();
-<% } else { %>
-                    config
+<% } else { %>                    config
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddDefaultJsonFiles()
-                        .AddEnvironmentVariables();
-<% } %>
+                        .AddEnvironmentVariables();<% } %>
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
