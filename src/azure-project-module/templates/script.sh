@@ -19,6 +19,17 @@ fi
 
 az account set --subscription $subscription
 
+# --------------
+# Resource Group
+# --------------
+
+echo "Creating Resource Group for Module..."
+
+# Create Resource Group for Module
+az group create \
+  --name "$moduleName" \
+  --location $location
+
 # ---------
 # AAD Group
 # ---------
@@ -38,7 +49,7 @@ sleep 10
 az role assignment create \
   --assignee $groupObjectId \
   --role "Contributor" \
-  --scope "/subscriptions/$subscription"
+  --scope "/subscriptions/$subscription/resourceGroups/$moduleName"
 
 # ------------------
 # Service Principals
@@ -57,14 +68,22 @@ localDevPassword=$(echo $localDevServicePrincipal | jq -r .password)
 
 # Add the service principal to the developers group
 az ad group member add \
-  --group $groupName \
+  --group "$groupName" \
   --member-id $(az ad sp show --id $localDevAppId --query objectId -o tsv)
 
 # Create Service for GitHub Actions
 echo "Creating Service Principal for GitHub Actions..."
+
 gitHubActions=$(az ad sp create-for-rbac \
   --name "wemogy $moduleName GitHub Actions" \
-  --role contributor)
+  --skip-assignment)
+
+gitHubActionsAppId=$(echo $gitHubActions | jq -r .appId)
+
+# Add the service principal to the developers group
+az ad group member add \
+  --group "$groupName" \
+  --member-id $(az ad sp show --id $gitHubActionsAppId --query objectId -o tsv)
 
 if [ "$addGitHubSecrets" = true ]; then
   echo "Adding Secrets to GitHub Repository..."
@@ -84,37 +103,32 @@ fi
 
 echo "Creating Development Key Vault..."
 
-# Create Development Resource Group
-az group create \
-  --name "general" \
-  --location $location
-
 # Create Azure Key Vault for Developer Secrets
 az keyvault create \
-  --name "wemogy${moduleName}devvault" \
-  --resource-group "general" \
+  --name "wemogy${moduleName}kv" \
+  --resource-group "$moduleName" \
   --location $location
 
 # Give Developers AAD Group read-access
 az keyvault set-policy \
-  --name "wemogy${moduleName}devvault" \
-  --resource-group "general" \
+  --name "wemogy${moduleName}kv" \
+  --resource-group "$moduleName" \
   --object-id $groupObjectId \
   --secret-permissions get list
 
 # Add Local Development Service Principal Secrets
 az keyvault secret set \
-  --vault-name "wemogy${moduleName}devvault" \
+  --vault-name "wemogy${moduleName}kv" \
   --name "LocalDevServicePrincipalAppId" \
   --value "$localDevAppId"
 
 az keyvault secret set \
-  --vault-name "wemogy${moduleName}devvault" \
+  --vault-name "wemogy${moduleName}kv" \
   --name "LocalDevServicePrincipalTenantId" \
   --value "$localDevTenantId"
 
 az keyvault secret set \
-  --vault-name "wemogy${moduleName}devvault" \
+  --vault-name "wemogy${moduleName}kv" \
   --name "LocalDevServicePrincipalPassword" \
   --value "$localDevPassword"
 

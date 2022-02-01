@@ -19,7 +19,8 @@ class AzureWemogyModuleProjectGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'subscription',
-        message: 'Subscription ID'
+        message: 'Subscription ID',
+        default: '2421b4f0-f1da-48e8-adc8-30166c4147af'
       },
       {
         type: 'input',
