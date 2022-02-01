@@ -7,12 +7,14 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
 ARG NUGET_TOKEN
 
 # Copy .csproj files for NuGet restore
-COPY <%= parentPath %>/*/*.csproj ./
+COPY <%= parentPath %>/<%= name %>.Api/<%= name %>.Api.csproj <%= parentPath %>/<%= name %>.Api/
+COPY <%= parentPath %>/<%= name %>.Core/<%= name %>.Core.csproj <%= parentPath %>/<%= name %>.Core/
+<% if(unitTests) { %>COPY <%= parentPath %>/<%= name %>.Core.UnitTests/<%= name %>.Core.UnitTests.csproj <%= parentPath %>/<%= name %>.Core.UnitTests/<% } %>
 
 # Restore NuGet packages
 RUN dotnet nuget add source https://nuget.pkg.github.com/wemogy/index.json --name wemogy --username wemogy --password $NUGET_TOKEN --store-password-in-clear-text
 RUN dotnet restore <%= parentPath %>/<%= name %>/<%= name %>.csproj
-<% if(unitTests) { %>RUN dotnet restore <%= parentPath %>/<%= name %>.Tests/<%= name %>.Tests.csproj<% } %>
+<% if(unitTests) { %>RUN dotnet restore <%= parentPath %>/<%= name %>.Core.UnitTests/<%= name %>.Core.UnitTests.csproj<% } %>
 
 # Copy the rest of the files over
 COPY . .
