@@ -30,7 +30,10 @@ class TemplateArgument {
 function toTemplateArguments(obj: object): object {
   obj = _.cloneDeep(obj);
   for (const propertyName in obj) {
-    obj[propertyName] = new TemplateArgument(obj[propertyName]);
+    // only replace string values
+    if (typeof obj[propertyName] === 'string') {
+      obj[propertyName] = new TemplateArgument(obj[propertyName]);
+    }
   }
   return obj;
 }
