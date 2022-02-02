@@ -31,6 +31,7 @@ yarn-error.log*
 
 # jetbrains
 .idea/
+*.user
 
 # helm
 *.tgz
