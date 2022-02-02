@@ -19,7 +19,7 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.pascalCase(this.options.defaultName) || 'MyProject'
+        default: this.options.defaultName || 'MyProject'
       },
       {
         type: 'input',
