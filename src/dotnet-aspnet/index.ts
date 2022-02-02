@@ -19,7 +19,7 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: this.pascalCase(this.options.defaultName) || 'MyProject'
+        default: this.options.defaultName || 'MyProject'
       },
       {
         type: 'input',
@@ -65,14 +65,16 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    this.log(this.answers);
     this.copyTemplateToDestination();
+    this.log(this.answers);
 
     // Unit Tests
     if (this.answers.unitTests) {
       this.composeWith('wemogy:dotnet-xunit', {
-        name: `${this.answers.name}.UnitTests`,
+        name: `${this.answers.name}.Core.UnitTests`,
         referenceProjectToTest: true,
-        projectToTest: `../${this.answers.name}/${this.answers.name}.csproj`,
+        projectToTest: `../${this.answers.name}.Core/${this.answers.name}.Core.csproj`,
         solution: this.answers.solution
       });
     }
@@ -82,7 +84,11 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
   public install(): void {
     addProjectToSln.bind(this)(
       this.answers.solution,
-      this.destinationPath(`${this.answers.name}/${this.answers.name}.csproj`)
+      this.destinationPath(`${this.answers.name}.Api/${this.answers.name}.Api.csproj`)
+    );
+    addProjectToSln.bind(this)(
+      this.answers.solution,
+      this.destinationPath(`${this.answers.name}.Core/${this.answers.name}.Core.csproj`)
     );
   }
 

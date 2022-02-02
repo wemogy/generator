@@ -1,6 +1,6 @@
 using System;
 
-namespace <%= name %>
+namespace <%= name %>.Api
 {
     public class WeatherForecast
     {
