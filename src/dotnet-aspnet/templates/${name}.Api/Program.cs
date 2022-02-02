@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Wemogy.Core.Configuration;
-using System.IO;
-<% if (dapr) { %>using Dapr.Client;
-using Wemogy.Configuration;<% } %>
+using Wemogy.Configuration;
+<% if (dapr) { %>using Dapr.Client;<% } %>
 
 namespace <%= name %>.Api
 {
