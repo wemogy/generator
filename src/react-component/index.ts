@@ -1,7 +1,7 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 
-class ReactbaseComponent extends BaseTemplateGenerator {
+class ReactComponent extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,26 +12,15 @@ class ReactbaseComponent extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'name',
-        message: 'Component Name',
-        default: 'MyComponent'
+        message: 'Component name'
       }
     ]);
   }
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.updateComponentThemeCollection();
-    this.copyTemplateToDestination();
-  }
-
-  private updateComponentThemeCollection(): void {
-    this.getComponentThemeCollectionFilePath();
-  }
-
-  private getComponentThemeCollectionFilePath(): string {
-    console.log(this.destinationPath('..'));
-    return '';
+    this.copyTemplateToDestination(this.answers.path);
   }
 }
 
-export default resolveGeneratorInheritance(ReactbaseComponent);
+export default resolveGeneratorInheritance(ReactComponent);

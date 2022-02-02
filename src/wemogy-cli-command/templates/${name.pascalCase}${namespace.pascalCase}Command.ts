@@ -1,5 +1,5 @@
-import CommandBase from '@base/CommandBase';
-import CommandParameters from '@base/types/CommandParameters';
+import CommandBase from '<%= relativePath %>../base/CommandBase';
+import CommandParameters from '<%= relativePath %>../base/types/CommandParameters';
 
 export default class <%= name.pascalCase %><%= namespace.pascalCase %>Command extends CommandBase {
   public description: string = '';

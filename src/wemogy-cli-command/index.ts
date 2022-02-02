@@ -14,13 +14,15 @@ class WemogyCliCommand extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'name',
-        message: 'Command name'
+        name: 'path',
+        message: 'Command path',
+        default: 'dotnet'
       },
       {
         type: 'input',
-        name: 'path',
-        message: 'Command path'
+        name: 'name',
+        message: 'Command name',
+        default: 'create'
       }
     ]);
   }
@@ -31,7 +33,12 @@ class WemogyCliCommand extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     const namespace = this.pascalCase(this.answers.path.replace('/', ' '));
-    this.copyTemplateToDestination(this.answers.path, { namespace });
+    const relativePath = this.answers.path
+      .split('/')
+      .map(() => '../')
+      .join('');
+
+    this.copyTemplateToDestination(`src/commands/${this.answers.path}`, { namespace, relativePath });
   }
 
   // Where installation are run (npm, bower)
