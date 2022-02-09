@@ -4,6 +4,11 @@ import BaseDotnetProjectTemplateGenerator from '../BaseDotnetProjectTemplateGene
 class DotnetServiceSubprojectGenerator extends BaseDotnetProjectTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
+
+    this.option('name', { type: Boolean });
+    this.option('dapr', { type: Boolean });
+    this.option('wemogyIdentity', { type: Boolean });
+    this.option('authorization', { type: Boolean });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -34,6 +39,9 @@ class DotnetServiceSubprojectGenerator extends BaseDotnetProjectTemplateGenerato
       defaultName: `Wemogy.${toPascalCase(this.appname)}.WebServices.${toPascalCase(this.answers.folder)}`,
       parentPath: `src/webservices/${this.answers.folder.toLowerCase()}`,
       unitTests: true,
+      dapr: this.options.dapr,
+      wemogyIdentity: this.options.wemogyIdentity,
+      authorization: this.options.authorization,
       solution: this.getSolutionPath()
     });
   }

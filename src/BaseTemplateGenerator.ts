@@ -66,6 +66,18 @@ class BaseTemplateGenerator extends Generator {
   // Called last, cleanup, say good bye, etc
   public end(): void {}
 
+  public composeWith(
+    generators: Array<Generator.CompositionOptions | string> | Generator.CompositionOptions | string,
+    options?: Generator.GeneratorOptions,
+    returnNewGenerator?: any
+  ): any {
+    // Remove properties from options that are 'undefined'
+    // We do this because yeoman-generator transforms boolean options from 'undefined' to 'false' but we
+    // want to keep the 'undefined' value so that the generator asks the user for the value
+    const cleanedOptions = _.omitBy(options, _.isUndefined);
+    return super.composeWith(generators, cleanedOptions, returnNewGenerator);
+  }
+
   protected eclint(): void {
     this.log('Applying EditorConfig rules by running eclint...');
     this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-<%= name %>
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-<%= name %>
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-<%= name %>
+      {{- if .Values.api.podLabels }}
+        {{- toYaml .Values.api.podLabels | nindent 8 }}
+      {{- end }}
+      annotations:
+        dapr.io/enabled: 'true'
+        dapr.io/app-id: '{{ .Release.Name }}-<%= name %>'
+        dapr.io/app-port: '80'
+    spec:
+      containers:
+      - name: <%= name %>
+        image: {{ .Values.images.wemogy.<%= name %>.repository }}:{{ tpl .Values.images.wemogy.<%= name %>.tag . }}
+        env:
+        - name: CONFIG_PATH
+          value: /etc/config/config.yaml
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config
+          readOnly: true
+        ports:
+        - name: http
+          containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      {{- if .Values.images.wemogy.pullSecret  }}
+      imagePullSecrets:
+      - name: {{ .Values.images.wemogy.pullSecret  }}
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          {{- if .Values.config.content  }}
+          name: {{ .Release.Name }}-<%= name %>-config
+          {{- end }}
+          {{- if .Values.config.configMap.name  }}
+          name: {{.Values.config.configMap.name  }}
+          {{- end }}

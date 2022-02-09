@@ -67,6 +67,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     const cleanName = _.replace(this.answers.name, ' ', '').toLowerCase();
 
     // Base structure
+    this.log('Generating base folder structure...');
     this.composeWith('wemogy:project-empty', {
       name: this.answers.name,
       emptyFolders: false
@@ -74,7 +75,9 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
     // Frontend
     if (this.answers.frontend) {
-      // React Base
+      this.log('Generating Frontend projects...');
+
+      // React
       if (this.answers.frontendSubprojects.indexOf('React') > -1) {
         this.composeWith('wemogy:subproject-frontend-react', {
           folder: 'web',
@@ -85,12 +88,22 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
     // Backend
     if (this.answers.backend) {
-      // React Base
+      this.log('Generating Backend projects...');
+
+      // ASP.NET API Service
       if (this.answers.backendSubprojects.indexOf('ASP.NET API Service') > -1) {
         this.composeWith('wemogy:subproject-webservice-dotnet', {
-          folder: 'api'
+          folder: 'main',
+          dapr: true,
+          wemogyIdentity: false,
+          authorization: false
         });
       }
+
+      // Helm Chart
+      this.composeWith('wemogy:subproject-helm-chart', {
+        name: cleanName
+      });
     }
   }
 

@@ -38,6 +38,7 @@ export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>)
       : this.argument(question.name, { type: String, required: false });
 
     // resolve the option from command
+    //console.log('this.options', this.options);
     const option = this.options[question.name];
     // if option is supplied
     if (option !== undefined) {

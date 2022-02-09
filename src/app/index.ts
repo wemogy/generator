@@ -26,6 +26,7 @@ class AppGenerator extends BaseSelectionGenerator {
       new GeneratorSelection('GitHub', 'wemogy:github'),
       new GeneratorSelection('Dapr', 'wemogy:dapr'),
       new GeneratorSelection('Azure', 'wemogy:azure'),
+      new GeneratorSelection('Helm', 'wemogy:helm'),
       new SeparatorSelection(),
       new GeneratorSelection('ReactBase', 'wemogy:reactbase'),
       new SeparatorSelection(),

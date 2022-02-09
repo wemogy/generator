@@ -65,11 +65,8 @@ class DotAspNetGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.log(this.answers);
     this.copyTemplateToDestination();
-    this.log(this.answers);
 
-    // Unit Tests
     if (this.answers.unitTests) {
       this.composeWith('wemogy:dotnet-xunit', {
         name: `${this.answers.name}.Core.UnitTests`,
