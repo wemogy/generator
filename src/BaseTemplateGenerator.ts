@@ -1,23 +1,34 @@
 import _ = require('lodash');
 import * as Generator from 'yeoman-generator';
 import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
-import { replaceAll } from './StringHelpers';
+import {
+  replaceAll,
+  toPascalCase,
+  toCamelCase,
+  toNoWhitespaceLowerCase,
+  toSnakeCase,
+  toKebabCase
+} from './StringHelpers';
 
 class TemplateArgument {
   public get pascalCase(): string {
-    return _.upperFirst(_.camelCase(this.toString()));
+    return toPascalCase(this.toString());
   }
 
   public get camelCase(): string {
-    return _.camelCase(this.toString());
+    return toCamelCase(this.toString());
+  }
+
+  public get lowerCase(): string {
+    return toNoWhitespaceLowerCase(this.toString());
   }
 
   public get snakeCase(): string {
-    return _.snakeCase(this.toString());
+    return toSnakeCase(this.toString());
   }
 
   public get kebabCase(): string {
-    return _.kebabCase(this.toString());
+    return toKebabCase(this.toString());
   }
 
   public constructor(private readonly arg: any) {}
@@ -44,6 +55,16 @@ class BaseTemplateGenerator extends Generator {
 
   constructor(args: any, options: any) {
     super(args, options);
+    this.option('skipSecretHints', {
+      type: Boolean,
+      default: false,
+      description: "Don't show hints about GitHub secrets that need to added."
+    });
+    this.option('skipEclint', {
+      type: Boolean,
+      default: false,
+      description: "Don't run Editor Config Linting after execution."
+    });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -79,8 +100,10 @@ class BaseTemplateGenerator extends Generator {
   }
 
   protected eclint(): void {
-    this.log('Applying EditorConfig rules by running eclint...');
-    this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
+    if (!this.options.skipEclint) {
+      this.log('Applying EditorConfig rules by running eclint...');
+      this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
+    }
   }
 
   protected copyTemplateToDestination(destinationSubPath = '.', params?: object, sourceSubPath = '.'): void {
@@ -94,8 +117,6 @@ class BaseTemplateGenerator extends Generator {
     };
 
     const argNames = Object.keys(args);
-
-    this.log(args);
 
     this.fs.copyTpl(
       this.templatePath(sourceSubPath),

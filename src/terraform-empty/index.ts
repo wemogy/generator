@@ -10,34 +10,29 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
-    this.answers = await this.prompt([
+    this.answers = await this.optionOrPrompt([
       {
-        type: 'confirm',
-        name: 'remoteBackend',
-        message: 'Are you using a remote backend?'
+        type: 'select',
+        name: 'folder',
+        message: 'Terraform Folder',
+        choices: ['terraform', 'terraform/shared', 'terraform/individual']
       },
       {
-        when: (answers: any) => answers.remoteBackend,
         type: 'input',
         name: 'remoteBackendStorageAccountName',
-        message: 'Remote backend Azure Storage Account Name'
+        message: 'Remote backend Azure Storage Account Name' // TODO: Ask for container as well
       },
       {
-        type: 'confirm',
-        name: 'azureSubscription',
-        message: 'Are you targeting a specific Azure Subscription?'
-      },
-      {
-        when: (answers: any) => answers.azureSubscription,
         type: 'input',
         name: 'azureSubscriptionId',
-        message: 'Azure Subscription ID'
+        message: 'Azure Subscription ID',
+        default: '00000000-0000-0000-0000-000000000000'
       },
       {
-        when: (answers: any) => answers.azureSubscription,
         type: 'input',
         name: 'azureTenantId',
-        message: 'Azure Tenant ID'
+        message: 'Azure Tenant ID',
+        default: '00000000-0000-0000-0000-000000000000'
       }
     ]);
   }
@@ -47,18 +42,14 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.templatePath(), this.destinationPath(), this.answers);
+    this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
   }
 
   // Where installation are run (npm, bower)
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {
-    this.log(
-      'Project structure has been created. Please checkout our docs for details: https://docs.wemogy.com/docs-internal/devops/terraform'
-    );
-  }
+  public end(): void {}
 }
 
 export default TerraformEmptyGenerator;

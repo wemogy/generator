@@ -1,3 +1,4 @@
+import chalk = require('chalk');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
@@ -32,7 +33,20 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    if (!this.options.skipSecretHints) {
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_APP_ID`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_PASSWORD`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_TENANT_ID`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AKS_NAME`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AKS_RESOURCE_GROUP`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_SERVER`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PULL_SECRET_USERNAME`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PULL_SECRET_PASSWORD`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: TERRAFORM_BACKEND_ACCESS_KEY`);
+    }
+  }
 }
 
 export default GitHubWorkflowPipelineGenerator;

@@ -51,24 +51,6 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
             name: 'containersActionPath',
             message: 'Path to Containers Action',
             default: './.github/workflows/containers'
-          },
-          {
-            type: 'input',
-            name: 'containerRegistryServer',
-            message: 'Container Registry Server',
-            default: '${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}'
-          },
-          {
-            type: 'input',
-            name: 'containerRegistryUsername',
-            message: 'Container Registry Username',
-            default: '${{ secrets.CONTAINER_REGISTRY_USERNAME }}'
-          },
-          {
-            type: 'input',
-            name: 'containerRegistryPassword',
-            message: 'Container Registry Password (please use a GitHub Secret)',
-            default: '${{ secrets.CONTAINER_REGISTRY_PASSWORD }}'
           }
         ]
       },
@@ -109,14 +91,15 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
   // Called last, cleanup, say good bye, etc
   public end(): void {
     if (this.answers.infrastructure) {
-      this.log(
-        `${chalk.yellow('Hint:')} Please don't forget to set the following GitHub Secrets for Terraform or check,` +
-          'if they are already part of the company-wide secrets:'
-      );
-      this.log('- AZURE_APP_ID');
-      this.log('- AZURE_PASSWORD');
-      this.log('- AZURE_TENANT_ID');
-      this.log('- TERRAFORM_BACKEND_ACCESS_KEY');
+      if (!this.options.skipSecretHints) {
+        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: HELM_REPO_TOKEN`);
+        this.log(
+          `${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_LOGIN_SERVER`
+        );
+        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_USERNAME`);
+        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_PASSWORD`);
+        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
+      }
     }
   }
 }

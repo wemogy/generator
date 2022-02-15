@@ -26,7 +26,7 @@ class CustomerProjectHelmGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination();
+    this.copyTemplateToDestination(this.destinationPath(`env/helm`));
   }
 }
 

@@ -18,11 +18,6 @@ class DotNetSolutionGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Solution name',
         default: `Wemogy.${toPascalCase(this.appname)}`
-      },
-      {
-        type: 'confirm',
-        name: 'styleCop',
-        message: 'Include StyleCop config?'
       }
     ]);
   }
@@ -32,11 +27,7 @@ class DotNetSolutionGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copy(this.templatePath('Solution.sln'), this.destinationPath(`${this.answers.name}.sln`));
-
-    if (this.answers.styleCop) {
-      this.composeWith('wemogy:dotnet-stylecop');
-    }
+    this.copyTemplateToDestination(this.destinationPath(`src`));
   }
 
   // Where installation are run (npm, bower)

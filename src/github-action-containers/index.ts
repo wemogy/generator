@@ -15,7 +15,7 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'dockerfilePath',
         message: 'Path to dockerfile',
-        default: 'src/services/my-service/Dockerfile'
+        default: 'src/webservices/my-service/Dockerfile'
       },
       {
         type: 'input',

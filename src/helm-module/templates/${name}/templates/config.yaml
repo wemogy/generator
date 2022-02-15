@@ -1,9 +1,0 @@
-{{- if .Values.config.content  }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-authorization-config
-data:
-  config.yaml: |
-{{- include "config-content" . | indent 4 }}
-{{- end}}

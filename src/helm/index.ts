@@ -2,15 +2,17 @@ import { resolveGeneratorInheritance } from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
 import GeneratorSelection from '../GeneratorSelection';
 
-class HelmGenerator extends BaseSelectionGenerator {
+class HelmSelectionGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
 
     this.generators = this.generators = [
-      new GeneratorSelection('Customer project Helm Chart', 'wemogy:helm-customer-project'),
-      new GeneratorSelection('wemogy Module Helm Chart', 'wemogy:helm-module')
+      new GeneratorSelection('Helm Chart for a customer project', 'wemogy:helm-customer-project')
+    ];
+    this.generators = this.generators = [
+      new GeneratorSelection('Helm Chart for a wemogy module', 'wemogy:helm-wemogy-module')
     ];
   }
 }
 
-export default resolveGeneratorInheritance(HelmGenerator);
+export default resolveGeneratorInheritance(HelmSelectionGenerator);
