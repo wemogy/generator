@@ -1,7 +1,3 @@
-
-# Set to false, if this chart gets deployed outside of wemogy cloud
-wemogyCloud: false
-
 # Set to false, if this chart gets deployed outside of wemogy cloud
 wemogyCloud: false
 

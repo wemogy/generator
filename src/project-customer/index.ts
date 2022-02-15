@@ -25,43 +25,36 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
         message: 'Project name',
         default: this.appname
       },
-      // Frontend
       {
-        type: 'confirm',
-        name: 'frontend',
-        message: 'Generate Frontend?',
-        default: true,
-        followUpQuestions: [
-          {
-            type: 'checkbox',
-            name: 'frontendSubprojects',
-            message: 'Which Frontend subprojects do you want to create?',
-            choices: ['React'],
-            default: ['React']
-          }
-        ]
+        type: 'checkbox',
+        name: 'components',
+        message: 'Which components do you want to create?',
+        choices: ['React Frontend', 'ASP.NET Backend Service']
       },
-      // Backend
       {
-        type: 'confirm',
-        name: 'backend',
-        message: 'Generate Backend?',
-        default: true,
-        followUpQuestions: [
-          {
-            type: 'select',
-            name: 'backendSubproject',
-            message: 'Which Backend subprojects do you want to create?',
-            choices: ['ASP.NET API Service'],
-            default: 'ASP.NET API Service'
-          },
-          {
-            type: 'input',
-            name: 'backendServiceName',
-            message: 'Name of the backend service',
-            default: 'main'
-          }
-        ]
+        when: answers => answers.components.includes('Backend Services'),
+        type: 'input',
+        name: 'backendServiceName',
+        message: 'Name of the backend service',
+        default: 'main'
+      },
+      {
+        type: 'input',
+        name: 'azureSubscriptionId',
+        message: 'Azure Subscription ID',
+        default: '00000000-0000-0000-0000-000000000000'
+      },
+      {
+        type: 'input',
+        name: 'azureTenantId',
+        message: 'Azure Tenant ID',
+        default: '00000000-0000-0000-0000-000000000000'
+      },
+      {
+        type: 'input',
+        name: 'azureDevKeyVaultName',
+        message: 'Developer Azure KeyVault Name',
+        default: `${toNoWhitespaceLowerCase(this.appname)}devvault`
       }
     ]);
   }
@@ -71,6 +64,9 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
+    const helmChartName = toNoWhitespaceLowerCase(this.answers.name);
+
     // Base structure
     this.log('Generating base folder structure...');
     this.composeWith('wemogy:project-empty', {
@@ -78,11 +74,10 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
       skipEclint: true
     });
 
-    // Frontend
-    if (this.answers.frontend) {
-      this.log('Generating Frontend projects...');
+    // React Frontend
+    if (this.answers.components.includes('React Frontend')) {
+      this.log('Generating React frontend projects...');
 
-      // React
       if (this.answers.frontendSubprojects.indexOf('React') > -1) {
         this.composeWith('wemogy:frontend-react', {
           name: `@wemogy/${toNoWhitespaceLowerCase(this.answers.name)}-web`,
@@ -92,46 +87,41 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
       }
     }
 
-    // Backend
-    if (this.answers.backend) {
-      this.log('Generating Backend projects...');
+    // ASP.NET Backend Service
+    if (this.answers.components.includes('ASP.NET Backend Service')) {
+      this.log('ASP.NET Backend Service...');
 
-      if (this.answers.backendSubproject === 'ASP.NET API Service') {
-        const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
+      // .NET Core Library
+      this.composeWith('wemogy:library-dotnet', {
+        folder: 'core',
+        name: `${slnName}.Shared.Core`,
+        nuget: false,
+        solutionName: slnName,
+        skipEclint: true
+      });
 
-        // .NET Core Library
-        this.composeWith('wemogy:library-dotnet', {
-          folder: 'core',
-          name: `${slnName}.Shared.Core`,
-          nuget: false,
-          solutionName: slnName,
-          skipEclint: true
-        });
+      // ASP.NET API Service
+      this.composeWith('wemogy:webservice-aspnet', {
+        folder: toNoWhitespaceLowerCase(this.answers.backendServiceName),
+        name: `${slnName}.Webservices.${toPascalCase(this.answers.backendServiceName)}`,
+        dapr: true,
+        wemogyIdentity: false,
+        authorization: false,
+        solutionName: slnName,
+        skipEclint: true
+      });
 
-        // ASP.NET API Service
-        this.composeWith('wemogy:webservice-aspnet', {
-          folder: toNoWhitespaceLowerCase(this.answers.backendServiceName),
-          name: `${slnName}.Webservices.${toPascalCase(this.answers.backendServiceName)}`,
-          dapr: true,
-          wemogyIdentity: false,
-          authorization: false,
-          solutionName: slnName,
-          skipEclint: true
-        });
-
-        // Dapr Secret Store
-        this.composeWith('wemogy:dapr-secret-store', {
-          name: 'secret-store',
-          keyVaultName: '', // TODO: Fill
-          helm: true,
-          helmChartFolder: toNoWhitespaceLowerCase(this.answers.name),
-          skipEclint: true
-        });
-      }
+      // Dapr Secret Store
+      this.composeWith('wemogy:dapr-secret-store', {
+        name: 'secret-store',
+        keyVaultName: this.answers.azureDevKeyVaultName,
+        helmChartFolder: toNoWhitespaceLowerCase(this.answers.name),
+        skipEclint: true
+      });
 
       // Helm Chart
       this.composeWith('wemogy:helm-customer-project', {
-        name: toNoWhitespaceLowerCase(this.answers.name),
+        name: helmChartName,
         service: toNoWhitespaceLowerCase(this.answers.backendServiceName),
         skipEclint: true
       });
@@ -153,18 +143,18 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     // Shared Terraform
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform/shared',
-      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`, // TODO: Adjust
-      azureSubscriptionId: '00000000-0000-0000-0000-000000000000', // TODO Ask
-      azureTenantId: '00000000-0000-0000-0000-000000000000',
+      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
+      azureSubscriptionId: this.answers.azureSubscriptionId,
+      azureTenantId: this.answers.azureTenantId,
       skipEclint: true
     });
 
     // Individual Terraform
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform/individual',
-      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`, // TODO: Adjust
-      azureSubscriptionId: '00000000-0000-0000-0000-000000000000', // TODO Ask
-      azureTenantId: '00000000-0000-0000-0000-000000000000',
+      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
+      azureSubscriptionId: this.answers.azureSubscriptionId,
+      azureTenantId: this.answers.azureTenantId,
       skipEclint: true
     });
 
