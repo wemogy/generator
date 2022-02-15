@@ -16,13 +16,19 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
         type: 'select',
         name: 'folder',
         message: 'Terraform Folder',
-        choices: ['terraform', 'terraform/shared', 'terraform/individual']
+        choices: ['terraform', 'shared', 'individual']
       },
       {
         type: 'input',
         name: 'remoteBackendStorageAccountName',
         message: 'Remote backend Azure Storage Account Name',
         default: `${toNoWhitespaceLowerCase(this.appname)}tfstate`
+      },
+      {
+        type: 'input',
+        name: 'remoteBackendStorageBlobContainerName',
+        message: 'Remote backend Blob Container Name',
+        default: 'tfstate'
       },
       {
         type: 'input',
@@ -44,7 +50,11 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
+    if (this.answers.folder === 'terraform') {
+      this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
+    } else {
+      this.copyTemplateToDestination(this.destinationPath(`env/terraform/${this.answers.folder}`));
+    }
   }
 
   // Where installation are run (npm, bower)

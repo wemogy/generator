@@ -32,10 +32,10 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
         choices: ['React Frontend', 'ASP.NET Backend Service']
       },
       {
-        when: answers => answers.components.includes('Backend Services'),
+        when: answers => answers.components.includes('ASP.NET Backend Service'),
         type: 'input',
         name: 'backendServiceName',
-        message: 'Name of the backend service',
+        message: 'Folder name of the ASP.NET Backend Service',
         default: 'main'
       },
       {
@@ -78,13 +78,11 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     if (this.answers.components.includes('React Frontend')) {
       this.log('Generating React frontend projects...');
 
-      if (this.answers.frontendSubprojects.indexOf('React') > -1) {
-        this.composeWith('wemogy:frontend-react', {
-          name: `@wemogy/${toNoWhitespaceLowerCase(this.answers.name)}-web`,
-          folder: 'web',
-          skipEclint: true
-        });
-      }
+      this.composeWith('wemogy:frontend-react', {
+        name: `@wemogy/${toNoWhitespaceLowerCase(this.answers.name)}-web`,
+        folder: 'web',
+        skipEclint: true
+      });
     }
 
     // ASP.NET Backend Service
@@ -126,6 +124,11 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
         skipEclint: true
       });
 
+      this.composeWith('wemogy:github-action-helm', {
+        helmChartName: helmChartName,
+        skipEclint: true
+      });
+
       // GitHub Actions
       this.composeWith('wemogy:github-action-containers', {
         dockerfilePath: `src/webservices/${toNoWhitespaceLowerCase(this.answers.backendServiceName)}/Dockerfile`,
@@ -142,8 +145,9 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
     // Shared Terraform
     this.composeWith('wemogy:terraform-empty', {
-      folder: 'terraform/shared',
+      folder: 'shared',
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
+      remoteBackendStorageBlobContainerName: 'tfstate',
       azureSubscriptionId: this.answers.azureSubscriptionId,
       azureTenantId: this.answers.azureTenantId,
       skipEclint: true
@@ -151,8 +155,9 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
     // Individual Terraform
     this.composeWith('wemogy:terraform-empty', {
-      folder: 'terraform/individual',
+      folder: 'individual',
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
+      remoteBackendStorageBlobContainerName: 'tfstate-dev',
       azureSubscriptionId: this.answers.azureSubscriptionId,
       azureTenantId: this.answers.azureTenantId,
       skipEclint: true

@@ -66,7 +66,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
-    console.log(slnName);
+    const helmChartName = toNoWhitespaceLowerCase(this.answers.name);
 
     // Base structure
     this.log('Generating base folder structure...');
@@ -152,7 +152,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
 
       // Helm Chart
       this.composeWith('wemogy:helm-wemogy-module', {
-        name: toNoWhitespaceLowerCase(this.answers.name),
+        name: helmChartName,
         service: toNoWhitespaceLowerCase(this.answers.backendServiceName),
         skipEclint: true
       });
@@ -164,6 +164,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform',
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
+      remoteBackendStorageBlobContainerName: 'tfstate',
       azureSubscriptionId: this.answers.azureSubscriptionId,
       azureTenantId: this.answers.azureTenantId,
       skipEclint: true
@@ -196,7 +197,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       containers: this.answers.components.includes('ASP.NET Backend Service'),
       containersActionPath: './.github/actions/containers',
       helm: this.answers.components.includes('ASP.NET Backend Service'),
-      helmChartName: toNoWhitespaceLowerCase(this.answers.name),
+      helmChartName: helmChartName,
       skipSecretHints: true,
       skipEclint: true
     });
