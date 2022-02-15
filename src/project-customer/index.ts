@@ -136,6 +136,10 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
         skipEclint: true
       });
 
+      this.composeWith('wemogy:github-action-helm', {
+        helmChartName: toNoWhitespaceLowerCase(this.answers.name)
+      });
+
       // GitHub Actions
       this.composeWith('wemogy:github-action-containers', {
         dockerfilePath: `src/webservices/${toNoWhitespaceLowerCase(this.answers.backendServiceName)}/Dockerfile`,
@@ -153,7 +157,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     // Shared Terraform
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform/shared',
-      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`, // TODO: Adjust
+      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
       azureSubscriptionId: '00000000-0000-0000-0000-000000000000',
       azureTenantId: '00000000-0000-0000-0000-000000000000',
       skipEclint: true
@@ -162,14 +166,14 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     // Individual Terraform
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform/individual',
-      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`, // TODO: Adjust
+      remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
       azureSubscriptionId: '00000000-0000-0000-0000-000000000000',
       azureTenantId: '00000000-0000-0000-0000-000000000000',
       skipEclint: true
     });
 
     // GitHub Workflows
-    this.log('Generating GitHub Actions...');
+    this.log('Generating GitHub Actions Workflows...');
 
     this.composeWith('wemogy:github-workflow-style', {
       name: toNoWhitespaceLowerCase(this.answers.name),
@@ -186,21 +190,18 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     });
 
     this.composeWith('wemogy:github-workflow-release-app', {
-      destinationRoot: this.destinationRoot('.'),
       name: toNoWhitespaceLowerCase(this.answers.name),
       skipSecretHints: true,
       skipEclint: true
     });
 
     this.composeWith('wemogy:github-workflow-deploy-pr', {
-      destinationRoot: this.destinationRoot('.'),
       name: toNoWhitespaceLowerCase(this.answers.name),
       skipSecretHints: true,
       skipEclint: true
     });
 
     this.composeWith('wemogy:github-workflow-shared-infrastructure', {
-      destinationRoot: this.destinationRoot('.'),
       name: toNoWhitespaceLowerCase(this.answers.name),
       skipSecretHints: true,
       skipEclint: true

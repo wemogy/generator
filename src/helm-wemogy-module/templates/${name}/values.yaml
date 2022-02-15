@@ -2,9 +2,6 @@
 # Set to false, if this chart gets deployed outside of wemogy cloud
 wemogyCloud: false
 
-# Set to false, if this chart gets deployed outside of wemogy cloud
-wemogyCloud: false
-
 # You can either provide the config file in plain text or reference an existing ConfigMap
 config:
   # Config content in plain text

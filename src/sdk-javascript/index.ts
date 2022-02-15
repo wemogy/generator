@@ -16,6 +16,11 @@ class SdkJavascriptGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Project name',
         default: `@wemogy/${this.appname}-sdk`
+      },
+      {
+        type: 'input',
+        name: 'repoUrl',
+        message: 'NPM: GitHub Repository Url'
       }
     ]);
   }
