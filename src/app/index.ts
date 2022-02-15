@@ -11,7 +11,7 @@ class AppGenerator extends BaseSelectionGenerator {
     this.generators = [
       new GeneratorSelection('Project: Empty structure', 'wemogy:project-empty'),
       new GeneratorSelection('Project: Customer project', 'wemogy:project-customer'),
-      //new GeneratorSelection('Project: wemogy Module', 'wemogy:project-module'),
+      new GeneratorSelection('Project: wemogy Module', 'wemogy:project-module'),
       new SeparatorSelection(),
       new GeneratorSelection('Frontend (React)', 'wemogy:frontend-react'),
       new GeneratorSelection('Library (.NET)', 'wemogy:library-dotnet'),

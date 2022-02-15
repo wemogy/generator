@@ -14,13 +14,19 @@ class WemogyModuleHelmGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Chart name (without "wemogy")',
         default: this.appname
+      },
+      {
+        type: 'input',
+        name: 'service',
+        message: 'Service name (more can be added manually)',
+        default: 'main'
       }
     ]);
   }
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination();
+    this.copyTemplateToDestination(this.destinationPath(`env/helm`));
   }
 }
 

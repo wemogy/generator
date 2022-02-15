@@ -56,16 +56,16 @@ runs:
     - name: Restore Helm chart dependnecies
       shell: bash
       run: helm dependency update <%= helmChartName %>
-      working-directory: <%= helmPath %>
+      working-directory: env/helm
 
     - name: Package Helm chart
       shell: bash
       run: helm package <%= helmChartName %> --app-version ${{ inputs.version }} --version ${{ inputs.version }}
-      working-directory: <%= helmPath %>
+      working-directory: env/helm
 
     - name: Install Helm Chart
       shell: bash
-      working-directory: <%= helmPath %>
+      working-directory: env/helm
       run: |
         helm upgrade ${{ inputs.name }} <%= helmChartName %>-${{ inputs.version }}.tgz \
           --install \

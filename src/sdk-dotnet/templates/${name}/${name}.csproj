@@ -1,23 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <% if(nuget) { %><IsPackable>true</IsPackable><% } %>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <% if(nuget) { %><PropertyGroup>
+  <PropertyGroup>
     <PackageId><%= name %></PackageId>
     <Authors>wemogy GmbH</Authors>
     <Company>wemogy GmbH</Company>
-    <PackageDescription><%= nugetDescription %></PackageDescription>
+    <PackageDescription>SDK for <%= name %></PackageDescription>
     <PackageTags>wemogy</PackageTags>
-    <RepositoryUrl><%= nugetRepoUrl %></RepositoryUrl>
-  </PropertyGroup><% } %>
+    <RepositoryUrl><%= repoUrl %></RepositoryUrl>
+  </PropertyGroup>
 
   <ItemGroup>
-    <% if(nuget) { %><PackageReference Include="NuGetizer" Version="0.7.1">
+      <PackageReference Include="NuGetizer" Version="0.7.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference><% } %>
+    </PackageReference>
   </ItemGroup>
 
   <PropertyGroup>

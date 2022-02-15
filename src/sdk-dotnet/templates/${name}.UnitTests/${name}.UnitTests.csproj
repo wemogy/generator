@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
@@ -18,7 +17,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <% if(referenceProjectToTest) { %><ItemGroup>
-    <ProjectReference Include="<%= projectToTest %>" />
-  </ItemGroup><% } %>
+  ><ItemGroup>
+    <ProjectReference Include="../<%= name %>/<%= name %>.csproj" />
+  </ItemGroup>
 </Project>
