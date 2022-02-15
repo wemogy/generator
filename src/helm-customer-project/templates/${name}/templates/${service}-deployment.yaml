@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: <%= service %>
-        image: {{ .Values.images.<%= service %>.repository }}:{{ tpl .Values.images.<%= service %>.tag . }}
+        image: {{ .Values.<%= service %>.images.repository }}:{{ tpl .Values.<%= service %>.image.tag . }}
         ports:
         - name: http
           containerPort: 80

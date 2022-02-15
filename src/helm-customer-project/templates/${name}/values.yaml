@@ -12,15 +12,24 @@ ingress:
 
 # Application Settings
 settings:
+  azure:
+    keyVault:
+      name:
 
 # Image configuration
-images:
-  <%= service %>:
+<%= service %>:
+  podLabels:
+  image:
     repository: ""
-    tag: latest
+    tag: '{{ .Chart.AppVersion }}'
 
 # wemogy Modules configuration
-demo-module:
-  images:
-    wemogy:
-      pullSecret: wemogy-pull-secret
+wemogy:
+  pullSecret:
+    username: ""
+    password: ""
+
+# demo-wemogy-module:
+#   images:
+#     wemogy:
+#       pullSecret: wemogy-pull-secret

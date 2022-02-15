@@ -29,14 +29,33 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       {
         type: 'checkbox',
         name: 'components',
-        choices: ['JavaScript SDK', '.NET SDK', 'Backend Services']
+        message: 'Which components do you want to create?',
+        choices: ['JavaScript SDK', '.NET SDK', 'ASP.NET Backend Service']
       },
       {
-        when: answers => answers.components.includes('Backend Services'),
+        when: answers => answers.components.includes('ASP.NET Backend Service'),
         type: 'input',
         name: 'backendServiceName',
         message: 'Name of the backend service',
         default: 'main'
+      },
+      {
+        type: 'input',
+        name: 'azureSubscriptionId',
+        message: 'Azure Subscription ID',
+        default: '00000000-0000-0000-0000-000000000000'
+      },
+      {
+        type: 'input',
+        name: 'azureTenantId',
+        message: 'Azure Tenant ID',
+        default: '00000000-0000-0000-0000-000000000000'
+      },
+      {
+        type: 'input',
+        name: 'azureDevKeyVaultName',
+        message: 'Developer Azure KeyVault Name',
+        default: `${toNoWhitespaceLowerCase(this.appname)}devvault`
       }
     ]);
   }
@@ -47,7 +66,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
-    console.log(slnName);
+    const helmChartName = toNoWhitespaceLowerCase(this.answers.name);
 
     // Base structure
     this.log('Generating base folder structure...');
@@ -91,9 +110,9 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       });
     }
 
-    // Backend Services
-    if (this.answers.components.includes('Backend Services')) {
-      this.log('Generating Backend Services...');
+    // ASP.NET Backend Service
+    if (this.answers.components.includes('ASP.NET Backend Service')) {
+      this.log('Generating ASP.NET Backend Service...');
 
       this.composeWith('wemogy:library-dotnet', {
         folder: 'core',
@@ -126,15 +145,14 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       // Dapr Secret Store
       this.composeWith('wemogy:dapr-secret-store', {
         name: 'secret-store',
-        keyVaultName: '', // TODO: Fill
-        helm: true,
+        keyVaultName: this.answers.azureDevKeyVaultName,
         helmChartFolder: toNoWhitespaceLowerCase(this.answers.name),
         skipEclint: true
       });
 
       // Helm Chart
       this.composeWith('wemogy:helm-wemogy-module', {
-        name: toNoWhitespaceLowerCase(this.answers.name),
+        name: helmChartName,
         service: toNoWhitespaceLowerCase(this.answers.backendServiceName),
         skipEclint: true
       });
@@ -146,8 +164,9 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform',
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
-      azureSubscriptionId: '00000000-0000-0000-0000-000000000000',
-      azureTenantId: '00000000-0000-0000-0000-000000000000',
+      remoteBackendStorageBlobContainerName: 'tfstate',
+      azureSubscriptionId: this.answers.azureSubscriptionId,
+      azureTenantId: this.answers.azureTenantId,
       skipEclint: true
     });
 
@@ -164,7 +183,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       buildDotnetActionPath: './.github/actions/dotnet',
       javaScript: this.answers.components.includes('JavaScript SDK'),
       buildJavaScriptActionPath: './.github/actions/javascript',
-      containers: this.answers.components.includes('Backend Services'),
+      containers: this.answers.components.includes('ASP.NET Backend Service'),
       containersActionPath: './.github/actions/containers',
       skipSecretHints: true,
       skipEclint: true
@@ -175,10 +194,10 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       buildDotnetActionPath: './.github/actions/dotnet',
       npm: this.answers.components.includes('JavaScript SDK'),
       buildJavaScriptActionPath: './.github/actions/javascript',
-      containers: this.answers.components.includes('Backend Services'),
+      containers: this.answers.components.includes('ASP.NET Backend Service'),
       containersActionPath: './.github/actions/containers',
-      helm: this.answers.components.includes('Backend Services'),
-      helmChartName: toNoWhitespaceLowerCase(this.answers.name),
+      helm: this.answers.components.includes('ASP.NET Backend Service'),
+      helmChartName: helmChartName,
       skipSecretHints: true,
       skipEclint: true
     });

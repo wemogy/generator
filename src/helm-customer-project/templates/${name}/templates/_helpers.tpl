@@ -6,7 +6,7 @@
 
 # Docker Login Credentials for wemoy Image Pull Secret
 {{- define "wemogyDockerLogin" -}}
-{{- .Values.images.wemogy.pullSecret.username }}:{{ .Values.images.wemogy.pullSecret.password }}
+{{- .Values.wemogy.pullSecret.username }}:{{ .Values.wemogy.pullSecret.password }}
 {{- end }}
 
 {{- define "wemogyDockerLoginPullSecretContent" -}}

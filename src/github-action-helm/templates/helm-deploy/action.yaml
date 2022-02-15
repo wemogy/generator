@@ -72,20 +72,8 @@ runs:
           --namespace ${{ inputs.namespace }} \
           --create-namespace \
           --wait \
-          --set images.mainapi.repository=${{ inputs.container-registry-server }}/isi-digittool-mainapi \
-          --set images.mainapi.tag=${{ inputs.version }} \
-          --set images.apigateway.repository=${{ inputs.container-registry-server }}/isi-digittool-apigateway \
-          --set images.apigateway.tag=${{ inputs.version }} \
-          --set images.web.repository=${{ inputs.container-registry-server }}/isi-digittool-web \
-          --set images.web.tag=${{ inputs.version }} \
-          --set images.wemogy.pullSecret.username=${{ inputs.wemogy-pull-secret-username }} \
-          --set images.wemogy.pullSecret.password=${{ inputs.wemogy-pull-secret-password }} \
-          --set settings.cloudStorageUrl=${{ fromJSON(inputs.terraform-output).azure_blob_storage_url.value }} \
-          --set settings.azure.keyVault.name=${{ fromJSON(inputs.terraform-output).azure_keyvault_name.value }} \
-          --set settings.azure.keyVault.secretNames.cosmosDbConnectionString=${{ fromJSON(inputs.terraform-output).azure_keyvault_cosmos_db_connection_string_name.value }} \
-          --set settings.azure.keyVault.secretNames.redisCacheConnectionString=${{ fromJSON(inputs.terraform-output).azure_keyvault_redis_cache_connection_string_name.value }} \
-          --set settings.azure.keyVault.secretNames.serviceBusConnectionString=${{ fromJSON(inputs.terraform-output).azure_keyvault_service_bus_connection_string_name.value }} \
-          --set settings.azure.managedIdentity.resourceId=${{ fromJSON(inputs.terraform-output).aad_pod_identity_resource_id.value }} \
-          --set settings.azure.managedIdentity.clientId=${{ fromJSON(inputs.terraform-output).aad_pod_identity_client_id.value }} \
           --set ingress.domain.prefix=${{ inputs.domain-prefix }} \
           --set ingress.tls.letsencrypt.environment=prod
+          --set settings.azure.keyVault.name=${{ fromJSON(inputs.terraform-output).azure_keyvault_name.value }} \
+          --set wemogy.pullSecret.username=${{ inputs.wemogy-pull-secret-username }} \
+          --set wemogy.pullSecret.password=${{ inputs.wemogy-pull-secret-password }}
