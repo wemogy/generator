@@ -62,7 +62,7 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.templatePath(), this.destinationPath('.github/workflows'), this.answers);
+    this.copyTemplateToDestination(this.destinationPath('.github/workflows'));
   }
 
   // Where installation are run (npm, bower)

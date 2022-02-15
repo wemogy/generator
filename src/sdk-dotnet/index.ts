@@ -13,29 +13,17 @@ class SdkDotnetGenerator extends BaseDotnetTemplateGenerator {
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
     this.answers = await this.optionOrPrompt([
+      this.slnPrompt,
       {
         type: 'input',
         name: 'name',
         message: 'Project name',
-        default: `Wemogy.${toPascalCase(this.appname)}.Sdk.Dotnet`
+        default: `Wemogy.${toPascalCase(this.appname)}.Sdk`
       },
       {
-        type: 'confirm',
-        name: 'nuget',
-        message: 'Packable via NuGet?',
-        default: true,
-        followUpQuestions: [
-          {
-            type: 'input',
-            name: 'nugetRepoUrl',
-            message: 'Nuget: GitHub Repository Url'
-          },
-          {
-            type: 'input',
-            name: 'nugetDescription',
-            message: 'NuGet: Package description'
-          }
-        ]
+        type: 'input',
+        name: 'repoUrl',
+        message: 'GitHub Repository Url'
       }
     ]);
   }
@@ -60,7 +48,7 @@ class SdkDotnetGenerator extends BaseDotnetTemplateGenerator {
     // Add UnitTests to Solution
     addProjectToSln.bind(this)(
       this.getSolutionPath(),
-      this.destinationPath(`src/sdk/dotnet/${this.answers.name}/${this.answers.name}.UnitTests.csproj`)
+      this.destinationPath(`src/sdk/dotnet/${this.answers.name}.UnitTests/${this.answers.name}.UnitTests.csproj`)
     );
   }
 

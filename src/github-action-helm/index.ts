@@ -13,12 +13,6 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'helmPath',
-        message: 'Path to Helm Chart',
-        default: 'env/helm'
-      },
-      {
-        type: 'input',
         name: 'helmChartName',
         message: 'Helm Chart Folder Name',
         default: this.appname

@@ -62,15 +62,9 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
         followUpQuestions: [
           {
             type: 'input',
-            name: 'helmName',
+            name: 'helmChartName',
             message: 'Helm Chart Name',
             default: 'wemogy-demo'
-          },
-          {
-            type: 'input',
-            name: 'helmPath',
-            message: 'Path to Helm Chart folder',
-            default: 'env/helm'
           }
         ]
       }
@@ -82,7 +76,7 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.templatePath(), this.destinationPath('.github/workflows'), this.answers);
+    this.copyTemplateToDestination(this.destinationPath('.github/workflows'));
   }
 
   // Where installation are run (npm, bower)
