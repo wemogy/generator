@@ -1,3 +1,4 @@
+import { toNoWhitespaceLowerCase } from '../StringHelpers';
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class TerraformEmptyGenerator extends BaseTemplateGenerator {
@@ -20,7 +21,8 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'remoteBackendStorageAccountName',
-        message: 'Remote backend Azure Storage Account Name' // TODO: Ask for container as well
+        message: 'Remote backend Azure Storage Account Name',
+        default: `${toNoWhitespaceLowerCase(this.appname)}tfstate`
       },
       {
         type: 'input',

@@ -98,6 +98,18 @@ az storage container create \
   --name tfstate \
   --account-name ${projectName}tfstate
 
+az storage container create \
+  --name tfstate-dev \
+  --account-name ${projectName}tfstate
+
+sleep 10
+
+terraformDevSasToken=$(az storage container generate-sas \
+  --name tfstate-dev \
+  --account-name ${projectName}tfstate \
+  --permissions acdlrw \
+  --expiry 2030-01-01)
+
 # ---------------------
 # Development Key Vault
 # ---------------------
@@ -137,3 +149,9 @@ az keyvault secret set \
   --vault-name "${projectName}devvault" \
   --name "LocalDevServicePrincipalPassword" \
   --value "$localDevPassword"
+
+# Add Terraform Dev State Saas Token
+az keyvault secret set \
+  --vault-name "${projectName}devvault" \
+  --name "TerraformDevBackendSasToken" \
+  --value "$terraformDevSasToken"
