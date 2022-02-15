@@ -154,7 +154,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform/shared',
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`, // TODO: Adjust
-      azureSubscriptionId: '00000000-0000-0000-0000-000000000000',
+      azureSubscriptionId: '00000000-0000-0000-0000-000000000000', // TODO Ask
       azureTenantId: '00000000-0000-0000-0000-000000000000',
       skipEclint: true
     });
@@ -163,7 +163,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform/individual',
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`, // TODO: Adjust
-      azureSubscriptionId: '00000000-0000-0000-0000-000000000000',
+      azureSubscriptionId: '00000000-0000-0000-0000-000000000000', // TODO Ask
       azureTenantId: '00000000-0000-0000-0000-000000000000',
       skipEclint: true
     });
