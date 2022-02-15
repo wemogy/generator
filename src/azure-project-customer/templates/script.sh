@@ -66,18 +66,6 @@ gitHubActions=$(az ad sp create-for-rbac \
   --name "$projectName GitHub Actions" \
   --role contributor)
 
-if [ "$addGitHubSecrets" = true ]; then
-  echo "Adding Secrets to GitHub Repository..."
-  gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)
-  gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)
-  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)
-else
-  echo "Please add the following secrets to GitHub Repository:"
-  echo "gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)"
-  echo "gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)"
-  echo "gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)"
-fi
-
 # ---------
 # Terraform
 # ---------
@@ -109,6 +97,11 @@ terraformDevSasToken=$(az storage container generate-sas \
   --account-name ${projectName}tfstate \
   --permissions acdlrw \
   --expiry 2030-01-01)
+
+terraformAccessKey=$(az storage account keys list \
+  --account-name ${projectName}tfstate \
+  -o tsv \
+  --query "[0].value")
 
 # ---------------------
 # Development Key Vault
@@ -155,3 +148,21 @@ az keyvault secret set \
   --vault-name "${projectName}devvault" \
   --name "TerraformDevBackendSasToken" \
   --value "$terraformDevSasToken"
+
+# --------------
+# GitHub Secrets
+# --------------
+
+if [ "$addGitHubSecrets" = true ]; then
+  echo "Adding Secrets to GitHub Repository..."
+  gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)
+  gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)
+  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)
+  gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b $(echo $terraformAccessKey)
+else
+  echo "Please add the following secrets to GitHub Repository:"
+  echo "gh secret set AZURE_APP_ID -b <SECRET>"
+  echo "gh secret set AZURE_PASSWORD -b <SECRET>"
+  echo "gh secret set AZURE_TENANT_ID -b <SECRET>"
+  echo "gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b <SECRET>"
+fi
