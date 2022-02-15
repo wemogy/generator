@@ -1,23 +1,34 @@
 import _ = require('lodash');
 import * as Generator from 'yeoman-generator';
 import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
-import { replaceAll } from './StringHelpers';
+import {
+  replaceAll,
+  toPascalCase,
+  toCamelCase,
+  toNoWhitespaceLowerCase,
+  toSnakeCase,
+  toKebabCase
+} from './StringHelpers';
 
 class TemplateArgument {
   public get pascalCase(): string {
-    return _.upperFirst(_.camelCase(this.toString()));
+    return toPascalCase(this.toString());
   }
 
   public get camelCase(): string {
-    return _.camelCase(this.toString());
+    return toCamelCase(this.toString());
+  }
+
+  public get lowerCase(): string {
+    return toNoWhitespaceLowerCase(this.toString());
   }
 
   public get snakeCase(): string {
-    return _.snakeCase(this.toString());
+    return toSnakeCase(this.toString());
   }
 
   public get kebabCase(): string {
-    return _.kebabCase(this.toString());
+    return toKebabCase(this.toString());
   }
 
   public constructor(private readonly arg: any) {}
@@ -44,6 +55,16 @@ class BaseTemplateGenerator extends Generator {
 
   constructor(args: any, options: any) {
     super(args, options);
+    this.option('skipSecretHints', {
+      type: Boolean,
+      default: false,
+      description: "Don't show hints about GitHub secrets that need to added."
+    });
+    this.option('skipEclint', {
+      type: Boolean,
+      default: false,
+      description: "Don't run Editor Config Linting after execution."
+    });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -66,9 +87,23 @@ class BaseTemplateGenerator extends Generator {
   // Called last, cleanup, say good bye, etc
   public end(): void {}
 
+  public composeWith(
+    generators: Array<Generator.CompositionOptions | string> | Generator.CompositionOptions | string,
+    options?: Generator.GeneratorOptions,
+    returnNewGenerator?: any
+  ): any {
+    // Remove properties from options that are 'undefined'
+    // We do this because yeoman-generator transforms boolean options from 'undefined' to 'false' but we
+    // want to keep the 'undefined' value so that the generator asks the user for the value
+    const cleanedOptions = _.omitBy(options, _.isUndefined);
+    return super.composeWith(generators, cleanedOptions, returnNewGenerator);
+  }
+
   protected eclint(): void {
-    this.log('Applying EditorConfig rules by running eclint...');
-    this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
+    if (!this.options.skipEclint) {
+      this.log('Applying EditorConfig rules by running eclint...');
+      this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
+    }
   }
 
   protected copyTemplateToDestination(destinationSubPath = '.', params?: object, sourceSubPath = '.'): void {
@@ -82,8 +117,6 @@ class BaseTemplateGenerator extends Generator {
     };
 
     const argNames = Object.keys(args);
-
-    this.log(args);
 
     this.fs.copyTpl(
       this.templatePath(sourceSubPath),

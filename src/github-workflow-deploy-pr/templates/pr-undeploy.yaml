@@ -46,8 +46,8 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          name: digittool-${{ env.SLUG }}
-          namespace: digittool-${{ env.SLUG }}
+          name: <%= name %>-${{ env.SLUG }}
+          namespace: <%= name %>-${{ env.SLUG }}
           aks-name: ${{ secrets.AKS_NAME }}
           aks-resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
 
@@ -62,8 +62,8 @@ jobs:
           client-id: ${{ secrets.AZURE_APP_ID }}
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          backend-storage-account-name: digittooltfstate
-          backend-container-name: tfstate
+          backend-storage-account-name: <%= name %>tfstate
+          backend-container-name: tfstate-dev
           backend-key: ${{ needs.setup.outputs.env }}.tfstate
           backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
         env:

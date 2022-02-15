@@ -14,8 +14,13 @@ class YeomanTemplateGenerator extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'name',
-        message: 'Generator Name'
+        name: 'folder',
+        message: 'Folder Name'
+      },
+      {
+        type: 'input',
+        name: 'className',
+        message: 'Generator Class Name'
       }
     ]);
   }
@@ -25,7 +30,7 @@ class YeomanTemplateGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(_.kebabCase(this.answers.name));
+    this.copyTemplateToDestination(this.destinationPath(`src/${this.answers.folder}`));
   }
 
   // Where installation are run (npm, bower)

@@ -1,7 +1,7 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 
-class <%= name.pascalCase %> extends BaseTemplateGenerator {
+class <%= className %> extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -24,4 +24,4 @@ class <%= name.pascalCase %> extends BaseTemplateGenerator {
   }
 }
 
-export default resolveGeneratorInheritance(<%= name.pascalCase %>);
+export default resolveGeneratorInheritance(<%= className %>);

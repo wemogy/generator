@@ -1,4 +1,4 @@
 export default class SeparatorSelection {
-  public readonly line = '---------------';
+  public readonly line = '----------------------';
   constructor() {}
 }

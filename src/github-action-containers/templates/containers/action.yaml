@@ -36,8 +36,9 @@ runs:
       uses: docker/build-push-action@v2.5.0
       with:
         build-args: |
-          NUGET_USERNAME=${{ github.actor }}
           NUGET_TOKEN=${{ inputs.wemogy-packages-token }}
-        file: file: <%= dockerfilePath %>
+        file: <%= dockerfilePath %>
         push: ${{ inputs.push }}
         tags: ${{ inputs.container-registry-server }}/<%= containerName %>:${{ inputs.version }}
+
+    # Add build steps for additional containers here...

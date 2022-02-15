@@ -1,3 +1,4 @@
+import chalk = require('chalk');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
@@ -15,7 +16,7 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'dotnet',
         message: 'Build .NET?',
-        default: true,
+        default: false,
         followUpQuestions: [
           {
             type: 'input',
@@ -29,7 +30,7 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'javaScript',
         message: 'Build JavaScript?',
-        default: true,
+        default: false,
         followUpQuestions: [
           {
             type: 'input',
@@ -68,7 +69,11 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    if (!this.options.skipSecretHints) {
+      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
+    }
+  }
 }
 
 export default GitHubBuildWorkflowGenerator;

@@ -1,0 +1,26 @@
+# Ingress configuration
+ingress:
+  class: nginx
+  domain:
+    core: "<%= name %>.de"
+    prefix: ""
+  tls:
+    letsencrypt:
+      email: it@wemogy.com
+      # 'staging' or 'prod'
+      environment: staging
+
+# Application Settings
+settings:
+
+# Image configuration
+images:
+  <%= service %>:
+    repository: ""
+    tag: latest
+
+# wemogy Modules configuration
+demo-module:
+  images:
+    wemogy:
+      pullSecret: wemogy-pull-secret

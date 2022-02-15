@@ -2,6 +2,15 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: Manually set the version (for Pre-Releases)
+        required: false
+      pre-release:
+        description: Genereates a Pre-Release when checked
+        type: boolean
+        required: false
+        default: false
   push:
     branches:
       - release/**
@@ -11,10 +20,12 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      next-version: ${{ steps.release-version.outputs.next-version }}
+      # Override version with the manually provided version if available
+      next-version: ${{ github.event.inputs.version != '' && github.event.inputs.version || steps.release-version.outputs.next-version }}
     steps:
       - name: Get version for next release
-        uses: wemogy/release-version-action@1.0.1
+        if: ${{ github.event.inputs.version == '' }}
+        uses: wemogy/release-version-action@1.0.2
         id: release-version
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,9 +77,9 @@ jobs:
       - name: Login to Azure Container Registry
         uses: docker/login-action@v1
         with:
-          registry: <%= containerRegistryServer %>
-          username: <%= containerRegistryUsername %>
-          password: <%= containerRegistryPassword %>
+          registry: ${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       - name: Build Containers
         uses: <%= containersActionPath %>
         with:
@@ -108,7 +119,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.setup.outputs.next-version }}
           name: Version ${{ needs.setup.outputs.next-version }}
+          tag_name: ${{ needs.setup.outputs.next-version }}
+          prerelease: ${{ github.event.inputs.pre-release || false }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
