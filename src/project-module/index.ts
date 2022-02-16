@@ -43,19 +43,19 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'azureSubscriptionId',
         message: 'Azure Subscription ID',
-        default: '00000000-0000-0000-0000-000000000000'
+        default: '2421b4f0-f1da-48e8-adc8-30166c4147af'
       },
       {
         type: 'input',
         name: 'azureTenantId',
         message: 'Azure Tenant ID',
-        default: '00000000-0000-0000-0000-000000000000'
+        default: 'c6b872b6-efcd-4e66-8974-7d79ff4397d9'
       },
       {
         type: 'input',
         name: 'azureDevKeyVaultName',
         message: 'Developer Azure KeyVault Name',
-        default: `${toNoWhitespaceLowerCase(this.appname)}devvault`
+        default: `wemogy${toNoWhitespaceLowerCase(this.appname)}kv`
       }
     ]);
   }
@@ -104,7 +104,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       });
 
       this.composeWith('wemogy:github-action-dotnet', {
-        slnPath: `src/${slnName}.sln`,
+        slnPath: `src`,
         skipSecretHints: true,
         skipEclint: true
       });
@@ -209,11 +209,11 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
   // Called last, cleanup, say good bye, etc
   public end(): void {
     this.log();
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: HELM_REPO_TOKEN`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_LOGIN_SERVER`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_USERNAME`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_PASSWORD`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: HELM_REPO_TOKEN`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_LOGIN_SERVER`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_USERNAME`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_PASSWORD`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PACKAGES_TOKEN`);
     this.log();
 
     this.eclint();

@@ -208,16 +208,16 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
   // Called last, cleanup, say good bye, etc
   public end(): void {
     this.log();
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_APP_ID`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_PASSWORD`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_TENANT_ID`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AKS_NAME`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AKS_RESOURCE_GROUP`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_SERVER`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PULL_SECRET_USERNAME`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PULL_SECRET_PASSWORD`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
-    this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: TERRAFORM_BACKEND_ACCESS_KEY`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_APP_ID`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_PASSWORD`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_TENANT_ID`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AKS_NAME`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AKS_RESOURCE_GROUP`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_SERVER`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PULL_SECRET_USERNAME`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PULL_SECRET_PASSWORD`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PACKAGES_TOKEN`);
+    this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: TERRAFORM_BACKEND_ACCESS_KEY`);
     this.log();
 
     this.eclint();
