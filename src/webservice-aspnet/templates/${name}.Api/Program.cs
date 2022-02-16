@@ -16,7 +16,11 @@ namespace <%= name %>.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            // Wait until the Dapr Sidecar is ready
+            RetryPolicies.ResilientDaprHostBuilder.Execute(() =>
+            {
+                CreateHostBuilder(args).Build().Run();
+            });
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

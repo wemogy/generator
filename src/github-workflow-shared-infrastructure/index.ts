@@ -35,10 +35,10 @@ class GitHubSharedInfrastructureWorkflowGenerator extends BaseTemplateGenerator 
   // Called last, cleanup, say good bye, etc
   public end(): void {
     if (!this.options.skipSecretHints) {
-      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_APP_ID`);
-      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_PASSWORD`);
-      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: AZURE_TENANT_ID`);
-      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: TERRAFORM_BACKEND_ACCESS_KEY`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_APP_ID`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_PASSWORD`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_TENANT_ID`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: TERRAFORM_BACKEND_ACCESS_KEY`);
     }
   }
 }

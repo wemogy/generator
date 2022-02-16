@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-<%= name %>
+  name: {{ .Release.Name }}-<%= name %>-<%= service %>
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-<%= name %>
+      app: {{ .Release.Name }}-<%= name %>-<%= service %>
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-<%= name %>
+        app: {{ .Release.Name }}-<%= name %>-<%= service %>
       {{- if .Values.api.podLabels }}
         {{- toYaml .Values.api.podLabels | nindent 8 }}
       {{- end }}
       annotations:
         dapr.io/enabled: 'true'
-        dapr.io/app-id: '{{ .Release.Name }}-<%= name %>'
+        dapr.io/app-id: '<%= service %>'
         dapr.io/app-port: '80'
     spec:
       containers:
-      - name: <%= name %>
+      - name: <%= service %>
         image: {{ .Values.images.wemogy.<%= name %>.repository }}:{{ tpl .Values.images.wemogy.<%= name %>.tag . }}
         env:
         - name: CONFIG_PATH

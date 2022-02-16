@@ -10,7 +10,7 @@ on:
         description: Genereates a Pre-Release when checked
         type: boolean
         required: false
-        default: false
+        default: "false"
   push:
     branches:
       - release/**

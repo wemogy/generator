@@ -86,13 +86,11 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
   public end(): void {
     if (this.answers.infrastructure) {
       if (!this.options.skipSecretHints) {
-        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: HELM_REPO_TOKEN`);
-        this.log(
-          `${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_LOGIN_SERVER`
-        );
-        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_USERNAME`);
-        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: CONTAINER_REGISTRY_PASSWORD`);
-        this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
+        this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: HELM_REPO_TOKEN`);
+        this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_LOGIN_SERVER`);
+        this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_USERNAME`);
+        this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_PASSWORD`);
+        this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PACKAGES_TOKEN`);
       }
     }
   }

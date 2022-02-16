@@ -71,7 +71,7 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
   // Called last, cleanup, say good bye, etc
   public end(): void {
     if (!this.options.skipSecretHints) {
-      this.log(`${chalk.yellow('Hint:')} Please don't forget to set the GitHub Secret: WEMOGY_PACKAGES_TOKEN`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PACKAGES_TOKEN`);
     }
   }
 }

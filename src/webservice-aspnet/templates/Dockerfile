@@ -13,18 +13,18 @@ COPY src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/<%= name %>.Core.U
 
 # Restore NuGet packages
 RUN dotnet nuget add source https://nuget.pkg.github.com/wemogy/index.json --name wemogy --username wemogy --password $NUGET_TOKEN --store-password-in-clear-text
-RUN dotnet restore src/webservices/<%= folder %>/<%= name %>/<%= name %>.csproj
+RUN dotnet restore src/webservices/<%= folder %>/<%= name %>.Api/<%= name %>.Api.csproj
 RUN dotnet restore src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/<%= name %>.Core.UnitTests.csproj
 
 # Copy the rest of the files over
 COPY . .
 
 # Run unit tests
-WORKDIR /src/webservices/<%= folder %>/<%= name %>.Tests/
+WORKDIR /src/webservices/<%= folder %>.Core/<%= name %>.Core.UnitTests/
 RUN dotnet test --configuration Release
 
 # Build the application
-WORKDIR /src/webservices/<%= folder %>/<%= name %>/
+WORKDIR /src/webservices/<%= folder %>/<%= name %>.Api/
 RUN dotnet publish --output /out/ --configuration Release
 
 #######################################################
@@ -37,4 +37,4 @@ EXPOSE 80
 COPY --from=build /out .
 
 # Start the application
-ENTRYPOINT ["dotnet", "<%= name %>.dll"]
+ENTRYPOINT ["dotnet", "<%= name %>.Api.dll"]
