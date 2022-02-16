@@ -9,7 +9,7 @@ class AppGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
     this.generators = [
-      new GeneratorSelection('111Project: Empty structure', 'wemogy:project-empty'),
+      new GeneratorSelection('Project: Empty structure', 'wemogy:project-empty'),
       new GeneratorSelection('Project: Customer project', 'wemogy:project-customer'),
       new GeneratorSelection('Project: wemogy Module', 'wemogy:project-module'),
       new SeparatorSelection(),
