@@ -4,6 +4,14 @@
 
 ## Get it running
 
+Install [Yeoman]() via NPM
+
+```bash
+npm install -g yo
+```
+
+Now install the generator
+
 ```bash
 npm install -g generator-wemogy
 ```
