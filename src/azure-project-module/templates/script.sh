@@ -91,11 +91,9 @@ az ad group member add \
 
 echo "Creating Terraform Remote State resources..."
 
-az group create --name terraform --location $location
-
 az storage account create \
-  --name ${projectName}tfstate \
-  --resource-group terraform \
+  --name wemogy${moduleName}tfstate \
+  --resource-group $moduleName \
   --location $location \
   --kind StorageV2
 
@@ -103,10 +101,10 @@ sleep 10
 
 az storage container create \
   --name tfstate \
-  --account-name ${projectName}tfstate
+  --account-name ${moduleName}tfstate
 
 terraformAccessKey=$(az storage account keys list \
-  --account-name ${projectName}tfstate \
+  --account-name ${moduleName}tfstate \
   -o tsv \
   --query "[0].value")
 
@@ -144,6 +142,12 @@ az keyvault secret set \
   --vault-name "wemogy${moduleName}kv" \
   --name "LocalDevServicePrincipalPassword" \
   --value "$localDevPassword"
+
+az keyvault secret set \
+  --vault-name "wemogy${moduleName}kv" \
+  --name "TerraformBackendAccessKey" \
+  --value "$terraformAccessKey"
+
 
 # --------------
 # GitHub Secrets

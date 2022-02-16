@@ -53,6 +53,7 @@ terraform.tfstate.d/
 # Secrets
 .cert
 secrets.json
+.env
 
 # Yalc
 .yalc
