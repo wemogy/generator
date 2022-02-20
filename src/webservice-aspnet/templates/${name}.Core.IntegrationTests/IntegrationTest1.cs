@@ -16,4 +16,4 @@ namespace <%= name %>.Core.IntegrationTests
         {
         }
     }
- }
+}
