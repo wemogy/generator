@@ -66,6 +66,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
   public writing(): void {
     const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
     const helmChartName = toNoWhitespaceLowerCase(this.answers.name);
+    const serviceName = toNoWhitespaceLowerCase(this.answers.backendServiceName);
 
     // Base structure
     this.log('Generating base folder structure...');
@@ -100,7 +101,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
       // ASP.NET API Service
       this.composeWith('wemogy:webservice-aspnet', {
-        folder: toNoWhitespaceLowerCase(this.answers.backendServiceName),
+        folder: serviceName,
         name: `${slnName}.Webservices.${toPascalCase(this.answers.backendServiceName)}`,
         dapr: true,
         wemogyIdentity: false,
@@ -120,7 +121,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
       // Helm Chart
       this.composeWith('wemogy:helm-customer-project', {
         name: helmChartName,
-        service: toNoWhitespaceLowerCase(this.answers.backendServiceName),
+        service: serviceName,
         skipEclint: true
       });
 
@@ -131,7 +132,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
       // GitHub Actions
       this.composeWith('wemogy:github-action-containers', {
-        dockerfilePath: `src/webservices/${toNoWhitespaceLowerCase(this.answers.backendServiceName)}/Dockerfile`,
+        dockerfilePath: `src/webservices/${serviceName}/Dockerfile`,
         containerName: `${toNoWhitespaceLowerCase(this.answers.name)}-${toNoWhitespaceLowerCase(
           this.answers.backendServiceName
         )}`,
@@ -198,6 +199,13 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
       destinationRoot: this.destinationRoot('.'),
       name: toNoWhitespaceLowerCase(this.answers.name),
       skipSecretHints: true,
+      skipEclint: true
+    });
+
+    // Docker Compose
+    this.composeWith('wemogy:docker-compose', {
+      serviceName: serviceName,
+      dapr: true,
       skipEclint: true
     });
   }
