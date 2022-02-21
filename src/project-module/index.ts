@@ -67,6 +67,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
   public writing(): void {
     const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
     const helmChartName = toNoWhitespaceLowerCase(this.answers.name);
+    const serviceName = toNoWhitespaceLowerCase(this.answers.backendServiceName);
 
     // Base structure
     this.log('Generating base folder structure...');
@@ -124,7 +125,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
 
       // ASP.NET API Service
       this.composeWith('wemogy:webservice-aspnet', {
-        folder: toNoWhitespaceLowerCase(this.answers.backendServiceName),
+        folder: serviceName,
         name: `${slnName}.Webservices.${toPascalCase(this.answers.backendServiceName)}`,
         dapr: true,
         wemogyIdentity: false,
@@ -134,7 +135,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       });
 
       this.composeWith('wemogy:github-action-containers', {
-        dockerfilePath: `src/webservices/${toNoWhitespaceLowerCase(this.answers.backendServiceName)}/Dockerfile`,
+        dockerfilePath: `src/webservices/${serviceName}/Dockerfile`,
         containerName: `${toNoWhitespaceLowerCase(this.answers.name)}-${toNoWhitespaceLowerCase(
           this.answers.backendServiceName
         )}`,
@@ -153,7 +154,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       // Helm Chart
       this.composeWith('wemogy:helm-wemogy-module', {
         name: helmChartName,
-        service: toNoWhitespaceLowerCase(this.answers.backendServiceName),
+        service: serviceName,
         skipEclint: true
       });
     }
@@ -199,6 +200,13 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       helm: this.answers.components.includes('ASP.NET Backend Service'),
       helmChartName: helmChartName,
       skipSecretHints: true,
+      skipEclint: true
+    });
+
+    // Docker Compose
+    this.composeWith('wemogy:docker-compose', {
+      serviceName: serviceName,
+      dapr: true,
       skipEclint: true
     });
   }
