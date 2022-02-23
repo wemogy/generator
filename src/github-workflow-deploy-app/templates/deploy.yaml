@@ -78,7 +78,7 @@ jobs:
           client-secret: ${{ secrets.AZURE_PASSWORD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           backend-storage-account-name: <%= name %>tfstate
-          backend-container-name: tfstate
+          backend-container-name: ${{ needs.setup.outputs.env == 'dev' && 'tfstate-dev' || 'tfstate' }}
           backend-key: ${{ needs.setup.outputs.env }}.tfstate
           backend-access-key: ${{ secrets.TERRAFORM_BACKEND_ACCESS_KEY }}
         env:

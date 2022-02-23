@@ -7,8 +7,7 @@ class TerraformGenerator extends BaseSelectionGenerator {
     super(args, options);
     this.generators = [
       new GeneratorSelection('Empty', 'wemogy:terraform-empty'),
-      new GeneratorSelection('Azure Kubernetes Service (AKS)', 'wemogy:terraform-aks'),
-      new GeneratorSelection('Kubernetes Config', 'wemogy:terraform-kubernetes-config')
+      new GeneratorSelection('Azure Kubernetes Service (AKS)', 'wemogy:terraform-aks')
     ];
   }
 }

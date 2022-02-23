@@ -1,0 +1,14 @@
+{
+  "name": "<%= name %>",
+  "version": "0.1.0",
+  "repository": "<%= repoUrl %>",
+  "author": "wemogy GmbH",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^4.1.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "develop": "tsc --watch"
+  }
+}

@@ -4,13 +4,13 @@ description: "Builds and optionally pushes container images"
 inputs:
   container-registry-server:
     description: "Container registry server"
-    required: true
+    required: false
   container-registry-username:
     description: "Container registry username"
-    required: true
+    required: false
   container-registry-password:
     description: "Container registry password"
-    required: true
+    required: false
   wemogy-packages-token:
     description: "The token to use to authenticate with the wemogy-packages service"
     required: true
@@ -19,13 +19,14 @@ inputs:
     required: true
   push:
     description: "Whether to push the container image to the registry"
-    required: false
+    required: true
     default: "false"
 
 runs:
   using: "composite"
   steps:
     - name: Login to Azure Container Registry
+      if: inputs.push == 'true'
       uses: docker/login-action@v1
       with:
         registry: ${{ inputs.container-registry-server }}
@@ -36,8 +37,9 @@ runs:
       uses: docker/build-push-action@v2.5.0
       with:
         build-args: |
-          NUGET_USERNAME=${{ github.actor }}
           NUGET_TOKEN=${{ inputs.wemogy-packages-token }}
-        file: file: <%= dockerfilePath %>
+        file: <%= dockerfilePath %>
         push: ${{ inputs.push }}
         tags: ${{ inputs.container-registry-server }}/<%= containerName %>:${{ inputs.version }}
+
+    # Add build steps for additional containers here...

@@ -13,13 +13,13 @@ class YeomanDotnetTemplateGenerator extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'name',
-        message: 'Generator Name'
+        name: 'folder',
+        message: 'Folder Name'
       },
       {
         type: 'input',
         name: 'className',
-        message: 'Class Name'
+        message: 'Generator Class Name'
       }
     ]);
   }
@@ -29,12 +29,7 @@ class YeomanDotnetTemplateGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(
-      `${this.templatePath()}/index.ts`,
-      `${this.destinationPath()}/${this.answers.name}/index.ts`,
-      this.answers
-    );
-    this.fs.copy(`${this.templatePath()}/templates`, `${this.destinationPath()}/${this.answers.name}/templates`);
+    this.copyTemplateToDestination(this.destinationPath(`src/${this.answers.folder}`));
   }
 
   // Where installation are run (npm, bower)

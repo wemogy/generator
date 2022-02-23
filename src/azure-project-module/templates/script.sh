@@ -85,17 +85,28 @@ az ad group member add \
   --group "$groupName" \
   --member-id $(az ad sp show --id $gitHubActionsAppId --query objectId -o tsv)
 
-if [ "$addGitHubSecrets" = true ]; then
-  echo "Adding Secrets to GitHub Repository..."
-  gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)
-  gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)
-  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)
-else
-  echo "Please add the following secrets to GitHub Repository:"
-  echo "gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)"
-  echo "gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)"
-  echo "gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)"
-fi
+# ---------
+# Terraform
+# ---------
+
+echo "Creating Terraform Remote State resources..."
+
+az storage account create \
+  --name wemogy${moduleName}tfstate \
+  --resource-group $moduleName \
+  --location $location \
+  --kind StorageV2
+
+sleep 10
+
+az storage container create \
+  --name tfstate \
+  --account-name ${moduleName}tfstate
+
+terraformAccessKey=$(az storage account keys list \
+  --account-name ${moduleName}tfstate \
+  -o tsv \
+  --query "[0].value")
 
 # ---------------------
 # Development Key Vault
@@ -132,3 +143,26 @@ az keyvault secret set \
   --name "LocalDevServicePrincipalPassword" \
   --value "$localDevPassword"
 
+az keyvault secret set \
+  --vault-name "wemogy${moduleName}kv" \
+  --name "TerraformBackendAccessKey" \
+  --value "$terraformAccessKey"
+
+
+# --------------
+# GitHub Secrets
+# --------------
+
+if [ "$addGitHubSecrets" = true ]; then
+  echo "Adding Secrets to GitHub Repository..."
+  gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)
+  gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)
+  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)
+  gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b $(echo $terraformAccessKey)
+else
+  echo "Please add the following secrets to GitHub Repository:"
+  echo "gh secret set AZURE_APP_ID -b <SECRET>"
+  echo "gh secret set AZURE_PASSWORD -b <SECRET>"
+  echo "gh secret set AZURE_TENANT_ID -b <SECRET>"
+  echo "gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b <SECRET>"
+fi

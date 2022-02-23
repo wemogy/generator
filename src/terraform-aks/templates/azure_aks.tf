@@ -1,8 +1,8 @@
-resource "azurerm_kubernetes_cluster" "<%- id %>" {
-  name                = <%- name %>
-  location            = <%- resourceGroupName %>
-  resource_group_name = <%- location %>
-  dns_prefix          = <%- name %>
+resource "azurerm_kubernetes_cluster" "default" {
+  name                = "${var.prefix}aks"
+  location            = azurerm_resource_group.default.location
+  resource_group_name = azurerm_resource_group.default.name
+  dns_prefix          = "${var.prefix}aks"
   kubernetes_version  = "<%- kubernetesVersion %>"
 
   default_node_pool {
@@ -29,9 +29,9 @@ resource "azurerm_kubernetes_cluster" "<%- id %>" {
   }
 }
 
-resource "azurerm_kubernetes_cluster_node_pool" "<%- id %>_worker" {
+resource "azurerm_kubernetes_cluster_node_pool" "default_worker" {
   name                  = "worker"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.<%- id %>.id
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
   vm_size               = "Standard_DS2_v2"
   node_count            = 1
   vnet_subnet_id        = azurerm_subnet.aks.id

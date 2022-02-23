@@ -1,6 +1,6 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
-class CoreProjectGenerator extends BaseTemplateGenerator {
+class EmptyProjectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -14,14 +14,8 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'name',
-        message: 'Your project name',
+        message: 'Project name',
         default: this.appname
-      },
-      {
-        type: 'confirm',
-        name: 'emptyFolders',
-        message: 'Generate empty folder structure?',
-        default: false
       }
     ]);
   }
@@ -34,28 +28,7 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
     // .gitignore has to be created manually, as it will be ignored when placing it into /templates by default.
     // See this issue for more: https://github.com/yeoman/generator/issues/812
     this.fs.copy(this.templatePath('gitignore/gitignore-content'), this.destinationPath('.gitignore'));
-    this.fs.copyTpl(
-      this.templatePath('root'),
-      this.destinationPath(),
-      {
-        ...this.answers
-      },
-      null,
-      // Include dotfiles (like .editorconfig)
-      {
-        globOptions: {
-          dot: true
-        }
-      }
-    );
-
-    if (this.answers.emptyFolders) {
-      this.fs.copy(this.templatePath('folders'), this.destinationPath(), {
-        globOptions: {
-          dot: true
-        }
-      });
-    }
+    this.copyTemplateToDestination(this.destinationPath(), undefined, this.templatePath('root'));
   }
 
   // Where installation are run (npm, bower)
@@ -67,4 +40,4 @@ class CoreProjectGenerator extends BaseTemplateGenerator {
   }
 }
 
-export default CoreProjectGenerator;
+export default EmptyProjectGenerator;

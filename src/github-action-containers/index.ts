@@ -15,7 +15,7 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'dockerfilePath',
         message: 'Path to dockerfile',
-        default: 'src/services/my-service/Dockerfile'
+        default: 'src/webservices/my-service/Dockerfile'
       },
       {
         type: 'input',
@@ -31,7 +31,7 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.templatePath(), this.destinationPath('.github/actions'), this.answers);
+    this.copyTemplateToDestination(this.destinationPath('.github/actions'));
   }
 
   // Where installation are run (npm, bower)

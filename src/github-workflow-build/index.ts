@@ -1,3 +1,4 @@
+import chalk = require('chalk');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
@@ -15,7 +16,7 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'dotnet',
         message: 'Build .NET?',
-        default: true,
+        default: false,
         followUpQuestions: [
           {
             type: 'input',
@@ -29,7 +30,7 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'javaScript',
         message: 'Build JavaScript?',
-        default: true,
+        default: false,
         followUpQuestions: [
           {
             type: 'input',
@@ -61,14 +62,18 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.templatePath(), this.destinationPath('.github/workflows'), this.answers);
+    this.copyTemplateToDestination(this.destinationPath('.github/workflows'));
   }
 
   // Where installation are run (npm, bower)
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    if (!this.options.skipSecretHints) {
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PACKAGES_TOKEN`);
+    }
+  }
 }
 
 export default GitHubBuildWorkflowGenerator;

@@ -1,3 +1,4 @@
+import chalk = require('chalk');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 
 class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
@@ -32,7 +33,20 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    if (!this.options.skipSecretHints) {
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_APP_ID`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_PASSWORD`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AZURE_TENANT_ID`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AKS_NAME`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: AKS_RESOURCE_GROUP`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: CONTAINER_REGISTRY_SERVER`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PULL_SECRET_USERNAME`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PULL_SECRET_PASSWORD`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: WEMOGY_PACKAGES_TOKEN`);
+      this.log(`${chalk.yellow('Hint:')} Check if GitHub Repo or Org Secret is set: TERRAFORM_BACKEND_ACCESS_KEY`);
+    }
+  }
 }
 
 export default GitHubWorkflowPipelineGenerator;
