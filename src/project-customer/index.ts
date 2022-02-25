@@ -54,7 +54,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'azureDevKeyVaultName',
         message: 'Developer Azure KeyVault Name',
-        default: `${toNoWhitespaceLowerCase(this.appname)}devvault`
+        default: `${toNoWhitespaceLowerCase(this.appname)}devsecrets`
       }
     ]);
   }
