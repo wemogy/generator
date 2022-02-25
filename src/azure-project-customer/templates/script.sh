@@ -116,36 +116,36 @@ az group create \
 
 # Create Azure Key Vault for Developer Secrets
 az keyvault create \
-  --name "${projectName}devvault" \
+  --name "${projectName}devsecrets" \
   --resource-group "general" \
   --location $location
 
 # Give Developers AAD Group read-access
 az keyvault set-policy \
-  --name "${projectName}devvault" \
+  --name "${projectName}devsecrets" \
   --resource-group "general" \
   --object-id $groupObjectId \
   --secret-permissions get list
 
 # Add Local Development Service Principal Secrets
 az keyvault secret set \
-  --vault-name "${projectName}devvault" \
+  --vault-name "${projectName}devsecrets" \
   --name "LocalDevServicePrincipalAppId" \
   --value "$localDevAppId"
 
 az keyvault secret set \
-  --vault-name "${projectName}devvault" \
+  --vault-name "${projectName}devsecrets" \
   --name "LocalDevServicePrincipalTenantId" \
   --value "$localDevTenantId"
 
 az keyvault secret set \
-  --vault-name "${projectName}devvault" \
+  --vault-name "${projectName}devsecrets" \
   --name "LocalDevServicePrincipalPassword" \
   --value "$localDevPassword"
 
 # Add Terraform Dev State Saas Token
 az keyvault secret set \
-  --vault-name "${projectName}devvault" \
+  --vault-name "${projectName}devsecrets" \
   --name "TerraformDevBackendSasToken" \
   --value "$terraformDevSasToken"
 
