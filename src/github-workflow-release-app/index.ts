@@ -17,6 +17,12 @@ class GitHubWorkflowPipelineGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Project name (lowercase)',
         default: this.appname
+      },
+      {
+        type: 'input',
+        name: 'envUrl',
+        message: 'URL (core) to the environment',
+        default: `app.${this.appname}.com`
       }
     ]);
   }
