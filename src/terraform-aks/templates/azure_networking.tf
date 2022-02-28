@@ -7,7 +7,7 @@ resource "azurerm_public_ip" "aks_ingress" {
 }
 
 resource "azurerm_virtual_network" "default" {
-  name                = "vnet"
+  name                = "${var.prefix}vnet"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
   address_space       = ["10.0.0.0/8"]

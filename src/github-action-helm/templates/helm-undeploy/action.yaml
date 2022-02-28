@@ -10,6 +10,12 @@ inputs:
   tenant-id:
     description: "The Azure Tenant ID"
     required: true
+  aks-name:
+    description: "Name of the shared AKS cluster"
+    required: true
+  aks-resource-group:
+    description: "Name of the shared AKS cluster's resource group"
+    required: true
   name:
     description: "The name of the Helm Release"
     required: true

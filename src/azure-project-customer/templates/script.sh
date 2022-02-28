@@ -13,8 +13,12 @@ echo "Add GitHub Secrets: $addGitHubSecrets"
 # Make sure that the script is exected as it@wemogy.com admin account
 user=$(az account show --query user.name -o tsv)
 if [ "$user" != "it@wemogy.com" ]; then
-  echo "ERROR: This script must be executed as it@wemogy.com. Please login with that account by running 'az login' and try again."
-  exit 1
+  read -p "WARNING: You are logged in as $user but this script should only be executed as it@wemogy.com. Are you sure you want to continue? [y/N]" -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+      exit 1
+  fi
 fi
 
 az account set --subscription $subscription
@@ -23,21 +27,32 @@ az account set --subscription $subscription
 # AAD Group
 # ---------
 
-echo "Creating an AAD group for Developers..."
+echo "Creating an AAD groups..."
 
 # Create new AD Group for Developers
-group=$(az ad group create \
+devGroup=$(az ad group create \
   --display-name "$projectName Developers" \
   --mail-nickname "$projectName-developers")
+devGroupName=$(echo $devGroup | jq -r .displayName)
+devGroupObjectId=$(echo $devGroup | jq -r .objectId)
 
-groupName=$(echo $group | jq -r .displayName)
-groupObjectId=$(echo $group | jq -r .objectId)
+# Create new AD Group for Admins
+adminGroup=$(az ad group create \
+  --display-name "$projectName Administrators" \
+  --mail-nickname "$projectName-administrators")
+adminGroupName=$(echo $adminGroup | jq -r .displayName)
+adminGroupObjectId=$(echo $adminGroup | jq -r .objectId)
 
 sleep 10
 
 az role assignment create \
-  --assignee $groupObjectId \
+  --assignee $devGroupObjectId \
   --role "Reader" \
+  --scope "/subscriptions/$subscription"
+
+az role assignment create \
+  --assignee $adminGroupObjectId \
+  --role "Owner" \
   --scope "/subscriptions/$subscription"
 
 # ------------------
@@ -50,21 +65,28 @@ echo "Creating Service Principal for Local Development..."
 localDevServicePrincipal=$(az ad sp create-for-rbac \
   --name "$projectName Local Development" \
   --skip-assignment)
-
 localDevAppId=$(echo $localDevServicePrincipal | jq -r .appId)
 localDevTenantId=$(echo $localDevServicePrincipal | jq -r .tenant)
 localDevPassword=$(echo $localDevServicePrincipal | jq -r .password)
 
 # Add the service principal to the developers group
 az ad group member add \
-  --group $groupName \
+  --group $devGroupName \
   --member-id $(az ad sp show --id $localDevAppId --query objectId -o tsv)
 
 # Create Service for GitHub Actions
 echo "Creating Service Principal for GitHub Actions..."
 gitHubActions=$(az ad sp create-for-rbac \
   --name "$projectName GitHub Actions" \
-  --role contributor)
+  --role owner)
+gitHubActionsAppId=$(echo $gitHubActionsServicePrincipal | jq -r .appId)
+gitHubActionsTenantId=$(echo $gitHubActionsServicePrincipal | jq -r .tenant)
+gitHubActionsPassword=$(echo $gitHubActionsServicePrincipal | jq -r .password)
+
+# Add the service principal to the admin group
+az ad group member add \
+  --group $adminGroupName \
+  --member-id $(az ad sp show --id $gitHubActionsAppId --query objectId -o tsv)
 
 # ---------
 # Terraform
@@ -124,8 +146,15 @@ az keyvault create \
 az keyvault set-policy \
   --name "${projectName}devsecrets" \
   --resource-group "general" \
-  --object-id $groupObjectId \
+  --object-id $devGroupObjectId \
   --secret-permissions get list
+
+# Give Admin AAD Group write-access
+az keyvault set-policy \
+  --name "${projectName}devsecrets" \
+  --resource-group "general" \
+  --object-id $adminGroupObjectId \
+  --secret-permissions all
 
 # Add Local Development Service Principal Secrets
 az keyvault secret set \
@@ -155,9 +184,9 @@ az keyvault secret set \
 
 if [ "$addGitHubSecrets" = true ]; then
   echo "Adding Secrets to GitHub Repository..."
-  gh secret set AZURE_APP_ID -b $(echo $gitHubActions | jq -r .appId)
-  gh secret set AZURE_PASSWORD -b $(echo $gitHubActions | jq -r .password)
-  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActions | jq -r .tenant)
+  gh secret set AZURE_APP_ID -b $(echo $gitHubActionsServicePrincipal | jq -r .appId)
+  gh secret set AZURE_PASSWORD -b $(echo $gitHubActionsServicePrincipal | jq -r .password)
+  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActionsServicePrincipal | jq -r .tenant)
   gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b $(echo $terraformAccessKey)
 else
   echo "Please add the following secrets to GitHub Repository:"
