@@ -53,7 +53,7 @@ runs:
         client-secret: ${{ inputs.client-secret }}
         tenant-id: ${{ inputs.tenant-id }}
 
-    - name: Restore Helm chart dependnecies
+    - name: Restore Helm chart dependencies
       shell: bash
       run: helm dependency update <%= helmChartName %>
       working-directory: env/helm
@@ -73,7 +73,7 @@ runs:
           --create-namespace \
           --wait \
           --set ingress.domain.prefix=${{ inputs.domain-prefix }} \
-          --set ingress.tls.letsencrypt.environment=prod
+          --set ingress.tls.letsencrypt.environment=prod \
           --set settings.azure.keyVault.name=${{ fromJSON(inputs.terraform-output).azure_keyvault_name.value }} \
           --set wemogy.pullSecret.username=${{ inputs.wemogy-pull-secret-username }} \
           --set wemogy.pullSecret.password=${{ inputs.wemogy-pull-secret-password }}

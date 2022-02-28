@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-<%= name %>-<%= service %>
+  name: {{ .Release.Name }}-<%= service %>
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-<%= name %>-<%= service %>
+      app: {{ .Release.Name }}-<%= service %>
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-<%= name %>-<%= service %>
+        app: {{ .Release.Name }}-<%= service %>
       {{- if .Values.api.podLabels }}
         {{- toYaml .Values.api.podLabels | nindent 8 }}
       {{- end }}

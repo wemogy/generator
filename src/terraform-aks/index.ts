@@ -23,6 +23,12 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
         name: 'kubernetesVersion',
         message: 'Kubernetes Version',
         default: '1.20.7'
+      },
+      {
+        type: 'input',
+        name: 'aadAdminGroupId',
+        message: 'AAD Admin Group ID',
+        default: '00000000-0000-0000-0000-000000000000'
       }
     ]);
   }
