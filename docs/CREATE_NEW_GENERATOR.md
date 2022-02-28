@@ -1,6 +1,5 @@
 # Adding a new generator
 
-
 ## Creating new generators
 
 ### Selector Generator

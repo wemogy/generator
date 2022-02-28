@@ -28,7 +28,7 @@ resource "azurerm_kubernetes_cluster" "default" {
 
     azure_active_directory {
       managed                = true
-      admin_group_object_ids = ["<%- aadAdminGroupId %>"]
+      admin_group_object_ids = [var.azure_aad_group_admins_id]
       azure_rbac_enabled     = true
     }
   }
