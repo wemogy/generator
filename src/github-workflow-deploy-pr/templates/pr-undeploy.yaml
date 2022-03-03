@@ -40,6 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: terraform
     steps:
+      - uses: actions/checkout@v2
+
       - name: Delete Helm Deployment
         uses: ./.github/actions/helm-undeploy
         with:

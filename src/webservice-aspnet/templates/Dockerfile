@@ -5,6 +5,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
 
 ARG NUGET_TOKEN
+ARG CONFIGURATION=Release
 
 # Copy .csproj files for NuGet restore
 COPY src/webservices/<%= folder %>/<%= name %>.Api/<%= name %>.Api.csproj src/webservices/<%= folder %>/<%= name %>.Api/
@@ -21,11 +22,11 @@ COPY . .
 
 # Run unit tests
 WORKDIR /src/webservices/<%= folder %>.Core/<%= name %>.Core.UnitTests/
-RUN dotnet test --configuration Release
+RUN dotnet test --configuration $CONFIGURATION
 
 # Build the application
 WORKDIR /src/webservices/<%= folder %>/<%= name %>.Api/
-RUN dotnet publish --output /out/ --configuration Release
+RUN dotnet publish --output /out/ --configuration $CONFIGURATION
 
 #######################################################
 # Step 2: Run the build outcome in a container        #
