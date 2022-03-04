@@ -13,10 +13,16 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
   public async prompting() {
     this.answers = await this.optionOrPrompt([
       {
-        type: 'select',
+        type: 'list',
         name: 'folder',
         message: 'Terraform Folder',
         choices: ['terraform', 'shared', 'individual']
+      },
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name',
+        default: this.appname
       },
       {
         type: 'input',
@@ -25,10 +31,10 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
         default: `${toNoWhitespaceLowerCase(this.appname)}tfstate`
       },
       {
-        type: 'input',
+        type: 'list',
         name: 'remoteBackendStorageBlobContainerName',
         message: 'Remote backend Blob Container Name',
-        default: 'tfstate'
+        choices: ['tfstate', 'tfstate-dev']
       },
       {
         type: 'input',

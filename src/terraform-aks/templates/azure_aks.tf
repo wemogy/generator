@@ -1,8 +1,8 @@
 resource "azurerm_kubernetes_cluster" "default" {
-  name                = "${var.prefix}aks"
+  name                = "${local.prefix}aks"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
-  dns_prefix          = "${var.prefix}aks"
+  dns_prefix          = "${local.prefix}aks"
   kubernetes_version  = "<%- kubernetesVersion %>"
 
   default_node_pool {

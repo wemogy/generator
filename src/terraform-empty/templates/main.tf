@@ -9,7 +9,7 @@ terraform {
   backend "azurerm" {
     storage_account_name = "<%= remoteBackendStorageAccountName %>"
     container_name       = "<%= remoteBackendStorageBlobContainerName %>"
-    key                  = "dev.tfstate"
+    key                  = "<%= folder %>.tfstate"
   }
 
   required_providers {
