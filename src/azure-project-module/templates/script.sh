@@ -97,7 +97,7 @@ gitHubActionsPassword=$(echo $gitHubActionsServicePrincipal | jq -r .password)
 
 # Add the service principal to the admin group
 az ad group member add \
-  --group $adminGroupName \
+  --group "$adminGroupName" \
   --member-id $(az ad sp show --id $gitHubActionsAppId --query objectId -o tsv)
 
 # ---------
@@ -177,10 +177,10 @@ az keyvault secret set \
 
 if [ "$addGitHubSecrets" = true ]; then
   echo "Adding Secrets to GitHub Repository..."
-  gh secret set AZURE_APP_ID -b $(echo $gitHubActionsServicePrincipal | jq -r .appId)
-  gh secret set AZURE_PASSWORD -b $(echo $gitHubActionsServicePrincipal | jq -r .password)
-  gh secret set AZURE_TENANT_ID -b $(echo $gitHubActionsServicePrincipal | jq -r .tenant)
-  gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b $(echo $terraformAccessKey)
+  gh secret set AZURE_APP_ID -b "$(echo $gitHubActionsServicePrincipal | jq -r .appId)"
+  gh secret set AZURE_PASSWORD -b "$(echo $gitHubActionsServicePrincipal | jq -r .password)"
+  gh secret set AZURE_TENANT_ID -b "$(echo $gitHubActionsServicePrincipal | jq -r .tenant)"
+  gh secret set TERRAFORM_BACKEND_ACCESS_KEY -b "$(echo $terraformAccessKey)"
 else
   echo "Please add the following secrets to GitHub Repository:"
   echo "gh secret set AZURE_APP_ID -b <SECRET>"

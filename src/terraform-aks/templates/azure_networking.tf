@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "aks_ingress" {
-  name                = "${var.prefix}aksip"
+  name                = "${local.prefix}aksip"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
   allocation_method   = "Static"
@@ -7,7 +7,7 @@ resource "azurerm_public_ip" "aks_ingress" {
 }
 
 resource "azurerm_virtual_network" "default" {
-  name                = "${var.prefix}vnet"
+  name                = "${local.prefix}vnet"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
   address_space       = ["10.0.0.0/8"]

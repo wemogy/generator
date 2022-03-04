@@ -13,10 +13,10 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
   public async prompting() {
     this.answers = await this.prompt([
       {
-        type: 'select',
+        type: 'list',
         name: 'folder',
         message: 'Terraform Folder',
-        choices: ['terraform', 'terraform/shared', 'terraform/individual']
+        choices: ['terraform', 'shared', 'individual']
       },
       {
         type: 'input',
@@ -27,7 +27,13 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'aadAdminGroupId',
-        message: 'AAD Admin Group ID',
+        message: 'AAD Admin Group Object ID',
+        default: '00000000-0000-0000-0000-000000000000'
+      },
+      {
+        type: 'input',
+        name: 'aadDevGroupId',
+        message: 'AAD Developers Group Object ID',
         default: '00000000-0000-0000-0000-000000000000'
       }
     ]);
@@ -38,7 +44,11 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
+    if (this.answers.folder === 'terraform') {
+      this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
+    } else {
+      this.copyTemplateToDestination(this.destinationPath(`env/terraform/${this.answers.folder}`));
+    }
   }
 
   // Where installation are run (npm, bower)
