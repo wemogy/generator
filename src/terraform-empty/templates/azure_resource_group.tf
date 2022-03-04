@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "default" {
-  name     = local.prefix
+  name     = var.environment
   location = var.location
 
   lifecycle {
