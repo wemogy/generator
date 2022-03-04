@@ -4,6 +4,13 @@ on:
   push:
     branches:
     - main
+    paths:
+      - 'src/**'
+      - 'package.json'
+
+concurrency:
+  group: auto-mege-into-release
+  cancel-in-progress: true
 
 env:
   CURRENT_RELEASE_BRANCH: "release/0.2"
