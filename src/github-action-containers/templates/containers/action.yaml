@@ -4,6 +4,7 @@ description: "Builds and optionally pushes container images"
 inputs:
   container-registry-server:
     description: "Container registry server"
+    default: "docker.io"
     required: false
   container-registry-username:
     description: "Container registry username"
