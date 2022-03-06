@@ -12,9 +12,6 @@ concurrency:
   group: auto-mege-into-release
   cancel-in-progress: true
 
-env:
-  CURRENT_RELEASE_BRANCH: "release/0.2"
-
 jobs:
   merge:
     name: Merge Main into Release
@@ -27,6 +24,6 @@ jobs:
         with:
           type: now
           from_branch: main
-          target_branch: ${{ env.CURRENT_RELEASE_BRANCH }}
+          target_branch: ${{ secrets.CURRENT_RELEASE_BRANCH }}
           github_token: ${{ secrets.WEMOGY_GENERATOR_AUTO_MERGE }}
           message: "New Release"
