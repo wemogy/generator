@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "default" {
-  name     = var.environment
+  name     = <% if (isSingleResourceGroup) { %>local.prefix<% } else { %>var.environment<% } %>
   location = var.location
 
   lifecycle {
