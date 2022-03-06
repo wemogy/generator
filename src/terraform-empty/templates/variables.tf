@@ -6,7 +6,7 @@ variable "project" {
 }
 
 variable "environment" {
-  default     = "<%= folder %>"
+<% if (isSingleResourceGroup) { %>  default     = ""<% } else { %>  default     = "<%= folder %>"<% } %>
   description = "Will be attached to every resource name"
   type        = string
 }
