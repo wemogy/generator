@@ -56,6 +56,7 @@ class TerraformEmptyGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    this.answers.isSingleResourceGroup = this.answers.folder === 'terraform';
     if (this.answers.folder === 'terraform') {
       this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
     } else {
