@@ -7,9 +7,7 @@ class HelmSelectionGenerator extends BaseSelectionGenerator {
     super(args, options);
 
     this.generators = this.generators = [
-      new GeneratorSelection('Helm Chart for a customer project', 'wemogy:helm-customer-project')
-    ];
-    this.generators = this.generators = [
+      new GeneratorSelection('Helm Chart for a customer project', 'wemogy:helm-customer-project'),
       new GeneratorSelection('Helm Chart for a wemogy module', 'wemogy:helm-wemogy-module')
     ];
   }

@@ -164,6 +164,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
 
     this.composeWith('wemogy:terraform-empty', {
       folder: 'terraform',
+      name: `wemogy${toNoWhitespaceLowerCase(this.answers.name)}`,
       remoteBackendStorageAccountName: `${toNoWhitespaceLowerCase(this.answers.name)}tfstate`,
       remoteBackendStorageBlobContainerName: 'tfstate',
       azureSubscriptionId: this.answers.azureSubscriptionId,
