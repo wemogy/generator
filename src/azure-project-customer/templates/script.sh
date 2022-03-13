@@ -76,7 +76,7 @@ az ad group member add \
 
 # Create Service for GitHub Actions
 echo "Creating Service Principal for GitHub Actions..."
-gitHubActions=$(az ad sp create-for-rbac \
+gitHubActionsServicePrincipal=$(az ad sp create-for-rbac \
   --name "$projectName GitHub Actions" \
   --role owner)
 gitHubActionsAppId=$(echo $gitHubActionsServicePrincipal | jq -r .appId)
@@ -96,8 +96,10 @@ echo "Creating Terraform Remote State resources..."
 
 az group create --name terraform --location $location
 
+storageAccountName=${projectName}tfstate
+
 az storage account create \
-  --name ${projectName}tfstate \
+  --name $storageAccountName \
   --resource-group terraform \
   --location $location \
   --kind StorageV2
@@ -106,11 +108,11 @@ sleep 10
 
 az storage container create \
   --name tfstate \
-  --account-name ${projectName}tfstate
+  --account-name $storageAccountName
 
 az storage container create \
   --name tfstate-dev \
-  --account-name ${projectName}tfstate
+  --account-name $storageAccountName
 
 sleep 10
 

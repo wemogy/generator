@@ -26,6 +26,12 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
       },
       {
         type: 'input',
+        name: 'devNamespace',
+        message: 'Dev Namespace name',
+        default: `${this.appname}-dev`
+      },
+      {
+        type: 'input',
         name: 'aadAdminGroupId',
         message: 'AAD Admin Group Object ID',
         default: '00000000-0000-0000-0000-000000000000'

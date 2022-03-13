@@ -21,7 +21,7 @@ RUN dotnet restore src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/<%= 
 COPY . .
 
 # Run unit tests
-WORKDIR /src/webservices/<%= folder %>.Core/<%= name %>.Core.UnitTests/
+WORKDIR /src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/
 RUN dotnet test --configuration $CONFIGURATION
 
 # Build the application
