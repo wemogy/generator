@@ -28,7 +28,7 @@ resource "azurerm_role_assignment" "aks_dev_readonly" {
 
 # Allow Developers to modify Kubernets Resources in the dev Namespace
 resource "azurerm_role_assignment" "aks_dev_namespace" {
-  scope                = "${azurerm_kubernetes_cluster.default.id}/namespaces/dev"
-  role_definition_name = "Azure Kubernetes Service RBAC Writer"
+  scope                = "${azurerm_kubernetes_cluster.default.id}/namespaces/<%- devNamespace %>"
+  role_definition_name = "Azure Kubernetes Service RBAC Admin"
   principal_id         = var.azure_aad_group_developers_id
 }

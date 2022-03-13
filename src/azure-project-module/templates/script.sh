@@ -47,22 +47,10 @@ devGroup=$(az ad group create \
 devGroupName=$(echo $devGroup | jq -r .displayName)
 devGroupObjectId=$(echo $devGroup | jq -r .objectId)
 
-# Create new AD Group for Admins
-adminGroup=$(az ad group create \
-  --display-name "wemogy $moduleName Administrators" \
-  --mail-nickname "wemogy-$moduleName-administrators")
-adminGroupName=$(echo $adminGroup | jq -r .displayName)
-adminGroupObjectId=$(echo $adminGroup | jq -r .objectId)
-
 sleep 10
 
 az role assignment create \
   --assignee $devGroupObjectId \
-  --role "Contributor" \
-  --scope "/subscriptions/$subscription/resourceGroups/$moduleName"
-
-az role assignment create \
-  --assignee $adminGroupObjectId \
   --role "Owner" \
   --scope "/subscriptions/$subscription/resourceGroups/$moduleName"
 
@@ -88,16 +76,16 @@ az ad group member add \
 # Create Service for GitHub Actions
 echo "Creating Service Principal for GitHub Actions..."
 
-gitHubActions=$(az ad sp create-for-rbac \
+gitHubActionsServicePrincipal=$(az ad sp create-for-rbac \
   --name "wemogy $moduleName GitHub Actions" \
   --role owner)
 gitHubActionsAppId=$(echo $gitHubActionsServicePrincipal | jq -r .appId)
 gitHubActionsTenantId=$(echo $gitHubActionsServicePrincipal | jq -r .tenant)
 gitHubActionsPassword=$(echo $gitHubActionsServicePrincipal | jq -r .password)
 
-# Add the service principal to the admin group
+# Add the service principal to the aad group
 az ad group member add \
-  --group "$adminGroupName" \
+  --group "$devGroupObjectId" \
   --member-id $(az ad sp show --id $gitHubActionsAppId --query objectId -o tsv)
 
 # ---------
@@ -106,8 +94,10 @@ az ad group member add \
 
 echo "Creating Terraform Remote State resources..."
 
+storageAccountName=wemogy${moduleName}tfstate
+
 az storage account create \
-  --name wemogy${moduleName}tfstate \
+  --name $storageAccountName \
   --resource-group $moduleName \
   --location $location \
   --kind StorageV2
@@ -116,10 +106,10 @@ sleep 10
 
 az storage container create \
   --name tfstate \
-  --account-name ${moduleName}tfstate
+  --account-name $storageAccountName
 
 terraformAccessKey=$(az storage account keys list \
-  --account-name ${moduleName}tfstate \
+  --account-name wemogy${moduleName}tfstate \
   -o tsv \
   --query "[0].value")
 
@@ -135,18 +125,11 @@ az keyvault create \
   --resource-group "$moduleName" \
   --location $location
 
-# Give Developers AAD Group read-access
+# Give Developers AAD Group access
 az keyvault set-policy \
   --name "wemogy${moduleName}kv" \
   --resource-group "$moduleName" \
   --object-id $devGroupObjectId \
-  --secret-permissions get list
-
-# Give Admin AAD Group write-access
-az keyvault set-policy \
-  --name "wemogy${moduleName}kv" \
-  --resource-group "$moduleName" \
-  --object-id $adminGroupObjectId \
   --secret-permissions all
 
 # Add Local Development Service Principal Secrets
@@ -169,7 +152,6 @@ az keyvault secret set \
   --vault-name "wemogy${moduleName}kv" \
   --name "TerraformBackendAccessKey" \
   --value "$terraformAccessKey"
-
 
 # --------------
 # GitHub Secrets
