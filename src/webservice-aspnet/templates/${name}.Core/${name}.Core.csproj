@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -9,3 +10,5 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 </Project>
+
+
