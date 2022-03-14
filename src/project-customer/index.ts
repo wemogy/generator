@@ -208,6 +208,13 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
       dapr: true,
       skipEclint: true
     });
+
+    // Scripts
+    this.composeWith('wemogy:script-secrets', {
+      keyVaultName: `${toNoWhitespaceLowerCase(this.answers.name)}devsecrets`,
+      subscriptionId: this.answers.azureSubscriptionId,
+      projectType: 'Customer project'
+    });
   }
 
   // Where installation are run (npm, bower)
