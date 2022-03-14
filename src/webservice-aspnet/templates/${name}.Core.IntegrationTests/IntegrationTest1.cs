@@ -9,6 +9,7 @@ namespace <%= name %>.Core.IntegrationTests
         public IntegrationTest1()
         {
             var configuration = ConfigurationFactory.BuildConfiguration();
+
             // Access the Secret with configuration["Secret]
         }
 
