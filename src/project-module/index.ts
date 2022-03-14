@@ -210,6 +210,13 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       dapr: true,
       skipEclint: true
     });
+
+    // Scripts
+    this.composeWith('wemogy:script-secrets', {
+      keyVaultName: `wemogy${toNoWhitespaceLowerCase(this.answers.name)}kv`,
+      subscriptionId: this.answers.azureSubscriptionId,
+      projectType: 'wemogy Module'
+    });
   }
 
   // Where installation are run (npm, bower)
