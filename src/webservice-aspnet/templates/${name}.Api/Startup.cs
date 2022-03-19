@@ -45,7 +45,7 @@ namespace <%= name %>.Api
 <% if (authorization) { %>
             // Add Swagger
             var xmlDocsFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-            services.AddSwagger("1.0", "<%= name %> API", "1.0", "This is the <%= name %> API.", xmlDocsFilePath, "Bearer", new OpenApiSecurityScheme
+            services.AddSwagger("v1", "<%= name %> API", "v1", "This is the <%= name %> API.", xmlDocsFilePath, "Bearer", new OpenApiSecurityScheme
             {
                 Description = "API Key",
                 Name = "Authorization",
