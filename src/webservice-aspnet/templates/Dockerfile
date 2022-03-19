@@ -7,7 +7,9 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
 ARG NUGET_TOKEN
 ARG CONFIGURATION=Release
 
-# Copy .csproj files for NuGet restore
+# Copy .sln and .csproj files for NuGet restore
+COPY src/*.sln src/
+COPY src/*.props src/
 COPY src/webservices/<%= folder %>/<%= name %>.Api/<%= name %>.Api.csproj src/webservices/<%= folder %>/<%= name %>.Api/
 COPY src/webservices/<%= folder %>/<%= name %>.Core/<%= name %>.Core.csproj src/webservices/<%= folder %>/<%= name %>.Core/
 COPY src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/<%= name %>.Core.UnitTests.csproj src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/
