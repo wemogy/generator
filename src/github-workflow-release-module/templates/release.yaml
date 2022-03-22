@@ -3,9 +3,6 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: Manually set the version (for Pre-Releases)
-        required: false
       pre-release:
         description: Genereates a Pre-Release when checked
         type: boolean
@@ -21,11 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       # Override version with the manually provided version if available
-      next-version: ${{ github.event.inputs.version != '' && github.event.inputs.version || steps.release-version.outputs.next-version }}
+      next-version: ${{ steps.release-version.outputs.next-version }}${{ github.event.inputs.version && 'pre' || '' }}
+      next-version-name: ${{ steps.release-version.outputs.next-version-name }}${{ github.event.inputs.version && 'pre' || '' }}
     steps:
       - name: Get version for next release
         if: ${{ github.event.inputs.version == '' }}
-        uses: wemogy/release-version-action@1.0.2
+        uses: wemogy/release-version-action@2.0.2
         id: release-version
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -120,7 +118,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Version ${{ needs.setup.outputs.next-version }}
-          tag_name: ${{ needs.setup.outputs.next-version }}
+          tag_name: ${{ needs.setup.outputs.next-version-name }}
           prerelease: ${{ github.event.inputs.pre-release || false }}
           generate_release_notes: true
         env:
