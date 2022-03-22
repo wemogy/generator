@@ -7,8 +7,8 @@ class GitSelectionGenerator extends BaseSelectionGenerator {
     super(args, options);
 
     this.generators = this.generators = [
-      new GeneratorSelection('Fix .gitignore', 'wemogy:git-prefix'),
-      new GeneratorSelection('Add v prefix to branches and tags', 'wemogy:git-fix-gitignore')
+      new GeneratorSelection('Fix .gitignore', 'wemogy:git-fix-gitignore'),
+      new GeneratorSelection('Add v prefix to branches and tags', 'wemogy:git-prefix')
     ];
   }
 }
