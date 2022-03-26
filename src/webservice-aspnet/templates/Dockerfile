@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
 
 ARG NUGET_TOKEN
 ARG CONFIGURATION=Release
+ARG SKIP_TESTS=false
 
 # Copy .sln and .csproj files for NuGet restore
 COPY src/*.sln src/
@@ -24,7 +25,7 @@ COPY . .
 
 # Run unit tests
 WORKDIR /src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/
-RUN dotnet test --configuration $CONFIGURATION
+RUN if [ "$SKIP_TESTS" = "true" ]; then echo 'Skipping tests...'; else dotnet test --configuration $CONFIGURATION; fi
 
 # Build the application
 WORKDIR /src/webservices/<%= folder %>/<%= name %>.Api/
