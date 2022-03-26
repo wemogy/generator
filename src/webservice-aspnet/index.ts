@@ -94,6 +94,14 @@ class WebserviceAspNetGenerator extends BaseDotnetTemplateGenerator {
         }.Core.IntegrationTests.csproj`
       )
     );
+    addProjectToSln.bind(this)(
+      this.getSolutionPath(),
+      this.destinationPath(
+        `src/webservices/${toNoWhitespaceLowerCase(this.answers.folder)}/${this.answers.name}.Sdk/${
+          this.answers.name
+        }.Sdk.csproj`
+      )
+    );
   }
 
   // Called last, cleanup, say good bye, etc
