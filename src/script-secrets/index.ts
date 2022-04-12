@@ -34,7 +34,7 @@ class SecretScriptGenerator extends BaseTemplateGenerator {
   public writing(): void {
     this.answers.terraformSecretName =
       this.answers.projectType === 'Customer project' ? 'TerraformDevBackendSasToken' : 'TerraformBackendAccessKey';
-    this.copyTemplateToDestination();
+    this.copyTemplateToDestination(this.destinationPath('env/scripts/'));
   }
 }
 
