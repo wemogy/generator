@@ -1,26 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-<%= service %>
+  name: {{ .Release.Name }}-wemogy-<%= name %>-<%= service %>
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-<%= service %>
+      app: {{ .Release.Name }}-wemogy-<%= name %>-<%= service %>
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-<%= service %>
-      {{- if .Values.api.podLabels }}
-        {{- toYaml .Values.api.podLabels | nindent 8 }}
+        app: {{ .Release.Name }}-wemogy-<%= name %>-<%= service %>
+      {{- if .Values.<%= service %>.podLabels }}
+        {{- toYaml .Values.<%= service %>.podLabels | nindent 8 }}
       {{- end }}
       annotations:
         dapr.io/enabled: 'true'
         dapr.io/app-id: '<%= service %>'
         dapr.io/app-port: '80'
     spec:
+      serviceAccountName: {{ .Release.Name }}-wemogy-<%= name %>
       containers:
-      - name: <%= service %>
-        image: {{ .Values.images.wemogy.<%= name %>.repository }}:{{ tpl .Values.images.wemogy.<%= name %>.tag . }}
+      - name: app
+        image: {{ .Valuesy.<%= service %>.repository }}:{{ tpl .Values.<%= service %>.tag . }}
         env:
         - name: CONFIG_PATH
           value: /etc/config/config.yaml
@@ -38,10 +39,8 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
-      {{- if .Values.images.wemogy.pullSecret  }}
       imagePullSecrets:
-      - name: {{ .Values.images.wemogy.pullSecret  }}
-      {{- end }}
+      - name: {{ tpl .Values.images.wemogy.pullSecret.name . }}
       volumes:
       - name: config
         configMap:
