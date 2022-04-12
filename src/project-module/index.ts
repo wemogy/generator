@@ -191,6 +191,14 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       skipEclint: true
     });
 
+    this.composeWith('wemogy:github-workflow-test', {
+      dotnet:
+        this.answers.components.includes('.NET SDK') || this.answers.components.includes('ASP.NET Backend Service'),
+      helm: true,
+      skipSecretHints: true,
+      skipEclint: true
+    });
+
     this.composeWith('wemogy:github-workflow-release-module', {
       nuget: this.answers.components.includes('.NET SDK'),
       buildDotnetActionPath: './.github/actions/dotnet',
