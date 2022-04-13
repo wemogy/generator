@@ -20,6 +20,7 @@
     "eclint": "^2.8.1",
     "glob": "^7.1.7",
     "lodash": "^4.17.21",
+    "update-notifier": "^5.1.0",
     "yeoman-generator": "5.4.0",
     "yosay": "^2.0.2"
   },
@@ -27,6 +28,7 @@
     "generators"
   ],
   "devDependencies": {
+    "@types/update-notifier": "^5.1.0",
     "@types/glob": "^7.1.4",
     "@types/lodash": "^4.14.168",
     "@types/node": "^16.4.13",
