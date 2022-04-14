@@ -23,8 +23,23 @@ jobs:
       - name: Test .NET Solution
         working-directory: src
         shell: bash
-        run: dotnet test -c Release
-<% } if(helm) { %>
+        run: dotnet test -c Release /p:CollectCoverage=true -m:1
+<% }
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.0.2
+        with:
+          filename: coverage.cobertura.xml
+          badge: true
+          format: 'markdown'
+          output: 'both'
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
+<% if(helm) { %>
       # Helm Chart Tests
       - name: Validate Helm Chart
         working-directory: env/helm/media
