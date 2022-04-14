@@ -3,11 +3,8 @@ node_modules/
 .pnp
 .pnp.js
 
-# development
-*.Development.*
-*.development.*
-
 # testing
+coverage*
 coverage
 
 # production
