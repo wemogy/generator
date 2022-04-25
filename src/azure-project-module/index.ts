@@ -36,24 +36,25 @@ class AzureWemogyModuleProjectGenerator extends BaseTemplateGenerator {
     ]);
   }
 
+  public writing(): void {
+    // Overriding from base, to make sure, that no files are copied.
+  }
+
   public install(): void {
     const cleanName = _.replace(this.answers.name, ' ', '').toLowerCase();
-    try {
-      // Make script executable
-      this.spawnCommandSync('chmod', ['+x', 'script.sh'], { shell: true });
+    const scriptPath = `${__dirname}/templates/script.sh`;
 
-      // Execute script with parameters
-      this.spawnCommandSync(
-        './script.sh',
-        [cleanName, this.answers.subscription, this.answers.location, this.answers.addGitHubSecrets],
-        {
-          shell: true
-        }
-      );
-    } finally {
-      // Delete script after execution
-      this.spawnCommandSync('rm', ['script.sh'], { shell: true });
-    }
+    // Make script executable
+    this.spawnCommandSync('chmod', ['+x', scriptPath], { shell: true });
+
+    // Execute script with parameters
+    this.spawnCommandSync(
+      scriptPath,
+      [cleanName, this.answers.subscription, this.answers.location, this.answers.addGitHubSecrets],
+      {
+        shell: true
+      }
+    );
   }
 }
 

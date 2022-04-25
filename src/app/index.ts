@@ -23,8 +23,6 @@ class AppGenerator extends Generator {
     if (this.updateInfo.type == 'latest') {
       // Generator is on the latest version
       this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
-      this.composeWith('wemogy:app-selection');
-      return;
     } else {
       // Generator is NOT on the latest version
       this.log(
