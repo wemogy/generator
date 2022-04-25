@@ -71,6 +71,7 @@ runs:
           --install \
           --namespace ${{ inputs.namespace }} \
           --create-namespace \
+          --debug \
           --wait \
           --set ingress.domain.prefix=${{ inputs.domain-prefix }} \
           --set ingress.tls.letsencrypt.environment=prod \
