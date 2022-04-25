@@ -6,19 +6,20 @@ class GitPrefixGenerator extends BaseTemplateGenerator {
     super(args, options);
   }
 
-  public install(): void {
-    try {
-      // Make script executable
-      this.spawnCommandSync('chmod', ['+x', 'script.sh'], { shell: true });
+  public writing(): void {
+    // Overriding from base, to make sure, that no files are copied.
+  }
 
-      // Execute script with parameters
-      this.spawnCommandSync('./script.sh', [], {
-        shell: true
-      });
-    } finally {
-      // Delete script after execution
-      this.spawnCommandSync('rm', ['script.sh'], { shell: true });
-    }
+  public install(): void {
+    const scriptPath = `${__dirname}/templates/script.sh`;
+
+    // Make script executable
+    this.spawnCommandSync('chmod', ['+x', scriptPath], { shell: true });
+
+    // Execute script with parameters
+    this.spawnCommandSync(scriptPath, [], {
+      shell: true
+    });
   }
 }
 
