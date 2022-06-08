@@ -55,3 +55,7 @@ secrets.json
 # Yalc
 .yalc
 yalc.lock
+
+# Generated files
+.docusaurus
+.cache-loader
