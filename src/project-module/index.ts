@@ -22,9 +22,15 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       },
       {
         type: 'input',
-        name: 'repoUrl',
-        message: 'GitHub Repository URL (for publishing packages)',
-        default: `https://github.com/wemogy/${toKebabCase(this.appname)}`
+        name: 'repoOwner',
+        message: 'GitHub Repository Owner',
+        default: `wemogy`
+      },
+      {
+        type: 'input',
+        name: 'repoName',
+        message: 'GitHub Repository Name (for publishing packages)',
+        default: toKebabCase(this.appname)
       },
       {
         type: 'checkbox',
@@ -68,6 +74,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
     const slnName = `Wemogy.${toPascalCase(this.answers.name)}`;
     const helmChartName = toNoWhitespaceLowerCase(this.answers.name);
     const serviceName = toNoWhitespaceLowerCase(this.answers.backendServiceName);
+    const repoUrl = `https://github.com/${this.answers.repoOwner}/${this.answers.repoName}`;
 
     // Base structure
     this.log('Generating base folder structure...');
@@ -82,7 +89,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
 
       this.composeWith('wemogy:sdk-javascript', {
         name: `@wemogy/${toNoWhitespaceLowerCase(this.answers.name)}-sdk`,
-        repoUrl: this.answers.repoUrl,
+        repoUrl: repoUrl,
         skipEclint: true
       });
 
@@ -99,7 +106,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
 
       this.composeWith('wemogy:sdk-dotnet', {
         name: `${slnName}.Sdk`,
-        repoUrl: this.answers.repoUrl,
+        repoUrl: repoUrl,
         solutionName: slnName,
         skipEclint: true
       });
@@ -224,6 +231,13 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       keyVaultName: `wemogy${toNoWhitespaceLowerCase(this.answers.name)}kv`,
       subscriptionId: this.answers.azureSubscriptionId,
       projectType: 'wemogy Module'
+    });
+
+    // Documentation
+    this.composeWith('wemogy:docs-docusaurus', {
+      name: this.answers.name,
+      repoOwner: this.answers.repoOwner,
+      repoName: this.answers.repoName
     });
   }
 
