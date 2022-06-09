@@ -219,10 +219,13 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       skipEclint: true
     });
 
+    this.composeWith('wemogy:github-workflow-docs', {
+      name: toNoWhitespaceLowerCase(this.answers.name),
+      skipEclint: true
+    });
+
     // Docker Compose
     this.composeWith('wemogy:docker-compose', {
-      serviceName: serviceName,
-      dapr: true,
       skipEclint: true
     });
 
@@ -230,7 +233,8 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
     this.composeWith('wemogy:script-secrets', {
       keyVaultName: `wemogy${toNoWhitespaceLowerCase(this.answers.name)}kv`,
       subscriptionId: this.answers.azureSubscriptionId,
-      projectType: 'wemogy Module'
+      projectType: 'wemogy Module',
+      skipEclint: true
     });
 
     // Documentation
