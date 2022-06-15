@@ -17,6 +17,8 @@
     "@docusaurus/core": "2.0.0-beta.0",
     "@docusaurus/preset-classic": "2.0.0-beta.0",
     "@mdx-js/react": "^1.6.21",
+    "mdx-mermaid": "^1.2.3",
+    "mermaid": "^9.1.2",
     "clsx": "^1.1.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"

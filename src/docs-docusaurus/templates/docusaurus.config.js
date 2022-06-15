@@ -49,7 +49,8 @@ module.exports = {
           path: 'docs',
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/<%= repoOwner %>/<%= repoName %>/edit/main/'
+          editUrl: 'https://github.com/<%= repoOwner %>/<%= repoName %>/edit/main/',
+          remarkPlugins: [require('mdx-mermaid')]
         },
         blog: false,
         theme: {
