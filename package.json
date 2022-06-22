@@ -1,6 +1,6 @@
 {
   "name": "generator-wemogy",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A yeoman code generator for common wemogy templates",
   "repository": "https://github.com/wemogy/generator",
   "keywords": [
