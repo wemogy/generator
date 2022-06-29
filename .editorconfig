@@ -42,3 +42,7 @@ resharper_space_within_single_line_array_initializer_braces = false
 resharper_braces_for_foreach = required
 resharper_braces_for_ifelse = required
 resharper_blank_lines_before_single_line_comment = 1
+resharper_place_constructor_initializer_on_same_line = false
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_arguments_style = chop_always
+csharp_space_after_cast = false
