@@ -3,10 +3,11 @@ resource "azurerm_kubernetes_cluster" "default" {
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
   dns_prefix          = "${local.prefix}aks"
-  kubernetes_version  = "<%- kubernetesVersion %>"
+  kubernetes_version  = var.kubernetes_version
 
   default_node_pool {
     name                         = "system"
+    orchestrator_version         = var.kubernetes_version
     vm_size                      = "Standard_B2s"
     vnet_subnet_id               = azurerm_subnet.aks.id
     only_critical_addons_enabled = true
@@ -47,6 +48,7 @@ resource "azurerm_kubernetes_cluster" "default" {
 
 resource "azurerm_kubernetes_cluster_node_pool" "default_worker" {
   name                  = "worker"
+  orchestrator_version  = var.kubernetes_version
   kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
   vm_size               = "Standard_DS2_v2"
   vnet_subnet_id        = azurerm_subnet.aks.id

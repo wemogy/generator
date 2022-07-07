@@ -1,3 +1,8 @@
+variable "kubernetes_version" {
+  description = "The Kubernetes version to use for the API Server and Node Pools"
+  default     = "<%- kubernetesVersion %>"
+}
+
 variable "azure_aad_group_admins_id" {
   description = "Azure AD group ID for the Administrators group"
   default     = "<%- aadAdminGroupId %>"
