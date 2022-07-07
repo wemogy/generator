@@ -6,7 +6,10 @@ class DocsGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
 
-    this.generators = this.generators = [new GeneratorSelection('Docusaurus', 'wemogy:docs-docusaurus')];
+    this.generators = this.generators = [
+      new GeneratorSelection('Docusaurus', 'wemogy:docs-docusaurus'),
+      new GeneratorSelection('Architecture Decision Record (ADR)', 'wemogy:docs-adr')
+    ];
   }
 }
 
