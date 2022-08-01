@@ -40,7 +40,7 @@ class AzureCustomerProjectGenerator extends BaseTemplateGenerator {
   }
 
   public install(): void {
-    const cleanName = _.replace(this.answers.name, ' ', '').toLowerCase();
+    const cleanName = this.answers.name.replaceAll(' ', '');
     const scriptPath = `${__dirname}/templates/script.sh`;
 
     // Make script executable

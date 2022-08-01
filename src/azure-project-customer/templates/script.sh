@@ -34,14 +34,14 @@ devGroup=$(az ad group create \
   --display-name "$projectName Developers" \
   --mail-nickname "$projectName-developers")
 devGroupName=$(echo $devGroup | jq -r .displayName)
-devGroupObjectId=$(echo $devGroup | jq -r .objectId)
+devGroupObjectId=$(echo $devGroup | jq -r .id)
 
 # Create new AD Group for Admins
 adminGroup=$(az ad group create \
   --display-name "$projectName Administrators" \
   --mail-nickname "$projectName-administrators")
 adminGroupName=$(echo $adminGroup | jq -r .displayName)
-adminGroupObjectId=$(echo $adminGroup | jq -r .objectId)
+adminGroupObjectId=$(echo $adminGroup | jq -r .id)
 
 sleep 10
 
@@ -78,7 +78,8 @@ az ad group member add \
 echo "Creating Service Principal for GitHub Actions..."
 gitHubActionsServicePrincipal=$(az ad sp create-for-rbac \
   --name "$projectName GitHub Actions" \
-  --role owner)
+  --role owner \
+  --scopes "/subscriptions/$subscription")
 gitHubActionsAppId=$(echo $gitHubActionsServicePrincipal | jq -r .appId)
 gitHubActionsTenantId=$(echo $gitHubActionsServicePrincipal | jq -r .tenant)
 gitHubActionsPassword=$(echo $gitHubActionsServicePrincipal | jq -r .password)
