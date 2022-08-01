@@ -226,7 +226,9 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
 
     // Docker Compose
     this.composeWith('wemogy:docker-compose', {
-      skipEclint: true
+      skipEclint: true,
+      serviceName: serviceName,
+      dapr: true
     });
 
     // Scripts

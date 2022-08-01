@@ -24,7 +24,7 @@ jobs:
         working-directory: src
         shell: bash
         run: dotnet test -c Release /p:CollectCoverage=true -m:1
-<% }
+<% } %>
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.0.2
         with:
