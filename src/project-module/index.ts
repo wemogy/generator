@@ -202,6 +202,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       dotnet:
         this.answers.components.includes('.NET SDK') || this.answers.components.includes('ASP.NET Backend Service'),
       helm: true,
+      helmName: helmChartName,
       skipSecretHints: true,
       skipEclint: true
     });
