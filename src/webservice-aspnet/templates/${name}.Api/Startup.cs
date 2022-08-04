@@ -34,6 +34,8 @@ namespace <%= name %>.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.Add<%= folder.camelCase %>();            
 <% if (wemogyIdentity) { %>
             // Add Wemogy Authentication
             services.AddWemogyIdentity(options =>
