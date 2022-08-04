@@ -42,7 +42,7 @@ jobs:
 <% if(helm) { %>
       # Helm Chart Tests
       - name: Validate Helm Chart
-        working-directory: env/helm/media
+        working-directory: env/helm/<% helmName %>
         run: |
           helm dependency update
           helm lint

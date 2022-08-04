@@ -22,7 +22,15 @@ class GitHubBuildWorkflowGenerator extends BaseTemplateGenerator {
         type: 'confirm',
         name: 'helm',
         message: 'Validate Helm?',
-        default: false
+        default: false,
+        followUpQuestions: [
+          {
+            type: 'input',
+            name: 'helmName',
+            message: 'Helm Chart Name',
+            default: this.appname.toLowerCase()
+          }
+        ]
       }
     ]);
   }
