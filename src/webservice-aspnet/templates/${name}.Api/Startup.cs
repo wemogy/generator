@@ -57,7 +57,7 @@ namespace <%= name %>.Api
 <% } else { %>
             // Add Swagger
             var xmlDocsFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-            services.AddSwagger("1.0", "<%= name %> API", "1.0", "This is the <%= name %> API.", xmlDocsFilePath);
+            services.AddSwagger("v1", "<%= name %> API", "v1", "This is the <%= name %> API.", xmlDocsFilePath);
 <% } %>
             // Add Logging
             services.AddApplicationInsightsTelemetry(Configuration["AzureApplicationInsightsInstrumentationKey"]);
@@ -94,7 +94,7 @@ namespace <%= name %>.Api
             app.UseSwaggerUI(c =>
             {
                 c.DocumentTitle = "<%= name %> API";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "v1");
                 c.RoutePrefix = string.Empty;
             });
 
