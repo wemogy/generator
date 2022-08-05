@@ -82,6 +82,8 @@ jobs:
         uses: <%= containersActionPath %>
         with:
           container-registry-server: ${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}
+          container-registry-username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          container-registry-password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
           wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: ${{ needs.setup.outputs.next-version }}
           push: true
@@ -99,7 +101,7 @@ jobs:
             --app-version ${{ needs.setup.outputs.next-version }} \
             --version ${{ needs.setup.outputs.next-version }}
       - name: Publish Helm Chart
-        uses: wemogy/publish-helm-chart-action@1.1.0
+        uses: wemogy/publish-helm-chart-action@1.1.3
         with:
           path: <%= helmChartName %>-${{ needs.setup.outputs.next-version }}.tgz
           token: ${{ secrets.HELM_REPO_TOKEN }}
