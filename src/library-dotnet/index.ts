@@ -16,12 +16,6 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
       this.slnPrompt,
       {
         type: 'input',
-        name: 'folder',
-        message: 'Subfolder name',
-        default: `core`
-      },
-      {
-        type: 'input',
         name: 'name',
         message: 'Project name',
         default: `Wemogy.${toPascalCase(this.appname)}.Shared.Core`
@@ -53,7 +47,7 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     this.composeSolutionIfNeeded();
-    this.copyTemplateToDestination(this.destinationPath(`src/shared/${toNoWhitespaceLowerCase(this.answers.folder)}`));
+    this.copyTemplateToDestination(this.destinationPath('src'));
   }
 
   // Where installation are run (npm, bower)
@@ -61,15 +55,13 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
     // Add Library to Solution
     addProjectToSln.bind(this)(
       this.getSolutionPath(),
-      this.destinationPath(`src/shared/${this.answers.folder}/${this.answers.name}/${this.answers.name}.csproj`)
+      this.destinationPath(`src/${this.answers.name}/${this.answers.name}.csproj`)
     );
 
     // Add UnitTests to Solution
     addProjectToSln.bind(this)(
       this.getSolutionPath(),
-      this.destinationPath(
-        `src/shared/${this.answers.folder}/${this.answers.name}.UnitTests/${this.answers.name}.UnitTests.csproj`
-      )
+      this.destinationPath(`src/${this.answers.name}.UnitTests/${this.answers.name}.UnitTests.csproj`)
     );
   }
 
