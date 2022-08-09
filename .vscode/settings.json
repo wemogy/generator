@@ -8,5 +8,9 @@
   // Spell Checker
   "cSpell.allowCompoundWords": true,
   "cSpell.language": "en",
-  "cSpell.words": ["dapr", "eclint", "RBAC", "Xunit", "yosay"]
+  "cSpell.words": ["dapr", "eclint", "RBAC", "tfstate", "Xunit", "yosay"],
+
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/build.yaml"
+  }
 }

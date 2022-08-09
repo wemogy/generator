@@ -1,48 +1,54 @@
 import * as chalk from 'chalk';
-import GeneratorSelection from '../GeneratorSelection';
-import BaseSelectionGenerator from '../BaseSelectionGenerator';
+import * as Generator from 'yeoman-generator';
 const yosay = require('yosay');
-import { resolveGeneratorInheritance } from '../GeneratorResolver';
-import SeparatorSelection from '../SeparatorSelection';
+import { UpdateInfo, UpdateNotifier } from 'update-notifier';
 
-class AppGenerator extends BaseSelectionGenerator {
+class AppGenerator extends Generator {
+  private answers: any;
+  private updateInfo: UpdateInfo;
+
   constructor(args: any, options: any) {
     super(args, options);
-    this.generators = [
-      new GeneratorSelection('wemogy Empty project structure', 'wemogy:project-empty'),
-      new GeneratorSelection('wemogy Web Service (.NET)', 'wemogy:project-webservice-dotnet'),
-      new GeneratorSelection('wemogy Class Library (.NET)', 'wemogy:project-lib-dotnet'),
-      new GeneratorSelection('wemogy SDK (.NET)', 'wemogy:project-sdk-dotnet'),
-      new GeneratorSelection('wemogy SDK (JavaScript)', 'wemogy:project-sdk-javascript'),
-      new GeneratorSelection('wemogy Frontend (React)', 'wemogy:project-frontend-react'),
-      new SeparatorSelection(),
-      new GeneratorSelection('.NET', 'wemogy:dotnet'),
-      new GeneratorSelection('TypeScript', 'wemogy:typescript'),
-      new GeneratorSelection('Terraform', 'wemogy:terraform'),
-      new GeneratorSelection('Yeoman', 'wemogy:yeoman'),
-      new GeneratorSelection('GitHub', 'wemogy:github'),
-      new GeneratorSelection('Dapr', 'wemogy:dapr'),
-      new SeparatorSelection(),
-      new GeneratorSelection('React', 'wemogy:react'),
-      new GeneratorSelection('ReactBase', 'wemogy:reactbase'),
-      new SeparatorSelection(),
-      new GeneratorSelection('wemogy CLI', 'wemogy:wemogy-cli'),
-      new SeparatorSelection()
-    ];
+  }
 
-    this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
-    this.log(
-      `Choose generators with the ${chalk.cyan(
-        'wemogy'
-      )} prefix, to generate new projects as part of a larger wemogy repository. This will automatically create the correct folder structure.`
-    );
-    this.log(chalk.yellow('Hint: Please make sure to call this generator from the repository root.'));
-    this.log('');
-    this.log(
-      'All other options generate basic templates for specific technologies without any specific folder structure.'
-    );
-    this.log('');
+  public async initialize() {
+    // Check for updates
+    const packageJson = require('../../package.json');
+    var notifier = new UpdateNotifier({
+      pkg: packageJson
+    });
+
+    this.updateInfo = await notifier.fetchInfo();
+
+    if (this.updateInfo.type == 'latest') {
+      // Generator is on the latest version
+      this.log(yosay(`Welcome to the ${chalk.blue(`wemogy`)} code generator!`));
+    } else {
+      // Generator is NOT on the latest version
+      this.log(
+        yosay(`Update available!\n ${chalk.blue(this.updateInfo.current)} -> ${chalk.green(this.updateInfo.latest)}`)
+      );
+      this.answers = await this.prompt([
+        {
+          type: 'confirm',
+          name: 'update',
+          message: 'What do you want to update now?',
+          default: true
+        }
+      ]);
+    }
+  }
+
+  public writing(): void {
+    if (this.answers?.update) {
+      this.log('Installing update...');
+      this.spawnCommandSync('npm', ['update', '-g', 'generator-wemogy']);
+      this.log('Update installed.');
+      this.composeWith('wemogy:app');
+    } else {
+      this.composeWith('wemogy:app-selection');
+    }
   }
 }
 
-export default resolveGeneratorInheritance(AppGenerator);
+export default AppGenerator;

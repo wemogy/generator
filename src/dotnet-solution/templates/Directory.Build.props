@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CoverletOutput>$(SolutionDir)</CoverletOutput>
+    <CoverletOutputFormat>json,lcov,cobertura</CoverletOutputFormat>
+    <MergeWith>$(SolutionDir)/coverage.json</MergeWith>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Wemogy.StyleCop" Version="0.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

@@ -7,6 +7,10 @@ inputs:
   version:
     description: "The version of the build"
     required: true
+  configuration:
+    description: "The Build Configuration"
+    required: true
+    default: "Release"
 runs:
   using: "composite"
   steps:
@@ -23,8 +27,8 @@ runs:
     - name: Build
       working-directory: <%= slnPath %>
       shell: bash
-      run: dotnet build --no-restore
+      run: dotnet build --configuration ${{ inputs.configuration }} --no-restore
     - name: Test
       working-directory: <%= slnPath %>
       shell: bash
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --configuration ${{ inputs.configuration }} --no-build --verbosity normal

@@ -1,0 +1,29 @@
+name: Auto-Merge into Release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    paths:
+      - 'src/**'
+      - 'package.json'
+
+concurrency:
+  group: auto-mege-into-release
+  cancel-in-progress: true
+
+jobs:
+  merge:
+    name: Merge Main into Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Merge main -> release
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: main
+          target_branch: ${{ secrets.CURRENT_RELEASE_BRANCH }}
+          github_token: ${{ secrets.WEMOGY_GENERATOR_AUTO_MERGE }}
+          message: "New Release"

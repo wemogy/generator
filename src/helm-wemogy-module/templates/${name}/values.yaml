@@ -1,0 +1,36 @@
+# Set to false, if this chart gets deployed outside of wemogy cloud
+wemogyCloud: false
+enableRbac: true
+
+settings:
+  demo:
+    myService:
+      connectionString: ""
+
+# You can either provide the config file in plain text or reference an existing ConfigMap
+config:
+  # Config content in plain text
+  content: null
+  # The ConfigMap that includes the config
+  configMap:
+    name: null
+
+# Configures the local instance of Dapr
+dapr:
+  enabled: false
+  global:
+    ha:
+      enabled: true
+
+<%= service %>:
+  repository: ""
+  tag: '{{ .Chart.AppVersion }}'
+  podLabels:
+
+images:
+  wemogy:
+    # Name of the pull secret to use for the wemogy images
+    pullSecret:
+      name: '{{ .Release.Name }}-wemogy-<%= name %>-pull-secret'
+      username: ""
+      password: ""

@@ -13,53 +13,10 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
   public async prompting() {
     this.answers = await this.prompt([
       {
-        type: 'input',
-        name: 'id',
-        message: 'Terraform ID',
-        default: 'default'
-      },
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Resource Name',
-        default: '"${var.prefix}aks"'
-      },
-      {
-        type: 'confirm',
-        name: 'publicIp',
-        message: 'Create public IP address for Ingress?'
-      },
-      {
-        when: (answers: any) => answers.publicIp,
-        type: 'input',
-        name: 'publicIpName',
-        message: 'Public IP address Resource Name',
-        default: '"${var.prefix}aksingress"'
-      },
-      {
-        type: 'input',
-        name: 'vnetName',
-        message: 'Virtual Network Name',
-        default: '"${var.prefix}vnet"'
-      },
-      {
-        type: 'input',
-        name: 'resourceGroupName',
-        message: 'Azure Resource Group Name',
-        default: 'azurerm_resource_group.default.name'
-      },
-      {
-        when: (answers: any) => answers.publicIp,
-        type: 'input',
-        name: 'resourceGroupId',
-        message: 'Azure Resource Group ID',
-        default: 'azurerm_resource_group.default.id'
-      },
-      {
-        type: 'input',
-        name: 'location',
-        message: 'Azure Location',
-        default: 'azurerm_resource_group.default.location'
+        type: 'list',
+        name: 'folder',
+        message: 'Terraform Folder',
+        choices: ['terraform', 'shared', 'individual']
       },
       {
         type: 'input',
@@ -68,9 +25,22 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
         default: '1.20.7'
       },
       {
-        type: 'confirm',
-        name: 'createProviders',
-        message: 'Create Terraform providers for this cluster?'
+        type: 'input',
+        name: 'devNamespace',
+        message: 'Dev Namespace name',
+        default: `${this.appname}-dev`
+      },
+      {
+        type: 'input',
+        name: 'aadAdminGroupId',
+        message: 'AAD Admin Group Object ID',
+        default: '00000000-0000-0000-0000-000000000000'
+      },
+      {
+        type: 'input',
+        name: 'aadDevGroupId',
+        message: 'AAD Developers Group Object ID',
+        default: '00000000-0000-0000-0000-000000000000'
       }
     ]);
   }
@@ -80,26 +50,10 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    // AKS
-    this.fs.copyTpl(this.templatePath('azure_aks.tf'), this.destinationPath('azure_aks.tf'), this.answers);
-    this.fs.copyTpl(
-      this.templatePath('azure_networking.tf'),
-      this.destinationPath('azure_networking.tf'),
-      this.answers
-    );
-
-    // RBAC
-    if (this.answers.publicIp) {
-      this.fs.copyTpl(this.templatePath('azure_rbac.tf'), this.destinationPath('azure_rbac.tf'), this.answers);
-    }
-
-    // Providers
-    if (this.answers.createProviders) {
-      this.fs.copyTpl(
-        this.templatePath('provider_kubernetes.tf'),
-        this.destinationPath('provider_kubernetes.tf'),
-        this.answers
-      );
+    if (this.answers.folder === 'terraform') {
+      this.copyTemplateToDestination(this.destinationPath(`env/${this.answers.folder}`));
+    } else {
+      this.copyTemplateToDestination(this.destinationPath(`env/terraform/${this.answers.folder}`));
     }
   }
 
@@ -107,11 +61,7 @@ class TerraformAksGenerator extends BaseTemplateGenerator {
   public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {
-    this.log(
-      'Project structure has been created. Please checkout our docs for details: https://docs.wemogy.com/docs-internal/devops/terraform'
-    );
-  }
+  public end(): void {}
 }
 
 export default TerraformAksGenerator;

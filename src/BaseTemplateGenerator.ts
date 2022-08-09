@@ -2,22 +2,34 @@ import _ = require('lodash');
 import fs = require('fs');
 import * as Generator from 'yeoman-generator';
 import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
+import {
+  replaceAll,
+  toPascalCase,
+  toCamelCase,
+  toNoWhitespaceLowerCase,
+  toSnakeCase,
+  toKebabCase
+} from './StringHelpers';
 
 class TemplateArgument {
   public get pascalCase(): string {
-    return _.upperFirst(_.camelCase(this.toString()));
+    return toPascalCase(this.toString());
   }
 
   public get camelCase(): string {
-    return _.camelCase(this.toString());
+    return toCamelCase(this.toString());
+  }
+
+  public get lowerCase(): string {
+    return toNoWhitespaceLowerCase(this.toString());
   }
 
   public get snakeCase(): string {
-    return _.snakeCase(this.toString());
+    return toSnakeCase(this.toString());
   }
 
   public get kebabCase(): string {
-    return _.kebabCase(this.toString());
+    return toKebabCase(this.toString());
   }
 
   public constructor(private readonly arg: any) {}
@@ -28,8 +40,12 @@ class TemplateArgument {
 }
 
 function toTemplateArguments(obj: object): object {
+  obj = _.cloneDeep(obj);
   for (const propertyName in obj) {
-    obj[propertyName] = new TemplateArgument(obj[propertyName]);
+    // only replace string values
+    if (typeof obj[propertyName] === 'string') {
+      obj[propertyName] = new TemplateArgument(obj[propertyName]);
+    }
   }
   return obj;
 }
@@ -40,6 +56,16 @@ class BaseTemplateGenerator extends Generator {
 
   constructor(args: any, options: any) {
     super(args, options);
+    this.option('skipSecretHints', {
+      type: Boolean,
+      default: false,
+      description: "Don't show hints about GitHub secrets that need to added."
+    });
+    this.option('skipEclint', {
+      type: Boolean,
+      default: false,
+      description: "Don't run Editor Config Linting after execution."
+    });
   }
 
   // Your initialization methods (checking current project state, getting configs, etc
@@ -62,16 +88,26 @@ class BaseTemplateGenerator extends Generator {
   // Called last, cleanup, say good bye, etc
   public end(): void {}
 
-  protected eclint(): void {
-    this.log('Applying EditorConfig rules by running eclint...');
-    this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
+  public composeWith(
+    generators: Array<Generator.CompositionOptions | string> | Generator.CompositionOptions | string,
+    options?: Generator.GeneratorOptions,
+    returnNewGenerator?: any
+  ): any {
+    // Remove properties from options that are 'undefined'
+    // We do this because yeoman-generator transforms boolean options from 'undefined' to 'false' but we
+    // want to keep the 'undefined' value so that the generator asks the user for the value
+    const cleanedOptions = _.omitBy(options, _.isUndefined);
+    return super.composeWith(generators, cleanedOptions, returnNewGenerator);
   }
 
-  protected copyTemplateToDestination(destinationSubPath?: string, params?: object, sourceSubPath = '.'): void {
-    if (!destinationSubPath) {
-      destinationSubPath = '.';
+  protected eclint(): void {
+    if (!this.options.skipEclint) {
+      this.log('Applying EditorConfig rules by running eclint...');
+      this.spawnCommandSync('eclint', ['fix', '$(git ls-files)'], { shell: true });
     }
+  }
 
+  protected copyTemplateToDestination(destinationSubPath = '.', params?: object, sourceSubPath = '.'): void {
     if (!params) {
       params = {};
     }
@@ -94,13 +130,12 @@ class BaseTemplateGenerator extends Generator {
         },
         processDestinationPath: (filePath: string): string => {
           for (let argName of argNames) {
-            filePath = filePath.replace('${' + argName + '}', args[argName]);
-            filePath = filePath.replace('${' + argName + '.camelCase}', args[argName].camelCase);
-            filePath = filePath.replace('${' + argName + '.pascalCase}', args[argName].pascalCase);
-            filePath = filePath.replace('${' + argName + '.snakeCase}', args[argName].snakeCase);
-            filePath = filePath.replace('${' + argName + '.kebabCase}', args[argName].kebabCase);
+            filePath = replaceAll(filePath, '${' + argName + '}', args[argName]);
+            filePath = replaceAll(filePath, '${' + argName + '.camelCase}', args[argName].camelCase);
+            filePath = replaceAll(filePath, '${' + argName + '.pascalCase}', args[argName].pascalCase);
+            filePath = replaceAll(filePath, '${' + argName + '.snakeCase}', args[argName].snakeCase);
+            filePath = replaceAll(filePath, '${' + argName + '.kebabCase}', args[argName].kebabCase);
           }
-
           return filePath;
         }
       }

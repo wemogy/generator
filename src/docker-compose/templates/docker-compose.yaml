@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  <%= serviceName %>:
+    container_name: docker-<%= serviceName %>-1
+    build:
+      context: ../../
+      dockerfile: src/webservices/<%= serviceName %>/Dockerfile
+      args:
+        - CONFIGURATION=Debug
+        - NUGET_TOKEN
+    ports:
+      - '8080:80'
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - .env
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+<% if (dapr) { %>
+  <%= serviceName %>-dapr:
+    image: "daprio/daprd:1.6.0"
+    command: ["./daprd", "-app-id", "<%= serviceName %>", "-app-port", "80", "-components-path", "/components"]
+    volumes:
+      - "../dapr/components:/components"
+      - "../dapr/secrets:/env/dapr/secrets"
+    network_mode: "service:<%= serviceName %>"
+<% } %>

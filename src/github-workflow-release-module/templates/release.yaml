@@ -2,6 +2,12 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      pre-release:
+        description: Genereates a Pre-Release when checked
+        type: boolean
+        required: false
+        default: "false"
   push:
     branches:
       - release/**
@@ -11,10 +17,13 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      next-version: ${{ steps.release-version.outputs.next-version }}
+      # Override version with the manually provided version if available
+      next-version: ${{ steps.release-version.outputs.next-version }}${{ github.event.inputs.version && 'pre' || '' }}
+      next-version-name: ${{ steps.release-version.outputs.next-version-name }}${{ github.event.inputs.version && 'pre' || '' }}
     steps:
       - name: Get version for next release
-        uses: wemogy/release-version-action@1.0.1
+        if: ${{ github.event.inputs.version == '' }}
+        uses: wemogy/release-version-action@2.0.2
         id: release-version
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,13 +75,15 @@ jobs:
       - name: Login to Azure Container Registry
         uses: docker/login-action@v1
         with:
-          registry: <%= containerRegistryServer %>
-          username: <%= containerRegistryUsername %>
-          password: <%= containerRegistryPassword %>
+          registry: ${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       - name: Build Containers
         uses: <%= containersActionPath %>
         with:
           container-registry-server: ${{ secrets.CONTAINER_REGISTRY_LOGIN_SERVER }}
+          container-registry-username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          container-registry-password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
           wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
           version: ${{ needs.setup.outputs.next-version }}
           push: true
@@ -85,14 +96,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Package Helm chart
         run: |
-          helm dependency update <%= helmPath %>
-          helm package <%= helmPath %> \
+          helm dependency update env/helm/<%= helmChartName %>
+          helm package env/helm/<%= helmChartName %> \
             --app-version ${{ needs.setup.outputs.next-version }} \
             --version ${{ needs.setup.outputs.next-version }}
       - name: Publish Helm Chart
-        uses: wemogy/publish-helm-chart-action@1.1.0
+        uses: wemogy/publish-helm-chart-action@1.1.3
         with:
-          path: <%= helmName %>-${{ needs.setup.outputs.next-version }}.tgz
+          path: <%= helmChartName %>-${{ needs.setup.outputs.next-version }}.tgz
           token: ${{ secrets.HELM_REPO_TOKEN }}
 <% } %>
   github-release:
@@ -108,7 +119,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.setup.outputs.next-version }}
           name: Version ${{ needs.setup.outputs.next-version }}
+          tag_name: ${{ needs.setup.outputs.next-version-name }}
+          prerelease: ${{ github.event.inputs.pre-release || false }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

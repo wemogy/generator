@@ -18,6 +18,7 @@ runs:
     - name: Set version number
       shell: bash
       run: npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
+      working-directory: <%= jsPath %>
     - name: Install packages
       working-directory: <%= jsPath %>
       shell: bash

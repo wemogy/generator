@@ -11,7 +11,8 @@ class GitHubGenerator extends BaseSelectionGenerator {
       new GeneratorSelection('Action for Container Image Builds', 'wemogy:github-action-containers'),
       new GeneratorSelection('Action for Helm Charts', 'wemogy:github-action-helm'),
       new GeneratorSelection('Workflow for Builds', 'wemogy:github-workflow-build'),
-      new GeneratorSelection('Workflow for Shared Infrastructure', 'wemogy:github-workflow-shared'),
+      new GeneratorSelection('Workflow for Tests', 'wemogy:tests'),
+      new GeneratorSelection('Workflow for Shared Infrastructure', 'wemogy:github-workflow-shared-infrastructure'),
       new GeneratorSelection(
         'Workflow for App Releases (with GitHub Environments)',
         'wemogy:github-workflow-release-app'
@@ -26,7 +27,7 @@ class GitHubGenerator extends BaseSelectionGenerator {
       // ),
       new GeneratorSelection('Workflow for Pull Request Deployments', 'wemogy:github-workflow-deploy-pr'),
       new GeneratorSelection('Workflow for Coding Style Checks', 'wemogy:github-workflow-style'),
-      new GeneratorSelection('Workflow for Secret Scans', 'wemogy:github-workflow-secrets')
+      new GeneratorSelection('Workflow for publishing Docusaurus', 'wemogy:github-workflow-docs')
     ];
   }
 }

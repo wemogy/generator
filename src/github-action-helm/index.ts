@@ -13,12 +13,6 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
     this.answers = await this.optionOrPrompt([
       {
         type: 'input',
-        name: 'helmPath',
-        message: 'Path to Helm Chart',
-        default: 'env/helm'
-      },
-      {
-        type: 'input',
         name: 'helmChartName',
         message: 'Helm Chart Folder Name',
         default: this.appname
@@ -31,7 +25,7 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.fs.copyTpl(this.templatePath(), this.destinationPath('.github/actions'), this.answers);
+    this.copyTemplateToDestination(this.destinationPath('.github/actions'));
   }
 
   // Where installation are run (npm, bower)

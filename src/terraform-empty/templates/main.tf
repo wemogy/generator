@@ -1,16 +1,16 @@
-<% if (remoteBackend) { %># To use Azure Storage as remote backend to save state, follow the
+# To use Azure Storage as remote backend to save state, follow the
 # official guide, to setup the Storage Account: https://docs.microsoft.com/en-us/azure/terraform/terraform-backend
 #
 # export ARM_ACCESS_KEY=$(az storage account keys list -g terraform --account-name <%= remoteBackendStorageAccountName %> -o tsv --query "[0].value")
-<% } %>
+
 terraform {
   required_version = ">= 1.0.0"
 
-<% if (remoteBackend) { %>  backend "azurerm" {
+  backend "azurerm" {
     storage_account_name = "<%= remoteBackendStorageAccountName %>"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }<% } else { %>  backend "local" {}<% } %>
+    container_name       = "<%= remoteBackendStorageBlobContainerName %>"
+    key                  = "<%= folder %>.tfstate"
+  }
 
   required_providers {
     azuread = {
@@ -19,15 +19,15 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 2.69.0"
+      version = "~> 2.98.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.2.0"
+      version = "~> 2.4.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.3.2"
+      version = "~> 2.8.0"
     }
   }
 }

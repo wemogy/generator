@@ -4,6 +4,14 @@
 
 ## Get it running
 
+Install [Yeoman]() via NPM
+
+```bash
+npm install -g yo
+```
+
+Now install the generator
+
 ```bash
 npm install -g generator-wemogy
 ```
@@ -48,6 +56,7 @@ Choose these to generate basic templates for specific technologies. They will no
 | Terraform | Kubernetes Cluster configuration |  | `yo wemogy:terraform-kubernetes` |
 | TypeScript | Empty |  | `yo wemogy:typescript-empty` |
 | TypeScript | React |  | `yo wemogy:typescript-react` |
+| Documentation | Docusaurus |  | `yo wemogy:docs-docusaurus` |
 | Yeoman | Selector Generator |  | `yo wemogy:yeoman-selector` |
 | Yeoman | Template Generator (Generic) |  | `yo wemogy:yeoman-template` |
 | Yeoman | Template Generator (.NET) |  | `yo wemogy:yeoman-template-dotnet` |

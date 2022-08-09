@@ -3,11 +3,8 @@ node_modules/
 .pnp
 .pnp.js
 
-# development
-*.Development.*
-*.development.*
-
 # testing
+coverage*
 coverage
 
 # production
@@ -31,6 +28,7 @@ yarn-error.log*
 
 # jetbrains
 .idea/
+*.user
 
 # helm
 *.tgz
@@ -51,3 +49,13 @@ terraform.tfstate.d/
 
 # Secrets
 .cert
+secrets.json
+.env
+
+# Yalc
+.yalc
+yalc.lock
+
+# Generated files
+.docusaurus
+.cache-loader

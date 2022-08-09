@@ -2,7 +2,7 @@ import { resolveGeneratorInheritance } from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
 import GeneratorSelection from '../GeneratorSelection';
 
-class <%= name.pascalCase %> extends BaseSelectionGenerator {
+class <%= className %> extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
     super(args, options);
 
@@ -10,4 +10,4 @@ class <%= name.pascalCase %> extends BaseSelectionGenerator {
   }
 }
 
-export default resolveGeneratorInheritance(<%= name.pascalCase %>);
+export default resolveGeneratorInheritance(<%= className %>);

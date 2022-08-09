@@ -6,29 +6,60 @@ on:
       - main
 
 jobs:
-  containers:
-    name: Build
+  changes:
+    name: Check Pull Request Changes
     runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src }}
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          src: 'src/**'
+
+  build-apps:
+    name: Build Apps
+    runs-on: ubuntu-latest
+    needs: changes
     steps:
       - uses: actions/checkout@v2
+        if: needs.changes.outputs.src == 'true'
 <% if(dotnet) { %>
+      # Build .NET
+      - uses: actions/setup-dotnet@v1
+        if: needs.changes.outputs.src == 'true'
+        with:
+          dotnet-version: 5.0.x
+          source-url: https://nuget.pkg.github.com/wemogy/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
       - name: Build .NET
         uses: <%= buildDotnetActionPath %>
         with:
           wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
-          version: 0.0.0-test
-<% } if(dotnet) { %>
+<% } if(javaScript) { %>
+      # Build JavaScript
       - name: Build JavaScript
         uses: <%= buildJavaScriptActionPath %>
         with:
           wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
-          version: 0.0.0-test
 <% } if(containers) { %>
-      - name: Build Containers
-        uses: <%= containersActionPath %>
-        with:
-          container-registry-server: test
-          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
-          version: 0.0.0-test
-          push: false
+  build-containers:
+    name: Build Containers
+    runs-on: ubuntu-latest
+    needs: changes
+    steps:
+    - uses: actions/checkout@v2
+      if: needs.changes.outputs.src == 'true'
+    - name: Build Containers
+      if: needs.changes.outputs.src == 'true'
+      uses: <%= containersActionPath %>
+      with:
+        container-registry-server: test
+        wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+        version: 0.0.0-test
+        push: false
 <% } %>
