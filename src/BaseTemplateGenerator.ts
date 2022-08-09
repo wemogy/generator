@@ -1,4 +1,5 @@
 import _ = require('lodash');
+import fs = require('fs');
 import * as Generator from 'yeoman-generator';
 import optionOrPrompt, { AdvancedQuestions } from './OptionOrPrompt';
 
@@ -112,7 +113,25 @@ class BaseTemplateGenerator extends Generator {
     return _.upperFirst(_.camelCase(str));
   }
 
+  protected camelCase(str: string): string {
+    return _.camelCase(str);
+  }
+
   //#endregion
+
+  private appendLineCallHistory: string[] = [];
+  protected appendLine(filePath: string, line: string) {
+    const key = filePath + line;
+    if (this.appendLineCallHistory.includes(key)) {
+      return;
+    }
+    this.appendLineCallHistory.push(key);
+    const fileContent = this.fs.read(filePath);
+    if (fileContent.includes(line)) {
+      return;
+    }
+    fs.appendFileSync(filePath, line + '\n');
+  }
 }
 
 export default BaseTemplateGenerator;

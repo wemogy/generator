@@ -1,3 +1,4 @@
+import _ = require('lodash');
 import BaseSelectionGenerator from './BaseSelectionGenerator';
 import BaseTemplateGenerator from './BaseTemplateGenerator';
 
@@ -9,7 +10,7 @@ export function resolveGeneratorInheritance<T extends typeof BaseSelectionGenera
   generator.prototype.initialize = generator.prototype.initialize;
   generator.prototype.prompting = generator.prototype.prompting;
   generator.prototype.configuring = generator.prototype.configuring;
-  generator.prototype.writing = generator.prototype.writing;
+  generator.prototype.writing = _.once(generator.prototype.writing);
   generator.prototype.install = generator.prototype.install;
   generator.prototype.end = generator.prototype.end;
   return generator;

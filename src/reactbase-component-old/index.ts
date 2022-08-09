@@ -1,4 +1,3 @@
-import _ = require('lodash');
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 
@@ -21,15 +20,17 @@ class ReactbaseComponent extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.appendToIndex();
+    this.updateComponentThemeCollection();
     this.copyTemplateToDestination();
   }
 
-  private appendToIndex(): void {
-    const indexPath = this.destinationPath() + '/index.ts';
-    const componentName = this.pascalCase(this.answers.name);
-    const line = `export { default as ${componentName} } from 'ui/core/${componentName}';`;
-    this.appendLine(indexPath, line);
+  private updateComponentThemeCollection(): void {
+    this.getComponentThemeCollectionFilePath();
+  }
+
+  private getComponentThemeCollectionFilePath(): string {
+    console.log(this.destinationPath('..'));
+    return '';
   }
 }
 
