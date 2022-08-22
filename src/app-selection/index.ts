@@ -11,6 +11,7 @@ class AppSelectionGenerator extends BaseSelectionGenerator {
       new GeneratorSelection('Project: Empty structure', 'wemogy:project-empty'),
       new GeneratorSelection('Project: Customer project', 'wemogy:project-customer'),
       new GeneratorSelection('Project: wemogy Module', 'wemogy:project-module'),
+      new GeneratorSelection('Project: wemogy Library (.NET)', 'wemogy:project-library-dotnet'),
       new SeparatorSelection(),
       new GeneratorSelection('Frontend (React)', 'wemogy:frontend-react'),
       new GeneratorSelection('Library (.NET)', 'wemogy:library-dotnet'),

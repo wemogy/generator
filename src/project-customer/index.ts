@@ -92,7 +92,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
 
       // .NET Core Library
       this.composeWith('wemogy:library-dotnet', {
-        folder: 'core',
+        folder: 'shared/core',
         name: `${slnName}.Shared.Core`,
         nuget: false,
         solutionName: slnName,

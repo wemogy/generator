@@ -1,8 +1,9 @@
+import _ = require('lodash');
 import { toNoWhitespaceLowerCase } from '../StringHelpers';
-import { getSlnSelectionOptions, addProjectToSln, toPascalCase } from '../DotnetHelpers';
-import BaseDotnetTemplateGenerator from '../BaseDotnetTemplateGenerator';
+import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import chalk = require('chalk');
 
-class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
+class LibraryDotnetProjectGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -12,20 +13,21 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
 
   // Where you prompt users for options (where you’d call this.prompt())
   public async prompting() {
+    const solutionName = this.findFirstFileWithExtension(this.destinationPath('src'), '.sln')?.replace('.sln', '');
+    console.log('solutionName', solutionName);
     this.answers = await this.optionOrPrompt([
-      this.slnPrompt,
       {
         type: 'input',
-        name: 'folder',
-        message: 'Subfolder name (optional)',
-        default: ''
+        name: 'solutionName',
+        message: 'Solution name?',
+        default: solutionName
       },
       {
         type: 'input',
         name: 'name',
-        message: 'Project name',
-        default: `Wemogy.${toPascalCase(this.appname)}.Shared.Core`
+        message: 'Package name (just the name without solution name prefix, e.g. "cosmos")'
       },
+
       {
         type: 'confirm',
         name: 'nuget',
@@ -52,36 +54,28 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.composeSolutionIfNeeded();
-    this.copyTemplateToDestination(this.destinationPath(this.getProjectPath()));
+    // .NET Library
+    this.log('Generating .NET Library...');
+    this.composeWith('wemogy:library-dotnet', {
+      solutionName: this.answers.solutionName,
+      folder: _.camelCase(this.answers.name),
+      name: `${this.answers.solutionName}.${this.pascalCase(this.answers.name)}`,
+      nuget: true,
+      nugetRepoUrl: this.answers.nugetRepoUrl,
+      nugetDescription: this.answers.nugetDescription,
+      skipEclint: true
+    });
   }
 
   // Where installation are run (npm, bower)
-  public install(): void {
-    // Add Library to Solution
-    addProjectToSln.bind(this)(
-      this.getSolutionPath(),
-      this.destinationPath(`${this.getProjectPath()}/${this.answers.name}/${this.answers.name}.csproj`)
-    );
-
-    // Add UnitTests to Solution
-    addProjectToSln.bind(this)(
-      this.getSolutionPath(),
-      this.destinationPath(
-        `${this.getProjectPath()}/${this.answers.name}.UnitTests/${this.answers.name}.UnitTests.csproj`
-      )
-    );
-  }
-
-  private getProjectPath(): string {
-    if (this.answers.folder) {
-      return `src/${toNoWhitespaceLowerCase(this.answers.folder)}`;
-    }
-    return 'src';
-  }
+  public install(): void {}
 
   // Called last, cleanup, say good bye, etc
-  public end(): void {}
+  public end(): void {
+    this.log();
+
+    this.eclint();
+  }
 }
 
-export default LibraryDotnetGenerator;
+export default LibraryDotnetProjectGenerator;

@@ -9,6 +9,7 @@ import {
   toSnakeCase,
   toKebabCase
 } from './StringHelpers';
+import * as fs from 'fs';
 
 class TemplateArgument {
   public get pascalCase(): string {
@@ -139,6 +140,20 @@ class BaseTemplateGenerator extends Generator {
         }
       }
     );
+  }
+
+  protected findFirstFileWithExtension(directory: string, extension: string): string | undefined {
+    try {
+      const files = fs.readdirSync(directory);
+      for (const file of files) {
+        if (file.endsWith(extension)) {
+          return file;
+        }
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   //#region conventions
