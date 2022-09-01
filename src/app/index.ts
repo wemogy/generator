@@ -1,7 +1,8 @@
 import * as chalk from 'chalk';
 import * as Generator from 'yeoman-generator';
+import {UpdateInfo, UpdateNotifier} from 'update-notifier';
+
 const yosay = require('yosay');
-import { UpdateInfo, UpdateNotifier } from 'update-notifier';
 
 class AppGenerator extends Generator {
   private answers: any;

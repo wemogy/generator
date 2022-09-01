@@ -1,6 +1,6 @@
-import { toNoWhitespaceLowerCase } from '../StringHelpers';
 import { getSlnSelectionOptions, addProjectToSln, toPascalCase } from '../DotnetHelpers';
 import BaseDotnetTemplateGenerator from '../BaseDotnetTemplateGenerator';
+import _ = require('lodash');
 
 class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
   constructor(args: any, options: any) {
@@ -75,7 +75,7 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
 
   private getProjectPath(): string {
     if (this.answers.folder) {
-      return `src/${toNoWhitespaceLowerCase(this.answers.folder)}`;
+      return `src/${_.kebabCase(this.answers.folder)}`;
     }
     return 'src';
   }

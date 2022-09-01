@@ -10,6 +10,7 @@ import {
   toKebabCase
 } from './StringHelpers';
 import * as fs from 'fs';
+import * as glob from 'glob';
 
 class TemplateArgument {
   public get pascalCase(): string {
@@ -154,6 +155,11 @@ class BaseTemplateGenerator extends Generator {
     } catch {
       return undefined;
     }
+  }
+
+  protected findFirstFileOccurrence(directory: string, fileName: string): string | undefined {
+    const files = glob.sync(`${directory}/**/${fileName}`);
+    return files[0];
   }
 
   //#region conventions

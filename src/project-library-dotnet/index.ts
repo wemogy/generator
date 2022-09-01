@@ -71,7 +71,7 @@ class LibraryDotnetProjectGenerator extends BaseTemplateGenerator {
     this.composeWith('wemogy:library-dotnet', {
       solutionName: this.answers.name,
       folder: this.answers.multiPackageLibrary ? 'core' : '',
-      name: this.answers.coreProjectName,
+      name: this.answers.multiPackageLibrary ? this.answers.coreProjectName : this.answers.name,
       nuget: this.answers.nuget,
       nugetRepoUrl: this.answers.nugetRepoUrl,
       nugetDescription: this.answers.nugetDescription,

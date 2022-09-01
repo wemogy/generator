@@ -1,7 +1,6 @@
-import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import {resolveGeneratorInheritance} from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
 import GeneratorSelection from '../GeneratorSelection';
-import SeparatorSelection from '../SeparatorSelection';
 
 class YeomanGenerator extends BaseSelectionGenerator {
   constructor(args: any, options: any) {
