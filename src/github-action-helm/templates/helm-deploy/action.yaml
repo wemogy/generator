@@ -45,13 +45,14 @@ runs:
   using: "composite"
   steps:
     - name: AKS Login
-      uses: wemogy/aks-login-action@1.0.0
+      uses: wemogy/aks-login-action@1.1.1
       with:
         name: ${{ inputs.aks-name }}
         resource-group: ${{ inputs.aks-resource-group }}
         client-id:  ${{ inputs.client-id }}
         client-secret: ${{ inputs.client-secret }}
         tenant-id: ${{ inputs.tenant-id }}
+        admin: true
 
     - name: Restore Helm chart dependencies
       shell: bash
