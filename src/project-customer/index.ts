@@ -102,7 +102,7 @@ class CustomerProjectGenerator extends BaseTemplateGenerator {
       // ASP.NET API Service
       this.composeWith('wemogy:webservice-aspnet', {
         folder: serviceName,
-        name: `${slnName}.Webservices.${toPascalCase(this.answers.backendServiceName)}`,
+        name: `${slnName}.WebServices.${toPascalCase(this.answers.backendServiceName)}`,
         dapr: true,
         wemogyIdentity: false,
         authorization: false,
