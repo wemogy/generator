@@ -9,7 +9,6 @@ subscriptionId=<%= subscriptionId %>
 # Get absolute path for script and calculate path for output file
 scriptPath="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 parentDir="$(dirname "$scriptPath")"
-daprSecretsFolder="$(cd $parentDir/../env/dapr/secrets ; pwd)"
 
 ##################
 # Terraform      #
@@ -27,7 +26,8 @@ localDevServicePrincipalTenantId=$(az keyvault secret show --subscription $subsc
 localDevServicePrincipalPassword=$(az keyvault secret show --subscription $subscriptionId --vault-name $keyVaultName --name LocalDevServicePrincipalPassword --query value -o tsv)
 
 # Create secrets folder for Dapr
-mkdir $daprSecretsFolder
+daprSecretsFolder="$parentDir/../env/dapr/secrets"
+mkdir -p $daprSecretsFolder
 
 # Generate JSON file out of Key Vault secrets
 jq \

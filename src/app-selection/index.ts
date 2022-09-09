@@ -29,6 +29,7 @@ class AppSelectionGenerator extends BaseSelectionGenerator {
       new GeneratorSelection('Yeoman', 'wemogy:yeoman'),
       new GeneratorSelection('Git', 'wemogy:git'),
       new GeneratorSelection('Documentation', 'wemogy:docs'),
+      new GeneratorSelection('Scripts', 'wemogy:scripts'),
       new GeneratorSelection('wemogy CLI', 'wemogy:wemogy-cli'),
       new SeparatorSelection(),
       new GeneratorSelection('ReactBase', 'wemogy:reactbase'),
