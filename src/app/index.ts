@@ -42,7 +42,7 @@ class AppGenerator extends Generator {
   public writing(): void {
     if (this.answers?.update) {
       this.log('Installing update...');
-      this.spawnCommandSync('npm', ['update', '-g', 'generator-wemogy']);
+      this.spawnCommandSync('npm', ['upgrade', '-g', 'generator-wemogy']);
       this.log('Update installed.');
       this.composeWith('wemogy:app');
     } else {
