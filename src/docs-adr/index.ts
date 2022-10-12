@@ -1,6 +1,5 @@
-import { toPascalCase } from '../StringHelpers';
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
-import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import {resolveGeneratorInheritance} from '../GeneratorResolver';
 
 class DocsDocusurusGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {

@@ -20,8 +20,10 @@ export type AdvancedQuestions<
 > = AdvancedQuestion<A, AFollowUp> | Array<AdvancedQuestion<A, AFollowUp>>;
 
 export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>): Promise<T> {
+  if (!this.allAnswers) {
+    this.allAnswers = {};
+  }
   const answers: any = {};
-
   // if the question is a single question
   if (!isQuestionsArray(questions)) {
     const answer = await this.prompt(questions);
@@ -32,6 +34,9 @@ export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>)
   }
 
   for (const question of questions as any) {
+    // update the allAnswers
+    _.merge(this.allAnswers, answers);
+
     // add the option to the set of expected options or arguments
     question.type === 'confirm'
       ? this.option(question.name)
@@ -51,7 +56,7 @@ export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>)
 
     if (typeof question.when === 'function') {
       // call the when resolver
-      const shouldAskQuestion = await question.when(answers);
+      const shouldAskQuestion = await question.when(this.allAnswers);
       // ignore the question if when result is falsy
       if (!shouldAskQuestion) {
         continue;
@@ -62,7 +67,7 @@ export default async function optionOrPrompt<T>(questions: AdvancedQuestions<T>)
 
     if (typeof question.default === 'function') {
       // call the default resolver
-      question.default = question.default(answers);
+      question.default = question.default(this.allAnswers);
     }
 
     // recursive call to ask question or process questions

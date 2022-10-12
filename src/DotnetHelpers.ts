@@ -20,6 +20,15 @@ export function addProjectToSln(slnFile: string, projectFile: string): void {
   }
 }
 
+export function addProjectReferenceToProject(destinationProjectPath: string, pathOfProjectToReference: string): void {
+  this.spawnCommandSync('dotnet', [
+    'add',
+    `/${path.relative('/', destinationProjectPath)}`,
+    'reference',
+    pathOfProjectToReference
+  ]);
+}
+
 export function enforceSolutionFilePresence(): void {
   // Check, if a solution is already present.
   if (getSlnFiles().length === 0) {

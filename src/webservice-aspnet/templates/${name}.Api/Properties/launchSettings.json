@@ -17,9 +17,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Wemogy.Subscriptions.Api": {
+    "<%= name %>.Api": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "index.html",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
