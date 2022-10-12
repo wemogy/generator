@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wemogy.Core" Version="0.1.57" />
-    <PackageReference Include="Wemogy.AspNetCore" Version="0.1.32" />
-    <PackageReference Include="Wemogy.Configuration" Version="0.2.2" />
+    <PackageReference Include="Wemogy.Core" Version="0.5.1" />
+    <PackageReference Include="Wemogy.AspNetCore" Version="0.3.14" />
+    <PackageReference Include="Wemogy.Configuration" Version="0.3.1" />
 <% if (dapr) { %>    <PackageReference Include="Dapr.AspNetCore" Version="1.5.0" /><% } %>
 <% if (wemogyIdentity) { %>    <PackageReference Include="Wemogy.Identity.AspNetCore" Version="0.9.2" /><% } %>
   </ItemGroup>
@@ -14,15 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="../<%= name %>.Core/<%= name %>.Core.csproj" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
-
-  <!-- Generate swagger.json file after each build -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet tool restore" />
-    <Exec Command="dotnet swagger tofile --output $(OutputPath)\swagger.json $(OutputPath)\$(AssemblyName).dll v1" />
-  </Target>
 </Project>
