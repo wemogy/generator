@@ -1,5 +1,5 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
-import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import {resolveGeneratorInheritance} from '../GeneratorResolver';
 
 class GitPrefixGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {

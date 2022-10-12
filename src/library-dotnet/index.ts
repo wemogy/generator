@@ -1,6 +1,6 @@
-import { toNoWhitespaceLowerCase } from '../StringHelpers';
 import { getSlnSelectionOptions, addProjectToSln, toPascalCase } from '../DotnetHelpers';
 import BaseDotnetTemplateGenerator from '../BaseDotnetTemplateGenerator';
+import _ = require('lodash');
 
 class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
   constructor(args: any, options: any) {
@@ -14,6 +14,12 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
   public async prompting() {
     this.answers = await this.optionOrPrompt([
       this.slnPrompt,
+      {
+        type: 'input',
+        name: 'folder',
+        message: 'Subfolder name (optional)',
+        default: ''
+      },
       {
         type: 'input',
         name: 'name',
@@ -47,7 +53,7 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
     this.composeSolutionIfNeeded();
-    this.copyTemplateToDestination(this.destinationPath('src'));
+    this.copyTemplateToDestination(this.destinationPath(this.getProjectPath()));
   }
 
   // Where installation are run (npm, bower)
@@ -55,14 +61,24 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
     // Add Library to Solution
     addProjectToSln.bind(this)(
       this.getSolutionPath(),
-      this.destinationPath(`src/${this.answers.name}/${this.answers.name}.csproj`)
+      this.destinationPath(`${this.getProjectPath()}/${this.answers.name}/${this.answers.name}.csproj`)
     );
 
     // Add UnitTests to Solution
     addProjectToSln.bind(this)(
       this.getSolutionPath(),
-      this.destinationPath(`src/${this.answers.name}.UnitTests/${this.answers.name}.UnitTests.csproj`)
+      this.destinationPath(
+        `${this.getProjectPath()}/${this.answers.name}.UnitTests/${this.answers.name}.UnitTests.csproj`
+      )
     );
+  }
+
+  private getProjectPath(): string {
+    if (this.answers.folder) {
+      const folderPath = this.answers.folder.split('/').map(_.kebabCase).join('/');
+      return `src/${folderPath}`;
+    }
+    return 'src';
   }
 
   // Called last, cleanup, say good bye, etc

@@ -9,6 +9,8 @@ import {
   toSnakeCase,
   toKebabCase
 } from './StringHelpers';
+import * as fs from 'fs';
+import * as glob from 'glob';
 
 class TemplateArgument {
   public get pascalCase(): string {
@@ -139,6 +141,25 @@ class BaseTemplateGenerator extends Generator {
         }
       }
     );
+  }
+
+  protected findFirstFileWithExtension(directory: string, extension: string): string | undefined {
+    try {
+      const files = fs.readdirSync(directory);
+      for (const file of files) {
+        if (file.endsWith(extension)) {
+          return file;
+        }
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  protected findFirstFileOccurrence(directory: string, fileName: string): string | undefined {
+    const files = glob.sync(`${directory}/**/${fileName}`);
+    return files[0];
   }
 
   //#region conventions

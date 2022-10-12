@@ -123,7 +123,7 @@ class ModuleProjectGenerator extends BaseTemplateGenerator {
       this.log('Generating ASP.NET Backend Service...');
 
       this.composeWith('wemogy:library-dotnet', {
-        folder: 'core',
+        folder: 'shared/core',
         name: `${slnName}.Shared.Core`,
         nuget: false,
         solutionName: slnName,

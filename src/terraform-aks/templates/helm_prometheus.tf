@@ -42,5 +42,3 @@ resource "helm_release" "prometheus" {
     type  = "string"
   }
 }
-
-

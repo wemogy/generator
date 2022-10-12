@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      pre-release:
+        description: Genereates a Pre-Release when checked
+        type: boolean
+        required: false
+        default: "false"
+  push:
+    branches:
+      - release/**
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get version for next release
+        if: ${{ github.event.inputs.version == '' }}
+        uses: wemogy/next-version-action@2.0.2
+        id: release-version
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v2
+
+      # Nuget
+      - name: Build .NET
+        uses: ./.github/actions/dotnet
+        with:
+          wemogy-packages-token: ${{ secrets.WEMOGY_PACKAGES_TOKEN }}
+          version: ${{ steps.release-version.outputs.next-version }}${{ github.event.inputs.version && 'pre' || '' }}
+      - name: Create Nuget package(s)
+        run: dotnet pack --no-build --configuration Release /p:VersionPrefix=${{ steps.release-version.outputs.next-version }}${{ github.event.inputs.version && 'pre' || '' }}
+        working-directory: <%= slnPath %>
+      - name: Publish Nuget package(s)
+        run: dotnet nuget push **/*.nupkg --skip-duplicate --source https://nuget.pkg.github.com/${{ github.repository_owner }} --api-key ${{ secrets.GITHUB_TOKEN }}
+        working-directory: <%= slnPath %>
+
+      # GitHub
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Version ${{ steps.release-version.outputs.next-version }}${{ github.event.inputs.version && 'pre' || '' }}
+          tag_name: ${{ steps.release-version.outputs.next-version-name }}${{ github.event.inputs.version && 'pre' || '' }}
+          prerelease: ${{ github.event.inputs.pre-release || false }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

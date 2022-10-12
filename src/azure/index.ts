@@ -1,4 +1,4 @@
-import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import {resolveGeneratorInheritance} from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
 import GeneratorSelection from '../GeneratorSelection';
 

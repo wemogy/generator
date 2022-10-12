@@ -1,5 +1,5 @@
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
-import { resolveGeneratorInheritance } from '../GeneratorResolver';
+import {resolveGeneratorInheritance} from '../GeneratorResolver';
 import GeneratorSelection from '../GeneratorSelection';
 
 class TerraformGenerator extends BaseSelectionGenerator {

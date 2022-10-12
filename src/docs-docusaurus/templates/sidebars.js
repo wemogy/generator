@@ -7,7 +7,7 @@ Creating a sidebar enables you to:
 The sidebars can be generated from the filesystem, or explicitly defined here.
 
 Create as many sidebars as you want.
-*/
+ */
 
 module.exports = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
