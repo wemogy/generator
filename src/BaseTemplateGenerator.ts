@@ -162,6 +162,18 @@ class BaseTemplateGenerator extends Generator {
     return files[0];
   }
 
+  protected appendToFileIfNotExists(filePath: string, content: string): void {
+    // create file if it doesn't exist
+    if (!this.fs.exists(filePath)) {
+      this.fs.write(filePath, content);
+      return;
+    }
+    // append content if it doesn't exist
+    if (!this.fs.read(filePath).includes(content)) {
+      this.fs.append(filePath, content);
+    }
+  }
+
   //#region conventions
 
   protected pascalCase(str: string): string {
