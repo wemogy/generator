@@ -80,6 +80,10 @@ class BaseTemplateGenerator extends Generator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
+    // if template folder not exists, return
+    if (!fs.existsSync(this.templatePath())) {
+      return;
+    }
     this.copyTemplateToDestination();
   }
 

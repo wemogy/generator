@@ -1,4 +1,4 @@
-import {resolveGeneratorInheritance} from '../GeneratorResolver';
+import { resolveGeneratorInheritance } from '../GeneratorResolver';
 import BaseSelectionGenerator from '../BaseSelectionGenerator';
 import GeneratorSelection from '../GeneratorSelection';
 
@@ -8,6 +8,7 @@ class GitSelectionGenerator extends BaseSelectionGenerator {
 
     this.generators = this.generators = [
       new GeneratorSelection('Fix .gitignore', 'wemogy:git-fix-gitignore'),
+      new GeneratorSelection('Cleanup git', 'wemogy:git-cleanup'),
       new GeneratorSelection('Add v prefix to branches and tags', 'wemogy:git-prefix')
     ];
   }
