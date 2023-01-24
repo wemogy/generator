@@ -31,24 +31,6 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
         name: 'name',
         message: 'Project name',
         default: `Wemogy.${toPascalCase(this.appname)}.Shared.Core`
-      },
-      {
-        type: 'confirm',
-        name: 'nuget',
-        message: 'Packable via NuGet?',
-        default: true,
-        followUpQuestions: [
-          {
-            type: 'input',
-            name: 'nugetRepoUrl',
-            message: 'Nuget: GitHub Repository Url'
-          },
-          {
-            type: 'input',
-            name: 'nugetDescription',
-            message: 'NuGet: Package description'
-          }
-        ]
       }
     ]);
   }
@@ -60,20 +42,11 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
   public writing(): void {
     this.composeSolutionIfNeeded();
     this.copyTemplateToDestination(this.destinationPath(this.getProjectPath()));
-
-    // Add XUnit Test Project
-    this.composeWith('wemogy:test-dotnet', {
-      targetDirectory: this.options.targetDirectory,
-      solutionName: this.answers.solutionName,
-      folder: this.answers.folder,
-      name: `${this.answers.name}.UnitTests`,
-      skipEclint: true
-    });
   }
 
   // Where installation are run (npm, bower)
   public install(): void {
-    // Add Library to Solution
+    // Add project to Solution
     addProjectToSln.bind(this)(
       this.getSolutionPath(),
       this.destinationPath(`${this.getProjectPath()}/${this.answers.name}/${this.answers.name}.csproj`)
