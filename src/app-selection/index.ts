@@ -15,6 +15,8 @@ class AppSelectionGenerator extends BaseSelectionGenerator {
       new SeparatorSelection(),
       new GeneratorSelection('Frontend (React)', 'wemogy:frontend-react'),
       new GeneratorSelection('Library (.NET)', 'wemogy:library-dotnet'),
+      new GeneratorSelection('Test project (.NET)', 'wemogy:test-dotnet'),
+      new GeneratorSelection('E2E (.NET)', 'wemogy:e2e-dotnet'),
       new GeneratorSelection('SDK (.NET)', 'wemogy:sdk-dotnet'),
       new GeneratorSelection('SDK (JavaScript)', 'wemogy:sdk-javascript'),
       new GeneratorSelection('Web Service (ASP.NET)', 'wemogy:webservice-aspnet'),
