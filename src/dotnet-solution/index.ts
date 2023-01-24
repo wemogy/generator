@@ -18,6 +18,12 @@ class DotNetSolutionGenerator extends BaseTemplateGenerator {
         name: 'name',
         message: 'Solution name',
         default: `Wemogy.${toPascalCase(this.appname)}`
+      },
+      {
+        type: 'input',
+        name: 'targetDirectory',
+        message: 'Target directory',
+        default: 'src'
       }
     ]);
   }
@@ -27,7 +33,7 @@ class DotNetSolutionGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.destinationPath(`src`));
+    this.copyTemplateToDestination(this.answers.targetDirectory);
   }
 
   // Where installation are run (npm, bower)
