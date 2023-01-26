@@ -1,21 +1,30 @@
 import * as _ from 'lodash';
 import BaseTemplateGenerator from './BaseTemplateGenerator';
-import { getSlnFiles, toPascalCase } from './DotnetHelpers';
+import { getSlnFiles } from './DotnetHelpers';
 
 class BaseDotnetTemplateGenerator extends BaseTemplateGenerator {
-  private slnAvailable: boolean;
+  private readonly solutionFiles: string[];
+  private readonly solutionNames: string[];
+  private readonly slnAvailable: boolean;
+  private readonly multipleSlnAvailable: boolean;
 
-  protected slnPrompt = {
-    when: () => !this.slnAvailable,
-    type: 'input',
-    name: 'solutionName',
-    message: 'Solution name',
-    default: `Wemogy.${toPascalCase(this.appname)}`
-  };
+  protected get slnPrompt() {
+    return {
+      when: () => !this.slnAvailable || this.multipleSlnAvailable,
+      type: this.multipleSlnAvailable ? 'list' : 'input',
+      name: 'solutionName',
+      message: this.multipleSlnAvailable ? 'Which solution?' : 'Solution name',
+      default: this.multipleSlnAvailable ? undefined : this.solutionNames[0],
+      choices: this.multipleSlnAvailable ? this.solutionNames : undefined
+    };
+  }
 
   constructor(args: any, options: any) {
     super(args, options);
-    this.slnAvailable = getSlnFiles().length > 0;
+    this.solutionFiles = getSlnFiles();
+    this.solutionNames = this.solutionFiles.map(sln => sln.split('/').pop().replace('.sln', ''));
+    this.slnAvailable = this.solutionFiles.length > 0;
+    this.multipleSlnAvailable = this.solutionFiles.length > 1;
     if (!this.slnAvailable) {
       this.log.info('No .NET Solution found. We will create one during the process.');
     }
@@ -31,7 +40,8 @@ class BaseDotnetTemplateGenerator extends BaseTemplateGenerator {
   }
 
   protected getSolutionPath(): string {
-    return this.slnAvailable ? getSlnFiles()[0] : `./src/${this.answers.solutionName}.sln`;
+    const index = this.solutionNames.indexOf(this.answers.solutionName);
+    return this.solutionFiles[index];
   }
 }
 
