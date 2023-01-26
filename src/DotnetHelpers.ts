@@ -8,6 +8,10 @@ export function getSlnFiles(): string[] {
   return glob.sync('./**/*.sln');
 }
 
+export function getProjectFiles(): string[] {
+  return glob.sync('./**/*.csproj');
+}
+
 export function getSlnSelectionOptions(): string[] {
   const options = getSlnFiles();
   options.unshift(NO_SOLUTION_SELECTED);

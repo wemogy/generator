@@ -53,7 +53,7 @@ class LibraryDotnetGenerator extends BaseDotnetTemplateGenerator {
     );
   }
 
-  private getProjectPath(): string {
+  protected getProjectPath(): string {
     if (this.answers.folder) {
       const folderPath = this.answers.folder.split('/').map(_.kebabCase).join('/');
       return `${this.options['targetDirectory']}/${folderPath}`;
