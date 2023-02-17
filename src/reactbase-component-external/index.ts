@@ -1,7 +1,7 @@
 import BaseTemplateGenerator from '../BaseTemplateGenerator';
 import { resolveGeneratorInheritance } from '../GeneratorResolver';
 
-class ReactComponent extends BaseTemplateGenerator {
+class ReactbaseComponentExternal extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
     super(args, options);
   }
@@ -23,4 +23,4 @@ class ReactComponent extends BaseTemplateGenerator {
   }
 }
 
-export default resolveGeneratorInheritance(ReactComponent);
+export default resolveGeneratorInheritance(ReactbaseComponentExternal);
