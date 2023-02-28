@@ -49,3 +49,12 @@ resharper_space_within_single_line_array_initializer_braces = true
 resharper_csharp_space_within_single_line_array_initializer_braces = true
 resharper_max_attribute_length_for_same_line = 1
 resharper_mvc_action_not_resolved_highlighting = none
+
+# Ignore generated SDKs code
+[src/sdk/**]
+indent_style = unset
+indent_size = unset
+end_of_line = unset
+charset = unset
+trim_trailing_whitespace = unset
+insert_final_newline = unset
