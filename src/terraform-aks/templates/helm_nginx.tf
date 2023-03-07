@@ -3,7 +3,7 @@ resource "helm_release" "nginx" {
   namespace        = "ingress-system"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
-  version          = "4.0.17"
+  version          = "4.5.2"
   create_namespace = true
 
   set {
@@ -32,5 +32,11 @@ resource "helm_release" "nginx" {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io\\/azure-load-balancer-resource-group"
     value = azurerm_resource_group.default.name
     type  = "string"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io\\/azure-load-balancer-health-probe-request-path"
+    value = azurerm_resource_group.default.name
+    type  = "/healthz"
   }
 }
