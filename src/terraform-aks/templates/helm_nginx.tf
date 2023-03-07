@@ -36,7 +36,7 @@ resource "helm_release" "nginx" {
 
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io\\/azure-load-balancer-health-probe-request-path"
-    value = azurerm_resource_group.default.name
-    type  = "/healthz"
+    value = "/healthz"
+    type  = "string"
   }
 }
