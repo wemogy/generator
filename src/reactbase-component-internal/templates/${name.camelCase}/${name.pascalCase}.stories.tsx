@@ -16,9 +16,5 @@ export default {
 
 // CSF 3.0 - explicit render function
 export const Default: StoryObj<Full<%= name.pascalCase %>Props> = {
-  args: {
-    children: 'Primary variant',
-    iconVariation: 'advanced',
-    primary: true
-  }
+  args: {}
 };

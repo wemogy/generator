@@ -40,6 +40,18 @@ class ReactComponent extends BaseTemplateGenerator {
         ]
       },
       {
+        type: 'confirm',
+        name: 'enableMobxObserver',
+        message: 'Enable Mobx observer?',
+        default: false
+      },
+      {
+        type: 'confirm',
+        name: 'addStorybookFile',
+        message: 'Add Storybook file?',
+        default: false
+      },
+      {
         type: 'input',
         name: 'feature',
         message: 'In which feature should the component be placed? Leave empty for no feature.',
@@ -55,9 +67,10 @@ class ReactComponent extends BaseTemplateGenerator {
 
   // Where installation are run (npm, bower)
   public install(): void {
+    const camelCaseName = _.camelCase(this.answers.name);
     // Add export to folderName/index.ts
     const indexFilePath = this.destinationPath(`${this.folderName}/index.ts`);
-    const exportLine = `export * from './${_.camelCase(this.answers.name)}';`;
+    const exportLine = `export * from './${camelCaseName}';`;
     if (this.fs.exists(indexFilePath)) {
       // If index file exists, append exportLine to end of file
       const data = this.fs.read(indexFilePath);
@@ -67,6 +80,17 @@ class ReactComponent extends BaseTemplateGenerator {
     } else {
       // If index file does not exist, create it with exportLine
       this.fs.write(indexFilePath, `${exportLine}\n`);
+    }
+
+    // Remove storybook file, if not needed
+    if (!this.answers.addStorybookFile) {
+      const pascalCaseName = this.pascalCase(this.answers.name);
+      const storybookFilePath = this.destinationPath(
+        `${this.folderName}/${camelCaseName}/${pascalCaseName}.stories.tsx`
+      );
+      if (this.fs.exists(storybookFilePath)) {
+        this.fs.delete(storybookFilePath);
+      }
     }
   }
 }
