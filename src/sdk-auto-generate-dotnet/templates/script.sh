@@ -82,9 +82,11 @@ namespace $packageName.Client
     public partial class ApiClient
     {
         private readonly SpaceBlocksAccessTokenProvider _accessTokenProvider;
+        private readonly string _apiKey;
 
-        public ApiClient(Uri baseUrl, Uri authUrl, AuthenticationOptions authenticationOptions)
+        public ApiClient(Uri baseUrl, string apiKey, Uri authUrl, AuthenticationOptions authenticationOptions)
         {
+            _apiKey = apiKey;
             _baseUrl = baseUrl.ToString();
             _accessTokenProvider = new SpaceBlocksAccessTokenProvider(
                 authUrl,
@@ -95,6 +97,7 @@ namespace $packageName.Client
         {
             var accessToken = _accessTokenProvider.GetAccessTokenAsync().Result;
             request.AddHeader("Authorization", $"Bearer {accessToken}");
+            request.AddHeader("ApiKey", _apiKey);
         }
     }
 }

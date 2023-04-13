@@ -7,7 +7,11 @@ namespace <%= name %>
 {
     public class <%= clientName %>
     {
-        public <%= clientName %>(Uri basePath, AuthenticationOptions authenticationOptions, Uri? authUrl = null)
+        public <%= clientName %>(
+            Uri basePath,
+            string apiKey,
+            AuthenticationOptions authenticationOptions,
+            Uri? authUrl = null)
         {
             authUrl ??= new Uri("https://auth.spaceblocks.cloud");
             var configuration = new Configuration();
