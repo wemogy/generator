@@ -28,7 +28,7 @@ jobs:
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.0.2
         with:
-          filename: coverage.cobertura.xml
+          filename: src/coverage.cobertura.xml
           badge: true
           format: 'markdown'
           output: 'both'
