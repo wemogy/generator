@@ -18,6 +18,12 @@ class DocsDocusurusGenerator extends BaseTemplateGenerator {
       },
       {
         type: 'input',
+        name: 'url',
+        message: 'Documentation URL',
+        default: `docs.${toPascalCase(this.appname)}.wemogy.com`
+      },
+      {
+        type: 'input',
         name: 'repoOwner',
         message: 'GitHub repository owner',
         default: 'wemogy'
@@ -27,13 +33,19 @@ class DocsDocusurusGenerator extends BaseTemplateGenerator {
         name: 'repoName',
         message: 'GitHub repository name',
         default: this.appname
+      },
+      {
+        type: 'input',
+        name: 'path',
+        message: 'GitHub repository name',
+        default: 'docs/public'
       }
     ]);
   }
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.destinationPath('docs/public'));
+    this.copyTemplateToDestination(this.destinationPath(this.answers.path));
   }
 }
 
