@@ -20,7 +20,7 @@ class DocsDocusurusGenerator extends BaseTemplateGenerator {
         type: 'input',
         name: 'url',
         message: 'Documentation URL',
-        default: `docs.${toPascalCase(this.appname)}.wemogy.com`
+        default: `${toPascalCase(this.appname)}.docs.wemogy.com`
       },
       {
         type: 'input',
@@ -37,7 +37,7 @@ class DocsDocusurusGenerator extends BaseTemplateGenerator {
       {
         type: 'input',
         name: 'path',
-        message: 'GitHub repository name',
+        message: 'Path (from root)',
         default: 'docs/public'
       }
     ]);
