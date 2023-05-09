@@ -4,7 +4,7 @@
 
 ## Get it running
 
-Install [Yeoman]() via NPM
+Install [Yeoman](https://yeoman.io/) via NPM
 
 ```bash
 npm install -g yo

@@ -2,13 +2,27 @@
 module.exports = {
   title: '<%= name %> Documentation',
   tagline: '<%= name %>',
-  url: 'https://internal.wemogy.com/',
+  url: 'https://<%= url %>/',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: '<%= repoOwner %>', // Usually your GitHub org/user name.
   projectName: '<%= repoName %>', // Usually your repo name.
+  markdown: {
+    mermaid: true
+  },
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+      ({
+        hashed: true,
+        docsRouteBasePath: '/'
+      })
+    ]
+  ],
   themeConfig: {
     navbar: {
       title: '<%= name %> Documentation',
@@ -18,9 +32,11 @@ module.exports = {
       },
       items: [
         {
-          href: 'https://wemogy.com',
-          label: 'Website',
-          position: 'right'
+          type: 'doc',
+          docId: 'overview',
+          docsPluginId: 'general',
+          position: 'left',
+          label: 'General'
         },
         {
           href: 'https://github.com/<%= repoOwner %>/<%= repoName %>',
@@ -45,12 +61,9 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          id: 'general',
-          path: 'docs',
-          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/<%= repoOwner %>/<%= repoName %>/edit/main/',
-          remarkPlugins: [require('mdx-mermaid')]
+          remarkPlugins: []
         },
         blog: false,
         theme: {
@@ -59,5 +72,16 @@ module.exports = {
       }
     ]
   ],
-  plugins: []
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'general',
+        path: 'docs-general',
+        routeBasePath: '/',
+        sidebarPath: require.resolve('./sidebars.js'),
+        editUrl: 'https://github.com/<%= repoOwner %>/<%= repoName %>/edit/main/'
+      }
+    ]
+  ]
 };
