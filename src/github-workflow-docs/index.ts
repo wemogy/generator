@@ -9,7 +9,16 @@ class GitHubDocsWorkflowGenerator extends BaseTemplateGenerator {
   public initialize(): void {}
 
   // Where you prompt users for options (where you’d call this.prompt())
-  public async prompting() {}
+  public async prompting() {
+    this.answers = await this.optionOrPrompt([
+      {
+        type: 'input',
+        name: 'path',
+        message: 'Path (from root) to docusaurus',
+        default: 'docs/public'
+      }
+    ]);
+  }
 
   // Saving configurations and configure the project (creating .editorconfig files and other metadata files
   public configuring(): void {}
