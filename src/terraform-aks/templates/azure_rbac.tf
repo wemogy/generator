@@ -18,17 +18,3 @@ resource "azurerm_role_assignment" "aks_dev_login" {
   role_definition_name = "Azure Kubernetes Service Cluster User Role"
   principal_id         = var.azure_aad_group_developers_id
 }
-
-# Allow Developers to read all Kubernets Resources (except secrets)
-resource "azurerm_role_assignment" "aks_dev_readonly" {
-  scope                = azurerm_kubernetes_cluster.default.id
-  role_definition_name = "Azure Kubernetes Service RBAC Reader"
-  principal_id         = var.azure_aad_group_developers_id
-}
-
-# Allow Developers to modify Kubernets Resources in the dev Namespace
-resource "azurerm_role_assignment" "aks_dev_namespace" {
-  scope                = "${azurerm_kubernetes_cluster.default.id}/namespaces/<%- devNamespace %>"
-  role_definition_name = "Azure Kubernetes Service RBAC Admin"
-  principal_id         = var.azure_aad_group_developers_id
-}

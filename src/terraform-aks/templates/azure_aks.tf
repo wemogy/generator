@@ -1,9 +1,11 @@
 resource "azurerm_kubernetes_cluster" "default" {
-  name                = "${local.prefix}aks"
-  location            = azurerm_resource_group.default.location
-  resource_group_name = azurerm_resource_group.default.name
-  dns_prefix          = "${local.prefix}aks"
-  kubernetes_version  = var.kubernetes_version
+  name                      = "${local.prefix}aks"
+  location                  = azurerm_resource_group.default.location
+  resource_group_name       = azurerm_resource_group.default.name
+  dns_prefix                = "${local.prefix}aks"
+  kubernetes_version        = var.kubernetes_version
+  automatic_channel_upgrade = "patch"
+  sku_tier                  = "Standard"
 
   default_node_pool {
     name                         = "system"
@@ -24,14 +26,11 @@ resource "azurerm_kubernetes_cluster" "default" {
     network_plugin = "azure"
   }
 
-  role_based_access_control {
-    enabled = true
-
-    azure_active_directory {
-      managed                = true
-      admin_group_object_ids = [var.azure_aad_group_admins_id]
-      azure_rbac_enabled     = true
-    }
+  azure_active_directory_role_based_access_control {
+    managed                = true
+    tenant_id              = data.azurerm_client_config.current.tenant_id
+    admin_group_object_ids = [var.azure_aad_group_admins_id]
+    azure_rbac_enabled     = false
   }
 
   oms_agent {
@@ -42,6 +41,7 @@ resource "azurerm_kubernetes_cluster" "default" {
     prevent_destroy = true
     ignore_changes = [
       default_node_pool[0].node_count,
+      kubernetes_version
     ]
   }
 }
