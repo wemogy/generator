@@ -17,6 +17,24 @@ resource "kubernetes_cluster_role_binding" "developer_view" {
   }
 }
 
+# Give developers view access to the noes
+resource "kubernetes_cluster_role_binding" "developer_node_reader" {
+  metadata {
+    name = "${var.project}-developer-node-reader"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "node-reader"
+  }
+
+  subject {
+    kind = "Group"
+    name = var.azure_aad_group_developers_id
+  }
+}
+
 # Give developers port-forward access to the whole cluster
 resource "kubernetes_cluster_role_binding" "developer_port_forwarder" {
   metadata {
