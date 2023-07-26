@@ -1,4 +1,4 @@
-import BaseTemplateGenerator from '../BaseTemplateGenerator';
+import BaseTemplateGenerator from "../BaseTemplateGenerator";
 
 class GitHubContainersActionGenerator extends BaseTemplateGenerator {
   constructor(args: any, options: any) {
@@ -12,17 +12,17 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
   public async prompting() {
     this.answers = await this.optionOrPrompt([
       {
-        type: 'input',
-        name: 'dockerfilePath',
-        message: 'Path to dockerfile',
-        default: 'src/webservices/my-service/Dockerfile'
+        type: "input",
+        name: "dockerfilePath",
+        message: "Path to dockerfile",
+        default: "src/webservices/my-service/MyService.Api/Dockerfile",
       },
       {
-        type: 'input',
-        name: 'containerName',
-        message: 'Container name',
-        default: 'my-container'
-      }
+        type: "input",
+        name: "containerName",
+        message: "Container name",
+        default: "my-container",
+      },
     ]);
   }
 
@@ -31,7 +31,7 @@ class GitHubContainersActionGenerator extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.destinationPath('.github/actions'));
+    this.copyTemplateToDestination(this.destinationPath(".github/actions"));
   }
 
   // Where installation are run (npm, bower)
