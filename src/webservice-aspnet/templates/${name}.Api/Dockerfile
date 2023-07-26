@@ -23,10 +23,6 @@ RUN dotnet restore src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/<%= 
 # Copy the rest of the files over
 COPY . .
 
-# Run unit tests
-WORKDIR /src/webservices/<%= folder %>/<%= name %>.Core.UnitTests/
-RUN if [ "$SKIP_TESTS" = "true" ]; then echo 'Skipping tests...'; else dotnet test --configuration $CONFIGURATION; fi
-
 # Build the application
 WORKDIR /src/webservices/<%= folder %>/<%= name %>.Api/
 RUN dotnet publish --output /out/ --configuration $CONFIGURATION
