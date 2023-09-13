@@ -81,23 +81,31 @@ namespace $packageName.Client
 {
     public partial class ApiClient
     {
-        private readonly SpaceBlocksAccessTokenProvider _accessTokenProvider;
-        private readonly string _apiKey;
+        private readonly SpaceBlocksAccessTokenProvider? _accessTokenProvider;
+        private readonly string? _apiKey;
 
-        public ApiClient(Uri baseUrl, string apiKey, Uri authUrl, AuthenticationOptions authenticationOptions)
+        public ApiClient(Uri baseUrl, string? apiKey = null, Uri? authUrl = null, AuthenticationOptions? authenticationOptions = null)
         {
-            _apiKey = apiKey;
             _baseUrl = baseUrl.ToString();
-            _accessTokenProvider = new SpaceBlocksAccessTokenProvider(
-                authUrl,
-                authenticationOptions);
+            _apiKey = apiKey;
+            _accessTokenProvider =
+                authUrl != null && authenticationOptions != null
+                ? new SpaceBlocksAccessTokenProvider(authUrl, authenticationOptions)
+                : null;
         }
 
         partial void InterceptRequest(RestRequest request)
         {
-            var accessToken = _accessTokenProvider.GetAccessTokenAsync().Result;
-            request.AddHeader("Authorization", $"Bearer {accessToken}");
-            request.AddHeader("ApiKey", _apiKey);
+            if (_accessTokenProvider != null)
+            {
+                var accessToken = _accessTokenProvider?.GetAccessTokenAsync().Result;
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+            }
+
+            if (_apiKey != null)
+            {
+                request.AddHeader("ApiKey", _apiKey);
+            }
         }
     }
 }
