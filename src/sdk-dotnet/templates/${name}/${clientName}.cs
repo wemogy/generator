@@ -9,8 +9,8 @@ namespace <%= name %>
     {
         public <%= clientName %>(
             Uri basePath,
-            string apiKey,
-            AuthenticationOptions authenticationOptions,
+            string? apiKey = null,
+            AuthenticationOptions? authenticationOptions = null,
             Uri? authUrl = null)
         {
             authUrl ??= new Uri("https://auth.spaceblocks.cloud");

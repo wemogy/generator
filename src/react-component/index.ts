@@ -62,7 +62,7 @@ class ReactComponent extends BaseTemplateGenerator {
 
   //  Where you write the generator specific files (routes, controllers, etc)
   public writing(): void {
-    this.copyTemplateToDestination(this.folderName);
+    this.copyTemplateToDestination(`${this.folderName}/${_.camelCase(this.answers.name)}`);
   }
 
   // Where installation are run (npm, bower)
