@@ -18,6 +18,7 @@ echo "Generate config file for openapi-generator"
 cat > $openApiConfigPath <<EOF
 additionalProperties:
   library: restsharp
+  useDateTimeOffset: true
   nullableReferenceTypes: true
   packageName: $packageName
   packageVersion: 1.0.0
