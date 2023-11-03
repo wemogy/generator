@@ -28,10 +28,10 @@
     "generators"
   ],
   "devDependencies": {
-    "@types/update-notifier": "^5.1.0",
     "@types/glob": "^7.1.4",
     "@types/lodash": "^4.14.168",
     "@types/node": "^16.4.13",
+    "@types/update-notifier": "^5.1.0",
     "@types/yeoman-generator": "5.2.2",
     "@types/yosay": "^2.0.0",
     "copyfiles": "^2.4.1",
