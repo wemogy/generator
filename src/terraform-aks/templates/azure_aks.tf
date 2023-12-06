@@ -3,9 +3,30 @@ resource "azurerm_kubernetes_cluster" "default" {
   location                  = azurerm_resource_group.default.location
   resource_group_name       = azurerm_resource_group.default.name
   dns_prefix                = "${local.prefix}aks"
-  kubernetes_version        = var.kubernetes_version
-  automatic_channel_upgrade = "patch"
+  kubernetes_version        = var.kubernetes_version  
   sku_tier                  = "Standard"
+  automatic_channel_upgrade = "stable"
+  node_os_channel_upgrade   = "Unmanaged"
+
+  # Upgrade the cluster every first Sunday of a month at 1:00 am UTC for 8 hours
+  maintenance_window_auto_upgrade {
+    frequency   = "RelativeMonthly"
+    interval    = 1
+    day_of_week = "Sunday"
+    week_index  = "First"
+    duration    = 8
+    start_time  = "01:00"
+  }
+
+  # Upgrade the Node OS image every first Sunday of a month at 1:00 am UTC for 8 hours
+  maintenance_window_node_os {
+    frequency   = "RelativeMonthly"
+    interval    = 1
+    day_of_week = "Sunday"
+    week_index  = "First"
+    duration    = 8
+    start_time  = "01:00"
+  }
 
   default_node_pool {
     name                         = "system"
