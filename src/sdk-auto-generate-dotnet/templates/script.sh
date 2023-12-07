@@ -17,10 +17,10 @@ then
     exit
 fi
 
-# Verify that openapi-generator version is 7.0.X
-if [[ $(openapi-generator version) != 7.0.* ]];
+# Verify that openapi-generator version is 7.*
+if [[ $(openapi-generator version) != 7.* ]];
 then
-    echo "openapi-generator version 7.0.X is required"
+    echo "openapi-generator version 7.* is required - you have version $(openapi-generator version)"
     exit
 fi
 
