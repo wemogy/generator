@@ -105,13 +105,13 @@ namespace $packageName.Client
         private readonly SpaceBlocksAccessTokenProvider? _accessTokenProvider;
         private readonly string? _apiKey;
 
-        public ApiClient(Uri baseUrl, string? apiKey = null, Uri? authUrl = null, AuthenticationOptions? authenticationOptions = null)
+        public ApiClient(Uri baseUrl, string? apiKey = null, Uri? authUrl = null, AuthenticationOptions? authenticationOptions = null, TokenManagerOptions? tokenManagerOptions = null)
         {
             _baseUrl = baseUrl.ToString();
             _apiKey = apiKey;
             _accessTokenProvider =
                 authUrl != null && authenticationOptions != null
-                  ? new SpaceBlocksAccessTokenProvider(authUrl, authenticationOptions)
+                  ? new SpaceBlocksAccessTokenProvider(authUrl, authenticationOptions, tokenManagerOptions)
                   : null;
         }
 
