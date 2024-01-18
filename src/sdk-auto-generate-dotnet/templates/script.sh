@@ -89,7 +89,9 @@ git checkout $projectPath/$packageName.csproj
 dotnet add $projectPath/$packageName.csproj package SpaceBlocks.Libs.Sdk
 
 # Remove the Newtonsoft.Json dependency because it is already included in SpaceBlocks.Libs.Sdk
-dotnet remove $projectPath/$packageName.csproj package Newtonsoft.Json
+if grep -q "Newtonsoft.Json" "$projectPath/$packageName.csproj"; then
+    dotnet remove "$projectPath/$packageName.csproj" package Newtonsoft.Json
+fi
 
 # Place partial class ApiClient`.cs
 cat > $projectPath/Client/ApiClient\`.cs <<EOF
