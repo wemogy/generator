@@ -25,6 +25,12 @@ resource "helm_release" "prometheus" {
   }
 
   set {
+    name  = "prometheus.prometheusSpec.retention"
+    value = "100d"
+    type  = "string"
+  }
+
+  set {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName"
     value = "default"
     type  = "string"
