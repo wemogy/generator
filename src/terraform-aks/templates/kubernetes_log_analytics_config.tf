@@ -16,19 +16,19 @@ resource "kubernetes_config_map" "example" {
       # In the absense of this configmap, default value for enabled is true
       enabled = true
       # exclude_namespaces setting holds good only if enabled is set to true
-      # kube-system log collection is disabled by default in the absence of 'log_collection_settings.stdout' setting. If you want to enable kube-system, remove it from the following setting.
-      # If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.
-      # In the absense of this configmap, default value for exclude_namespaces = ["kube-system"]
-      exclude_namespaces = ["kube-system"]
+      # kube-system,gatekeeper-system log collection are disabled by default in the absence of 'log_collection_settings.stdout' setting. If you want to enable kube-system,gatekeeper-system, remove them from the following setting.
+      # If you want to continue to disable kube-system,gatekeeper-system log collection keep the namespaces in the following setting and add any other namespace you want to disable log collection to the array.
+      # In the absense of this configmap, default value for exclude_namespaces = ["kube-system","gatekeeper-system"]
+      exclude_namespaces = ["kube-system","gatekeeper-system"]
 
     [log_collection_settings.stderr]
       # Default value for enabled is true
       enabled = true
       # exclude_namespaces setting holds good only if enabled is set to true
-      # kube-system log collection is disabled by default in the absence of 'log_collection_settings.stderr' setting. If you want to enable kube-system, remove it from the following setting.
-      # If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.
-      # In the absense of this cofigmap, default value for exclude_namespaces = ["kube-system"]
-      exclude_namespaces = ["kube-system"]
+      # kube-system,gatekeeper-system log collection are disabled by default in the absence of 'log_collection_settings.stderr' setting. If you want to enable kube-system,gatekeeper-system, remove them from the following setting.
+      # If you want to continue to disable kube-system,gatekeeper-system log collection keep the namespaces in the following setting and add any other namespace you want to disable log collection to the array.
+      # In the absense of this configmap, default value for exclude_namespaces = ["kube-system","gatekeeper-system"]
+      exclude_namespaces = ["kube-system", "cert-manager-system", "dapr-system", "default", "ingress-system", "kong-system", "kube-node-lease", "kube-public", "monitoring-system"]
 
     [log_collection_settings.env_var]
       # In the absense of this configmap, default value for enabled is true
@@ -42,7 +42,18 @@ resource "kubernetes_config_map" "example" {
       # When the setting is set to false, only the kube events with !normal event type will be collected
       enabled = false
       # When this is enabled (enabled = true), all kube events including normal events will be collected
-    EOF
+    [log_collection_settings.schema]
+      # In the absence of this configmap, default value for containerlog_schema_version is "v1"
+      # Supported values for this setting are "v1","v2"
+      # See documentation at https://aka.ms/ContainerLogv2 for benefits of v2 schema over v1 schema before opting for "v2" schema
+      containerlog_schema_version = "v2"
+    #[log_collection_settings.enable_multiline_logs]
+      # fluent-bit based multiline log collection for .NET, Go, Java, and Python stacktraces. Update stacktrace_languages to specificy which languages to collect stacktraces for(valid inputs: "go", "java", "python", "dotnet").
+      # NOTE: for better performance consider enabling only for languages that are needed. Dotnet is experimental and may not work in all cases.
+      # If enabled will also stitch together container logs split by docker/cri due to size limits(16KB per log line) up to 64 KB.
+      # enabled = "false"
+      # stacktrace_languages = []
+EOF
 
     "prometheus-data-collection-settings" = <<EOF
 # Custom Prometheus metrics data collection settings
