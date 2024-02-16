@@ -47,4 +47,40 @@ resource "helm_release" "prometheus" {
     value = "10Gi"
     type  = "string"
   }
+
+  set {
+    name  = "grafana.persistence.enabled"
+    value = "true"
+    type  = "string"
+  }
+
+  set {
+    name  = "grafana.persistence.type"
+    value = "sts"
+    type  = "string"
+  }
+
+  set {
+    name  = "grafana.persistence.storageClassName"
+    value = "default"
+    type  = "string"
+  }
+
+  set {
+    name  = "grafana.persistence.accessModes[0]"
+    value = "ReadWriteOnce"
+    type  = "string"
+  }
+
+  set {
+    name  = "grafana.persistence.size"
+    value = "20Gi"
+    type  = "string"
+  }
+
+  set {
+    name  = "grafana.persistence.finalizers[0]"
+    value = "kubernetes.io/pvc-protection"
+    type  = "string"
+  }
 }
