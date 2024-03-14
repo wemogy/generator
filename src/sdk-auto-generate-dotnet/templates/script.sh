@@ -5,6 +5,7 @@ webservice=$2
 swagger=$3
 targetDirectory=$4
 packageName=$5
+packageDescription=$6
 
 projectPath=$targetDirectory/$packageName
 
@@ -36,6 +37,8 @@ additionalProperties:
   nullableReferenceTypes: true
   packageName: $packageName
   packageVersion: 1.0.0
+  packageCopyright: wemogy GmbH
+  packageDescription: $packageDescription
   targetFramework: netstandard2.1
   nonPublicApi: false # Can be set to true for rich SDKs, where the API should not be exposed to the user directly
 EOF
