@@ -25,5 +25,5 @@ jobs:
           type: now
           from_branch: main
           target_branch: ${{ secrets.CURRENT_RELEASE_BRANCH }}
-          github_token: ${{ secrets.WEMOGY_GENERATOR_AUTO_MERGE }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "New Release"
