@@ -29,6 +29,9 @@ class EmptyProjectGenerator extends BaseTemplateGenerator {
     // See this issue for more: https://github.com/yeoman/generator/issues/812
     this.fs.copy(this.templatePath('gitignore/gitignore-content'), this.destinationPath('.gitignore'));
     this.copyTemplateToDestination(this.destinationPath(), undefined, this.templatePath('root'));
+
+    // Add Git Hooks
+    this.composeWith('wemogy:git-hooks');
   }
 
   // Where installation are run (npm, bower)
