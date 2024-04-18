@@ -66,6 +66,12 @@ Choose these to generate basic templates for specific technologies. They will no
 
 ## Development
 
+Before starting local development, make sure, that the GitHooks are installed via [pre-commit](https://pre-commit.com/#installation).
+
+```bash
+pre-commit install
+```
+
 Open a Terminal at the repository root and run the following commands.
 
 ```bash
