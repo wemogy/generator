@@ -10,10 +10,18 @@ jobs:
     name: Check Coding Style
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # Check EditorConfig
       - name: Install eclint
         run: sudo npm install -g eclint
       - name: Check EditorConfig style
         run: eclint check $(git ls-files)
+
+      # Check Commit Messages
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Check commits
+        run: pre-commit run --hook-stage manual
