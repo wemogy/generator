@@ -11,7 +11,7 @@ class GitCleanupGenerator extends BaseTemplateGenerator {
   }
 
   public install(): void {
-    const scriptPath = `${__dirname}/templates/script.sh`;
+    const scriptPath = `"${__dirname}/templates/script.sh"`;
 
     // Make script executable
     this.spawnCommandSync('chmod', ['+x', scriptPath], { shell: true });
