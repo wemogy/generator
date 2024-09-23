@@ -1,4 +1,4 @@
-resource "kubernetes_config_map" "example" {
+resource "kubernetes_config_map" "log_analytics_agent_config" {
   metadata {
     name      = "container-azm-ms-agentconfig"
     namespace = "kube-system"
@@ -14,25 +14,25 @@ resource "kubernetes_config_map" "example" {
 [log_collection_settings]
     [log_collection_settings.stdout]
       # In the absense of this configmap, default value for enabled is true
-      enabled = true
+      enabled = false
       # exclude_namespaces setting holds good only if enabled is set to true
       # kube-system,gatekeeper-system log collection are disabled by default in the absence of 'log_collection_settings.stdout' setting. If you want to enable kube-system,gatekeeper-system, remove them from the following setting.
       # If you want to continue to disable kube-system,gatekeeper-system log collection keep the namespaces in the following setting and add any other namespace you want to disable log collection to the array.
       # In the absense of this configmap, default value for exclude_namespaces = ["kube-system","gatekeeper-system"]
-      exclude_namespaces = ["kube-system","gatekeeper-system"]
+      exclude_namespaces = ["kube-system", "kube-node-lease", "kube-public", "cert-manager-system", "dapr-system", "default", "ingress-system", "kong-system", "kube-node-lease", "kube-public", "monitoring-system"]
 
     [log_collection_settings.stderr]
       # Default value for enabled is true
-      enabled = true
+      enabled = false
       # exclude_namespaces setting holds good only if enabled is set to true
       # kube-system,gatekeeper-system log collection are disabled by default in the absence of 'log_collection_settings.stderr' setting. If you want to enable kube-system,gatekeeper-system, remove them from the following setting.
       # If you want to continue to disable kube-system,gatekeeper-system log collection keep the namespaces in the following setting and add any other namespace you want to disable log collection to the array.
       # In the absense of this configmap, default value for exclude_namespaces = ["kube-system","gatekeeper-system"]
-      exclude_namespaces = ["kube-system", "cert-manager-system", "dapr-system", "default", "ingress-system", "kong-system", "kube-node-lease", "kube-public", "monitoring-system"]
+      exclude_namespaces = ["kube-system", "kube-node-lease", "kube-public", "cert-manager-system", "dapr-system", "default", "ingress-system", "kong-system", "kube-node-lease", "kube-public", "monitoring-system"]
 
     [log_collection_settings.env_var]
       # In the absense of this configmap, default value for enabled is true
-      enabled = true
+      enabled = false
     [log_collection_settings.enrich_container_logs]
       # In the absense of this configmap, default value for enrich_container_logs is false
       enabled = false
@@ -51,8 +51,8 @@ resource "kubernetes_config_map" "example" {
       # fluent-bit based multiline log collection for .NET, Go, Java, and Python stacktraces. Update stacktrace_languages to specificy which languages to collect stacktraces for(valid inputs: "go", "java", "python", "dotnet").
       # NOTE: for better performance consider enabling only for languages that are needed. Dotnet is experimental and may not work in all cases.
       # If enabled will also stitch together container logs split by docker/cri due to size limits(16KB per log line) up to 64 KB.
-      # enabled = "false"
-      # stacktrace_languages = []
+      enabled = "true"
+      stacktrace_languages = ["python", "dotnet"]
 EOF
 
     "prometheus-data-collection-settings" = <<EOF
