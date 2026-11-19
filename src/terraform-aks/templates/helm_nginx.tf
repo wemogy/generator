@@ -6,6 +6,15 @@ resource "helm_release" "nginx" {
   version          = "4.5.2"
   create_namespace = true
 
+  # Mitigation for NGINX2Root (CVE-2026-123007, CVE-2026-123633): the bundled nginx is
+  # vulnerable and ingress-nginx is archived, so no patched controller will be released.
+  # Disabling HTTP/2 closes the HTTP/2 attack path until the ingress controller is replaced.
+  set {
+    name  = "controller.config.use-http2"
+    value = "false"
+    type  = "string"
+  }
+
   set {
     name  = "controller.replicaCount"
     value = "2"
